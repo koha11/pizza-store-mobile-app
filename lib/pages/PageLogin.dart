@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
@@ -73,8 +74,10 @@ class PageLogin extends StatelessWidget {
                         final Session? session = res.session;
                         final User? user = res.user;
 
+                        print(res);
+
                         if (user != null) {
-                          Get.to(PageHome());
+                          Get.to(PageHome(), binding: BindingsHomePizzaStore());
                         }
                       },
                       child: Text("Sign In"),
