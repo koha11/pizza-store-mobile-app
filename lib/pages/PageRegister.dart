@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_store_app/controllers/controller_home.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
-import 'package:pizza_store_app/pages/PageRegister.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class PageLogin extends StatelessWidget {
-  PageLogin({super.key});
+import '../controllers/controller_home.dart';
+import 'PageHome.dart';
+
+class PageRegister extends StatelessWidget {
+  PageRegister({super.key});
 
   final _formKey = GlobalKey<FormState>();
   final emailTxt = TextEditingController();
   final pwdTxt = TextEditingController();
+  final rePwdTxt = TextEditingController();
+  final nameTxt = TextEditingController();
+  final phoneTxt = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Đăng nhập vào",
+              "Đăng ký một",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 36,
@@ -30,7 +35,7 @@ class PageLogin extends StatelessWidget {
               ),
             ),
             Text(
-              "tài khoản của bạn.",
+              "tài khoản cho bạn.",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 36,
@@ -39,7 +44,7 @@ class PageLogin extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              "Hãy đăng nhập vô tài khoản của bạn",
+              "Hãy đăng ký một tài khoản của riêng bạn để có thể bắt đầu hưởng thức những món pizza tuyệt vời của chúng tôi.",
               style: TextStyle(color: Colors.grey),
             ),
             SizedBox(height: 30),
@@ -53,8 +58,24 @@ class PageLogin extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   TextFormField(
+                    controller: nameTxt,
+                    decoration: InputDecoration(labelText: "Tên của bạn"),
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: phoneTxt,
+                    decoration: InputDecoration(labelText: "Số điện thoại"),
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
                     controller: pwdTxt,
                     decoration: InputDecoration(labelText: "Mật khẩu"),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: rePwdTxt,
+                    decoration: InputDecoration(labelText: "Nhập lai Mật khẩu"),
                     obscureText: true,
                   ),
                   SizedBox(height: 20),
@@ -79,17 +100,23 @@ class PageLogin extends StatelessWidget {
                     ),
                     onPressed: () async {
                       final supabase = Supabase.instance.client;
-                      final AuthResponse res = await supabase.auth
-                          .signInWithPassword(
-                            email: emailTxt.text,
-                            password: pwdTxt.text,
-                          );
+                      final AuthResponse res = await supabase.auth.signUp(
+                        email: emailTxt.text,
+                        password: pwdTxt.text,
+                      );
 
                       final Session? session = res.session;
                       final User? user = res.user;
 
                       if (user != null) {
-                        Get.to(PageHome(), binding: BindingsHomePizzaStore());
+                        await supabase.from('app_user').insert({
+                          'user_id': user.id,
+                          'user_name': nameTxt.text,
+                          'phone_number': phoneTxt.text,
+                          'role_id': "CUSTOMER",
+                        });
+
+                        Get.off(PageLogin());
                       }
                     },
                     child: SizedBox(
@@ -98,7 +125,7 @@ class PageLogin extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Đăng nhập",
+                            "Đăng ký",
                             style: TextStyle(color: Colors.white),
                           ),
                         ],
@@ -109,15 +136,15 @@ class PageLogin extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Bạn không có tài khoản? "),
+                      Text("Bạn đã có tài khoản? "),
                       GestureDetector(
                         child: Text(
-                          "Hãy đăng ký",
+                          "Hãy đăng nhập",
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                         ),
-                        onTap: () => Get.off(PageRegister()),
+                        onTap: () => Get.off(PageLogin()),
                       ),
                     ],
                   ),
