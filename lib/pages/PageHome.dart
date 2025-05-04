@@ -8,54 +8,42 @@ class PageHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Pizza Store"),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: GetBuilder(
-        id: "home",
-        init: HomePizzaStoreController.get(),
-        builder: (controller) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.network("https://ilmio.vn/uploads/slider/10.png"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Find by category",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "See All",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                    ),
-                  ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Image.network("https://ilmio.vn/uploads/slider/10.png"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Find by category",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "See All",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.inversePrimary,
                 ),
-                GridView.count(
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                  childAspectRatio: 0.75,
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  children: List.generate(20, (index) {
-                    return Container(
-                      height: 200,
-                      color: Colors.grey[200],
-                      alignment: Alignment.center,
-                      child: Text("data $index"),
-                    );
-                  }),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+          GridView.count(
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+            childAspectRatio: 0.75,
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: List.generate(20, (index) {
+              return Container(
+                height: 200,
+                color: Colors.grey[200],
+                alignment: Alignment.center,
+                child: Text("data $index"),
+              );
+            }),
+          ),
+        ],
       ),
     );
   }
