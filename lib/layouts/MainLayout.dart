@@ -8,11 +8,14 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<HomePizzaStoreController>(
-      id: "home",
+    return GetBuilder(
+      id: "1",
       init: HomePizzaStoreController.get(),
       builder: (controller) {
         return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: controller.currentIndex,
             onTap: (value) {
@@ -24,8 +27,8 @@ class MainLayout extends StatelessWidget {
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag),
-                label: 'Cart',
+                icon: Icon(Icons.list_alt_outlined),
+                label: 'Hoạt động',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),

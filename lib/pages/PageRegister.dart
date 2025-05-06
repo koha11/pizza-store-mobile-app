@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../controllers/controller_home.dart';
@@ -105,7 +106,6 @@ class PageRegister extends StatelessWidget {
                         password: pwdTxt.text,
                       );
 
-                      final Session? session = res.session;
                       final User? user = res.user;
 
                       if (user != null) {
@@ -116,7 +116,7 @@ class PageRegister extends StatelessWidget {
                           'role_id': "CUSTOMER",
                         });
 
-                        Get.off(PageLogin());
+                        Get.to(PageVerifyEmail(email: user.email!));
                       }
                     },
                     child: SizedBox(

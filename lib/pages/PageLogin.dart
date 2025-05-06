@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
-import 'package:pizza_store_app/helpers/session.helper.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:pizza_store_app/pages/PageRegister.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../layouts/MainLayout.dart';
 
@@ -89,12 +86,9 @@ class PageLogin extends StatelessWidget {
                             password: pwdTxt.text,
                           );
 
-                      final Session? session = res.session;
                       final User? user = res.user;
 
                       if (user != null) {
-                        setCurrId(user.id);
-
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),

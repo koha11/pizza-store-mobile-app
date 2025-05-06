@@ -1,13 +1,17 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/controller_home.dart';
+import '../models/Item.model.dart';
 
 class PageHome extends StatelessWidget {
-  const PageHome({super.key});
+  PageHome({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Iterable<Item> items = HomePizzaStoreController().items;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -17,15 +21,31 @@ class PageHome extends StatelessWidget {
             children: [
               Text(
                 "Find by category",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               Text(
                 "See All",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.inversePrimary,
+                  fontSize: 20,
                 ),
               ),
             ],
+          ),
+          CarouselSlider(
+            items: [
+              Text("Test 1"),
+              Text("Test 2"),
+              Text("Test 3"),
+              Text("Test 4"),
+              Text("Test 5"),
+            ],
+            options: CarouselOptions(
+              height: 200,
+              autoPlay: false,
+              enlargeCenterPage: true,
+              viewportFraction: 0.8,
+            ),
           ),
           GridView.count(
             crossAxisSpacing: 5,
@@ -34,14 +54,21 @@ class PageHome extends StatelessWidget {
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            children: List.generate(20, (index) {
-              return Container(
-                height: 200,
-                color: Colors.grey[200],
-                alignment: Alignment.center,
-                child: Text("data $index"),
-              );
-            }),
+            children:
+                items
+                    .map(
+                      (item) => Container(
+                        color: Colors.grey[200],
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            Text(item.itemName),
+                            Image.network(item.itemImage ?? ""),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
           ),
         ],
       ),
