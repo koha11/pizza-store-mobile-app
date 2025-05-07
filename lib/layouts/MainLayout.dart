@@ -12,6 +12,22 @@ class MainLayout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          GetBuilder(
+            init: HomePizzaStoreController.get(),
+            id: "1",
+            builder:
+                (controller) => Stack(
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.shopping_cart),
+                    ),
+                  ],
+                ),
+          ),
+        ],
       ),
       bottomNavigationBar: GetBuilder(
         init: HomePizzaStoreController.get(),
