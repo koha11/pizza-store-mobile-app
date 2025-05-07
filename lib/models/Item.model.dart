@@ -1,8 +1,8 @@
 import '../helpers/supabase.helper.dart';
 
 class Item {
-  String itemId, itemName;
-  String? itemImage, description, categoryID;
+  String itemId, itemName, categoryID;
+  String? itemImage, description;
   int price;
 
   static String tableName = "item";
