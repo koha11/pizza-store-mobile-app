@@ -13,25 +13,28 @@ class PageProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomePizzaStoreController controller = HomePizzaStoreController.get();
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            Icon(Icons.person),
-            (getCurrentUser() == null
-                ? GestureDetector(
-                  child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
-                  onTap: () => Get.off(PageLogin()),
-                )
-                : Text(getCurrentUser()!.id)),
-            GestureDetector(
-              child: Text("Đăng xuất"),
-              onTap: () async {
-                await HomePizzaStoreController.get().signOut();
-              },
-            ),
-          ],
+    return GetBuilder(
+      init: HomePizzaStoreController.get(),
+      id: "1",
+      builder: (controller) =>  SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.person),
+              (getCurrentUser() == null
+                  ? GestureDetector(
+                    child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
+                    onTap: () => Get.off(PageLogin()),
+                  )
+                  : Text(getCurrentUser()!.id)),
+              GestureDetector(
+                child: Text("Đăng xuất"),
+                onTap: () async {
+                  await controller.signOut();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
