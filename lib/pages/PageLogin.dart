@@ -89,6 +89,7 @@ class PageLogin extends StatelessWidget {
                       final User? user = res.user;
 
                       if (user != null) {
+                        HomePizzaStoreController.get().setCurrUser(user);
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),

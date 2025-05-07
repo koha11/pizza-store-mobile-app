@@ -10,7 +10,7 @@ class PageHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Iterable<Item> items = HomePizzaStoreController().items;
+    Iterable<Item> items = HomePizzaStoreController.get().items;
 
     return SingleChildScrollView(
       child: Column(

@@ -13,6 +13,7 @@ class PageProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    HomePizzaStoreController controller = HomePizzaStoreController.get();
     return SingleChildScrollView(
       child: Center(
         child: Column(
