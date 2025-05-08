@@ -110,10 +110,11 @@ class SupabaseSnapshot {
   static Future<List<T>> getList<T>({
     required String table,
     required T Function(Map<String, dynamic> json) fromJson,
+    String selectString = "",
   }) async {
     List<T> ts = [];
 
-    var data = await supabase.from(table).select();
+    var data = await supabase.from(table).select(selectString);
 
     ts = data.map(fromJson).toList();
 
@@ -124,8 +125,13 @@ class SupabaseSnapshot {
     required String table,
     required T2 Function(Map<String, dynamic> json) fromJson,
     required T1 Function(T2) getId,
+    String selectString = "",
   }) async {
-    var data = await getList(table: table, fromJson: fromJson);
+    var data = await getList(
+      table: table,
+      fromJson: fromJson,
+      selectString: selectString,
+    );
 
     Map<T1, T2> _maps = Map.fromIterable(
       data,

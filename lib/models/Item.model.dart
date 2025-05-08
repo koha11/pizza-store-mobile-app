@@ -1,7 +1,10 @@
+import 'category.model.dart';
+
 import '../helpers/supabase.helper.dart';
 
 class Item {
-  String itemId, itemName, categoryID;
+  String itemId, itemName;
+  Category category;
   String? itemImage, description;
   int price;
 
@@ -13,7 +16,7 @@ class Item {
     this.itemImage,
     this.description,
     required this.price,
-    required this.categoryID,
+    required this.category,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -23,7 +26,7 @@ class Item {
       itemImage: json["item_image"],
       description: json["description"],
       price: json["price"],
-      categoryID: json["category_id"],
+      category: Category.fromJson(json["category"]),
     );
   }
 
@@ -34,7 +37,7 @@ class Item {
       "item_image": itemImage,
       "description": description,
       "price": price,
-      "category_id": categoryID,
+      "category": category.toJson(),
     };
   }
 }
@@ -48,6 +51,8 @@ class ItemSnapshot {
     return SupabaseSnapshot.getList(
       table: Item.tableName,
       fromJson: Item.fromJson,
+      selectString:
+          "*, category(category_id, category_name, category_image, description)",
     );
   }
 
@@ -56,6 +61,8 @@ class ItemSnapshot {
       table: Item.tableName,
       fromJson: Item.fromJson,
       getId: (p0) => p0.itemId,
+      selectString:
+          "*, category(category_id, category_name, category_image, description)",
     );
   }
 }

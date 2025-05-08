@@ -5,29 +5,27 @@ import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:pizza_store_app/pages/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../models/category.model.dart';
+
 class HomePizzaStoreController extends GetxController {
   int currentIndex = 0;
+  String currentCategoryId = "";
   final List<Widget> _pages = [PageHome(), PageProfile(), PageProfile()];
   Map<String, Item> _itemMaps = {};
+  Map<String, Category> _categoryMaps = {};
 
   User? _currUser;
 
   static HomePizzaStoreController get() => Get.find();
   Iterable<Item> get items => _itemMaps.values;
-
-  @override
-  void onInit() async {
-    // TODO: implement onInit
-    super.onInit();
-    _itemMaps = await ItemSnapshot.getMapItems();
-    update(["1"]);
-  }
+  Iterable<Category> get categories => _categoryMaps.values;
 
   @override
   void onReady() async {
     // TODO: implement onReady
     super.onReady();
     _itemMaps = await ItemSnapshot.getMapItems();
+    _categoryMaps = await CategorySnapshot.getMapCategories();
 
     update(["1"]);
   }
