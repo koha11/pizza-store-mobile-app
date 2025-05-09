@@ -16,7 +16,7 @@ class PageItemDetail extends StatelessWidget {
       body: GetBuilder(
         id: item.itemId,
         tag: item.itemId,
-        init: ItemDetailController.get(item.itemId),
+        init: ItemDetailController.get(item.category.categoryId),
         builder: (controller) {
           return SingleChildScrollView(
             child: Column(
@@ -60,7 +60,8 @@ class PageItemDetail extends StatelessWidget {
                         shrinkWrap: true,
                         itemCount: controller.variants.length,
                         itemBuilder: (context, index) {
-                          var variant = controller.variants.toList()[index];
+                          var variant =
+                              controller.variants.toList()[index].variant;
 
                           return Text(variant.variantName);
                         },
