@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,17 +13,6 @@ class PageChangeInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    User? user = getCurrentUser();
-    AppUser fakeUser = AppUser(
-      userId: "0312kn",
-      userName: "Khánh Vinh",
-      phoneNumber: "0899348258",
-      roleId: "123",
-    );
-    if (user == null) {
-      return Scaffold(body: Center(child: Text("Chưa đăng nhập")));
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -33,21 +23,11 @@ class PageChangeInfo extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
         ),
       ),
-      body: FutureBuilder<AppUser?>(
-        future: AppUserSnapshot.getUserById(user!.id),
-        builder: (context, snapshot) {
-          // if (snapshot.connectionState != ConnectionState.done) {
-          //   return Center(child: CircularProgressIndicator());
-          // }
-          // if (snapshot.hasError) {
-          //   return Center(child: Text("Error: ${snapshot.error}"));
-          // }
-          // if (!snapshot.hasData || snapshot.data == null) {
-          //   return Center(child: Text("Không tìm thấy người dùng"));
-          // }
-          AppUser? user = snapshot.data;
-          txtName.text = fakeUser.userName;
-          txtPhoneNumber.text = fakeUser.phoneNumber;
+      body: GetBuilder(
+        init: UserController.get(),
+        builder: (controller) {
+          txtName.text = controller.appUser?.userName ?? "";
+          txtPhoneNumber.text = controller.appUser?.phoneNumber ?? "";
           return Padding(
             padding: const EdgeInsets.all(24),
             child: SingleChildScrollView(
