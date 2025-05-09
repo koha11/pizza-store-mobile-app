@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 
 class PageChangeEmail extends StatelessWidget {
   PageChangeEmail({super.key});
   TextEditingController txtEmail = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    txtEmail.text = getCurrentUser()?.email ?? "";
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
