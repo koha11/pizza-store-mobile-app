@@ -45,11 +45,14 @@ class VariantSnapshot {
     );
   }
 
-  static Future<Map<String, Variant>> getMapVariants() {
-    return SupabaseSnapshot.getMapT<String, Variant>(
-      table: Variant.tableName,
-      fromJson: Variant.fromJson,
-      getId: (p0) => p0.variantId,
-    );
+  static Future<Map<String, Variant>> getMapVariants() async {
+    Map<String, Variant> variants =
+        await SupabaseSnapshot.getMapT<String, Variant>(
+          table: Variant.tableName,
+          fromJson: Variant.fromJson,
+          getId: (p0) => p0.variantId,
+        );
+
+    return variants;
   }
 }

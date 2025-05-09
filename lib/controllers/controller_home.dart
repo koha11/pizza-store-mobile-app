@@ -9,15 +9,15 @@ import '../models/category.model.dart';
 
 class HomePizzaStoreController extends GetxController {
   int currentIndex = 0;
-  String currentCategoryId = "";
+  String _currentCategoryId = "C00001";
   final List<Widget> _pages = [PageHome(), PageProfile(), PageProfile()];
   Map<String, Item> _itemMaps = {};
   Map<String, Category> _categoryMaps = {};
 
   User? _currUser;
 
-  static HomePizzaStoreController get() => Get.find();
   Iterable<Item> get items => _itemMaps.values;
+  static HomePizzaStoreController get() => Get.find();
   Iterable<Category> get categories => _categoryMaps.values;
 
   @override
@@ -32,6 +32,15 @@ class HomePizzaStoreController extends GetxController {
 
   Widget getPage(int index) => _pages[index];
 
+  Iterable<Item> getItems(String categoryId) =>
+      items.where((item) => item.category.categoryId == categoryId);
+
+  User? getCurrUser(User user) {
+    return _currUser;
+  }
+
+  String getCurrCategoryId() => _currentCategoryId;
+
   void changePage(int index) {
     currentIndex = index;
     update(["1"]);
@@ -41,8 +50,9 @@ class HomePizzaStoreController extends GetxController {
     _currUser = user;
   }
 
-  User? getCurrUser(User user) {
-    return _currUser;
+  void setCurrCategoryId(String categoryId) {
+    _currentCategoryId = categoryId;
+    update(["1"]);
   }
 
   Future<void> signOut() async {

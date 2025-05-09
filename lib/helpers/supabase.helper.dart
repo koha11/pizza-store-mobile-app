@@ -111,10 +111,21 @@ class SupabaseSnapshot {
     required String table,
     required T Function(Map<String, dynamic> json) fromJson,
     String selectString = "",
+    String columnName = "",
+    String columnValue = "",
   }) async {
     List<T> ts = [];
 
-    var data = await supabase.from(table).select(selectString);
+    PostgrestList data;
+
+    if (columnName == "") {
+      data = await supabase.from(table).select(selectString);
+    } else {
+      data = await supabase
+          .from(table)
+          .select(selectString)
+          .eq(columnName, columnValue);
+    }
 
     ts = data.map(fromJson).toList();
 
@@ -126,6 +137,8 @@ class SupabaseSnapshot {
     required T2 Function(Map<String, dynamic> json) fromJson,
     required T1 Function(T2) getId,
     String selectString = "",
+    String columnName = "",
+    String columnValue = "",
   }) async {
     var data = await getList(
       table: table,

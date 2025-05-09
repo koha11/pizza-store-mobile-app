@@ -1,12 +1,15 @@
 import 'package:get/get.dart';
-
-import '../models/variant.model.dart';
+import 'package:pizza_store_app/models/Item_variant.model.dart';
 
 class ItemDetailController extends GetxController {
-  late int amount;
-  Map<String, Variant> _variantMaps = {};
+  int amount = 1;
+  final String categoryId;
+
+  ItemDetailController(this.categoryId);
+
+  Map<String, ItemVariant> _variantMaps = {};
   static ItemDetailController get(String id) => Get.find(tag: id);
-  Iterable<Variant> get variants => _variantMaps.values;
+  Iterable<ItemVariant> get variants => _variantMaps.values;
 
   // get cart
 
@@ -23,19 +26,14 @@ class ItemDetailController extends GetxController {
   }
 
   @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    amount = 1;
-  }
-
-  @override
   void onReady() async {
     // TODO: implement onReady
     super.onReady();
-    _variantMaps = await VariantSnapshot.getMapVariants();
 
-    update();
+    _variantMaps = await ItemVariantSnapshot.getMapItemVariants(
+      columnName: "category_id",
+      columnValue: categoryId,
+    );
   }
 }
 
@@ -44,9 +42,10 @@ class BindingsItemDetail extends Bindings {
   void dependencies() {
     // TODO: implement dependencies
     final id = Get.arguments['id'];
+    final categoryId = Get.arguments['category_id'];
 
     Get.put<ItemDetailController>(
-      ItemDetailController(),
+      ItemDetailController(categoryId),
       tag: id,
       permanent: true,
     );
