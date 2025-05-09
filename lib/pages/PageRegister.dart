@@ -113,7 +113,7 @@ class PageRegister extends StatelessWidget {
                           'user_id': user.id,
                           'user_name': nameTxt.text,
                           'phone_number': phoneTxt.text,
-                          'role_id': "CUSTOMER",
+                          'role_id': "RI0002",
                         });
 
                         Get.to(PageVerifyEmail(email: user.email!));
