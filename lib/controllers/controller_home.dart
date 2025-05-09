@@ -9,7 +9,7 @@ import '../models/category.model.dart';
 
 class HomePizzaStoreController extends GetxController {
   int currentIndex = 0;
-  String _currentCategoryId = "C00001";
+  String _currentCategoryId = "CI0001";
   final List<Widget> _pages = [PageHome(), PageProfile(), PageProfile()];
   Map<String, Item> _itemMaps = {};
   Map<String, Category> _categoryMaps = {};

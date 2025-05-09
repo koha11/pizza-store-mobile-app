@@ -144,6 +144,8 @@ class SupabaseSnapshot {
       table: table,
       fromJson: fromJson,
       selectString: selectString,
+      columnName: columnName,
+      columnValue: columnValue,
     );
 
     Map<T1, T2> _maps = Map.fromIterable(
