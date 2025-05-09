@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/pages/PageHome.dart';
+import 'package:pizza_store_app/pages/PageItem.dart';
 import 'package:pizza_store_app/pages/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,7 +11,12 @@ import '../models/category.model.dart';
 class HomePizzaStoreController extends GetxController {
   int currentIndex = 0;
   String _currentCategoryId = "CI0001";
-  final List<Widget> _pages = [PageHome(), PageProfile(), PageProfile()];
+  final List<Widget> _pages = [
+    PageHome(),
+    PageProfile(),
+    PageProfile(),
+    PageItem(),
+  ];
   Map<String, Item> _itemMaps = {};
   Map<String, Category> _categoryMaps = {};
 

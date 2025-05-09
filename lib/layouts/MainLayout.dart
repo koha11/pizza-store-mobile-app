@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/pages/PageHome.dart';
+import 'package:pizza_store_app/pages/PageSearch.dart';
 
 import '../controllers/controller_home.dart';
+import '../controllers/controller_search.dart';
 
 class MainLayout extends StatelessWidget {
   const MainLayout({super.key});
@@ -12,8 +14,48 @@ class MainLayout extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        leading: GetBuilder(
+          id: "1",
+          init: HomePizzaStoreController.get(),
+          builder: (controller) {
+            if (controller.currentIndex == 3) {
+              return BackButton(onPressed: () => controller.changePage(0));
+            } else {
+              return Text("");
+            }
+          },
+        ),
+        title: GetBuilder(
+          id: "1",
+          init: HomePizzaStoreController.get(),
+          builder: (controller) {
+            final list = ['Apple', 'Banana', 'Orange', 'Mango'];
+            String? selectedItem;
+            return DropdownButton<String>(
+              value: selectedItem,
+              items:
+                  list
+                      .map(
+                        (item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item),
+                        ),
+                      )
+                      .toList(),
+              onChanged: (value) {
+                selectedItem = value;
+              },
+              hint: Text("Chọn địa chỉ của bạn"),
+            );
+          },
+        ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(
+            onPressed: () {
+              Get.to(PageSearch(), binding: BindingsSearch());
+            },
+            icon: Icon(Icons.search),
+          ),
           GetBuilder(
             init: HomePizzaStoreController.get(),
             id: "1",
@@ -34,7 +76,7 @@ class MainLayout extends StatelessWidget {
         id: "1",
         builder:
             (controller) => BottomNavigationBar(
-              currentIndex: controller.currentIndex,
+              currentIndex: controller.currentIndex % 3,
               onTap: (value) {
                 controller.changePage(value);
               },

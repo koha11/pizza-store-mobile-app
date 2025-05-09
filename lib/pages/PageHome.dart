@@ -47,7 +47,7 @@ class PageHome extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
-                              Get.to(PageItem(items: controller.items));
+                              controller.changePage(3);
                             },
                           ),
                         ],
