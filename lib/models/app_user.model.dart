@@ -38,10 +38,15 @@ class AppUserSnapshot {
 
   AppUserSnapshot(this.appUser);
 
-  static Future<List<AppUser>> getAppUsers() async {
+  static Future<List<AppUser>> getAppUsers({
+    String columnName = "",
+    String columnValue = "",
+  }) async {
     return SupabaseSnapshot.getList(
       table: AppUser.tableName,
       fromJson: AppUser.fromJson,
+      columnName: columnName,
+      columnValue: columnValue,
     );
   }
 
