@@ -48,7 +48,7 @@ class ItemVariantSnapshot {
     return SupabaseSnapshot.getMapT<String, ItemVariant>(
       table: ItemVariant.tableName,
       fromJson: ItemVariant.fromJson,
-      getId: (p0) => p0.categoryId,
+      getId: (p0) => p0.variant.variantId,
       columnName: columnName,
       columnValue: columnValue,
       selectString:

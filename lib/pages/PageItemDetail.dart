@@ -16,8 +16,12 @@ class PageItemDetail extends StatelessWidget {
       body: GetBuilder(
         id: item.itemId,
         tag: item.itemId,
-        init: ItemDetailController.get(item.category.categoryId),
+        init: ItemDetailController.get(item.itemId),
         builder: (controller) {
+          if (controller.variants == null) {
+            return Center(child: CircularProgressIndicator());
+          }
+
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,15 +60,19 @@ class PageItemDetail extends StatelessWidget {
                       Text("${item.description ?? ""}"),
                       SizedBox(height: 10),
 
-                      ListView.builder(
+                      ListView(
                         shrinkWrap: true,
-                        itemCount: controller.variants.length,
-                        itemBuilder: (context, index) {
-                          var variant =
-                              controller.variants.toList()[index].variant;
-
-                          return Text(variant.variantName);
-                        },
+                        children:
+                            controller.variants!
+                                .map(
+                                  (e) => RadioListTile(
+                                    value: e.variant.variantId,
+                                    groupValue: "test",
+                                    onChanged: (value) {},
+                                    title: Text(e.variant.variantName),
+                                  ),
+                                )
+                                .toList(),
                       ),
 
                       Container(height: 300),
@@ -76,75 +84,92 @@ class PageItemDetail extends StatelessWidget {
           );
         },
       ),
-      bottomSheet: GetBuilder(
-        id: item.itemId,
-        tag: item.itemId,
-        init: ItemDetailController.get(item.itemId),
-        builder: (controller) {
-          int amount = controller.amount;
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          child: Icon(Icons.remove),
-                          onPressed: () {
-                            controller.decreaseAmount(item.itemId);
-                          },
-                        ),
-                        SizedBox(width: 8),
-                        Text("$amount", style: TextStyle(fontSize: 18)),
-                        SizedBox(width: 8),
-                        ElevatedButton(
-                          child: Icon(Icons.add),
-                          onPressed: () {
-                            controller.increaseAmount(item.itemId);
-                          },
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "${item.price * amount}",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.shopping_cart),
-                    label: Text("Thêm vào giỏ hàng"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.inversePrimary,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                    ),
+      bottomSheet: ItemDetailBottomSheet(item: item),
+    );
+  }
+}
+
+class ItemDetailBottomSheet extends StatefulWidget {
+  Item item;
+
+  ItemDetailBottomSheet({super.key, required this.item});
+
+  @override
+  State<ItemDetailBottomSheet> createState() => _ItemDetailBottomSheetState();
+}
+
+class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
+  @override
+  Widget build(BuildContext context) {
+    Item item = widget.item;
+    final controller = ItemDetailController.get(item.itemId);
+    int amount = controller.amount;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  ElevatedButton(
+                    child: Icon(Icons.remove),
+                    onPressed: () {
+                      if (amount > 1) {
+                        setState(() {
+                          controller.amount = --amount;
+                        });
+                      }
+                    },
                   ),
+                  SizedBox(width: 8),
+                  Text("$amount", style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 8),
+                  ElevatedButton(
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      setState(() {
+                        controller.amount = ++amount;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Text(
+                "${item.price * amount}",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: Icon(Icons.shopping_cart),
+              label: Text("Thêm vào giỏ hàng"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40),
+                ),
+              ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
