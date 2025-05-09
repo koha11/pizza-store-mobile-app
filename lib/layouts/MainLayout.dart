@@ -1,51 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
+import 'package:pizza_store_app/controllers/cotroller_shoppingcart.dart';
 import 'package:pizza_store_app/pages/PageSearch.dart';
+import 'package:pizza_store_app/pages/PageShopping_cart.dart';
 
 import '../controllers/controller_home.dart';
 import '../controllers/controller_search.dart';
+import '../controllers/cotroller_location.dart';
 
 class MainLayout extends StatelessWidget {
-  const MainLayout({super.key});
-
+ // final LocationController controller = Get.put(LocationController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: GetBuilder(
-          id: "1",
-          init: HomePizzaStoreController.get(),
+        title: GetX<LocationController>(
+          init: Get.put(LocationController()),
           builder: (controller) {
-            if (controller.currentIndex == 3) {
-              return BackButton(onPressed: () => controller.changePage(0));
-            } else {
-              return Text("");
-            }
-          },
-        ),
-        title: GetBuilder(
-          id: "1",
-          init: HomePizzaStoreController.get(),
-          builder: (controller) {
-            final list = ['Apple', 'Banana', 'Orange', 'Mango'];
-            String? selectedItem;
-            return DropdownButton<String>(
-              value: selectedItem,
-              items:
-                  list
-                      .map(
-                        (item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item),
-                        ),
-                      )
-                      .toList(),
-              onChanged: (value) {
-                selectedItem = value;
-              },
-              hint: Text("Chọn địa chỉ của bạn"),
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: controller.fetchLocation,
+                  icon: Icon(Icons.location_on_outlined),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Text(
+                      "Chọn vị trí ${controller.selectedAddress.value}"
+                      ,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -63,7 +53,9 @@ class MainLayout extends StatelessWidget {
                 (controller) => Stack(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                         Get.to(PageshoppingCart(),binding: BindingsShoppingcart());
+                      },
                       icon: Icon(Icons.shopping_cart),
                     ),
                   ],
@@ -102,5 +94,12 @@ class MainLayout extends StatelessWidget {
         builder: (controller) => controller.getPage(controller.currentIndex),
       ),
     );
+  }
+}
+
+class LocationBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put(LocationController());
   }
 }
