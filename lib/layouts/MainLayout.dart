@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/cotroller_shoppingcart.dart';
+import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/pages/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
 
 import '../controllers/controller_home.dart';
 import '../controllers/controller_search.dart';
-import '../controllers/cotroller_location.dart';
+import '../controllers/controller_location.dart';
 
 class MainLayout extends StatelessWidget {
  // final LocationController controller = Get.put(LocationController());
