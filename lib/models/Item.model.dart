@@ -52,7 +52,7 @@ class ItemSnapshot {
       table: Item.tableName,
       fromJson: Item.fromJson,
       selectString:
-          "*, category(category_id, category_name, category_image, description)",
+          "*, category(category_id, category_name, category_image)",
     );
   }
 
@@ -62,7 +62,7 @@ class ItemSnapshot {
       fromJson: Item.fromJson,
       getId: (p0) => p0.itemId,
       selectString:
-          "*, category(category_id, category_name, category_image, description)",
+          "*, category(category_id, category_name, category_image)",
     );
   }
 }
