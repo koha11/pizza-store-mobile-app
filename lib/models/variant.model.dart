@@ -1,8 +1,10 @@
+import 'package:pizza_store_app/models/variant_type.model.dart';
+
 import '../helpers/supabase.helper.dart';
 
 class Variant {
   String variantId, variantName;
-  String? description;
+  VariantType variantType;
   int priceChange;
 
   static String tableName = "variant";
@@ -10,7 +12,7 @@ class Variant {
   Variant({
     required this.variantId,
     required this.variantName,
-    this.description,
+    required this.variantType,
     required this.priceChange,
   });
 
@@ -18,7 +20,7 @@ class Variant {
     return Variant(
       variantId: json["variant_id"],
       variantName: json["variant_name"],
-      description: json["description"],
+      variantType: VariantType.fromJson(json['variant_type']),
       priceChange: json["price_change"],
     );
   }
@@ -26,8 +28,8 @@ class Variant {
   Map<String, dynamic> toJson() {
     return {
       "variant_id": priceChange,
+      "variant_type_id": variantType.toJson(),
       "variant_name": variantName,
-      "description": description,
       "price_change": priceChange,
     };
   }
@@ -42,6 +44,7 @@ class VariantSnapshot {
     return SupabaseSnapshot.getList(
       table: Variant.tableName,
       fromJson: Variant.fromJson,
+      selectString: "*, variant_type(*)",
     );
   }
 
@@ -51,6 +54,7 @@ class VariantSnapshot {
           table: Variant.tableName,
           fromJson: Variant.fromJson,
           getId: (p0) => p0.variantId,
+          selectString: "*, variant_type(*)",
         );
 
     return variants;

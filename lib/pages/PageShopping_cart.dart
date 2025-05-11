@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD
-class PageShoppingCart extends StatelessWidget {
-  const PageShoppingCart({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-=======
 class PageshoppingCart extends StatefulWidget {
   const PageshoppingCart({super.key});
 
@@ -28,18 +20,11 @@ class _PageshoppingCartState extends State<PageshoppingCart> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Muốn ăn lăn ra trang Home"),
-            SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {
-
-                },
-                child: Text("Tìm kiếm món ăn"))
+            SizedBox(height: 10),
+            ElevatedButton(onPressed: () {}, child: Text("Tìm kiếm món ăn")),
           ],
         ),
       ),
     );
->>>>>>> main
   }
 }
