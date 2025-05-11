@@ -25,6 +25,7 @@ class PageChangeInfo extends StatelessWidget {
       ),
       body: GetBuilder(
         init: UserController.get(),
+        id: "user",
         builder: (controller) {
           txtName.text = controller.appUser?.userName ?? "";
           txtPhoneNumber.text = controller.appUser?.phoneNumber ?? "";

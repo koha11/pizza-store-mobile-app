@@ -21,6 +21,7 @@ class PageAddress extends StatelessWidget {
       ),
       body: GetBuilder(
         init: UserController.get(),
+        id: "user",
         builder: (controller) {
           return Padding(
             padding: const EdgeInsets.all(24),
