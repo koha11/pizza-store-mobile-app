@@ -11,31 +11,26 @@ import 'package:pizza_store_app/pages/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/PageChangePassword.dart';
 import 'package:pizza_store_app/pages/PageLogin.dart';
 
-import '../controllers/controller_home.dart';
-
 class PageProfile extends StatelessWidget {
   PageProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: UserController(),
+      init: UserController.get(),
       id: "user",
       builder: (controller) {
-        if (controller.appUser == null && getCurrentUser() == null) {
+        if (controller.appUser == null || getCurrentUser() == null) {
           return Scaffold(
             backgroundColor: Colors.white,
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.person),
-                  (getCurrentUser() == null
-                      ? GestureDetector(
-                        child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
-                        onTap: () => Get.off(PageLogin()),
-                      )
-                      : Text(getCurrentUser()!.id)),
+                  GestureDetector(
+                    child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
+                    onTap: () => Get.off(PageLogin()),
+                  ),
                 ],
               ),
             ),
