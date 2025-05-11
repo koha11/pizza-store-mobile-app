@@ -31,8 +31,7 @@ class ItemDetailController extends GetxController {
     _variantMaps = await VariantSnapshot.getMapVariants();
 
     _variantMaps!.forEach((variantId, variant) {
-      if (_itemVariants!.) ==
-          true) {
+      if (_itemVariants == true) {
         _myVariants.assign(variant.variantType.variantTypeName, variant);
       }
     });
