@@ -20,7 +20,11 @@ class PageProfile extends StatelessWidget {
       init: UserController.get(),
       id: "user",
       builder: (controller) {
-        if (controller.appUser == null || getCurrentUser() == null) {
+        final user = controller.appUser;
+        if (controller.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (user == null) {
           return Scaffold(
             backgroundColor: Colors.white,
             body: Center(
@@ -28,7 +32,9 @@ class PageProfile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
+                    child: Text(
+                      "Bạn chưa đăng nhập, click để đăng nhập ${getCurrentUser()!.id}",
+                    ),
                     onTap: () => Get.off(PageLogin()),
                   ),
                 ],
@@ -52,8 +58,13 @@ class PageProfile extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: NetworkImage(
-                              "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
+                              user != null &&
+                                      user.avatar != null &&
+                                      user.avatar!.isNotEmpty
+                                  ? user.avatar!
+                                  : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
                             ),
+
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -61,7 +72,7 @@ class PageProfile extends StatelessWidget {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      "${controller.appUser?.userName ?? ""}",
+                      "${user.userName}",
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w500,
@@ -73,7 +84,7 @@ class PageProfile extends StatelessWidget {
                     ),
                     SizedBox(height: 50),
                     GestureDetector(
-                      onTap: () => Get.to(PageChangeInfo()),
+                      onTap: () => Get.to(() => PageChangeInfo()),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -96,7 +107,7 @@ class PageProfile extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () => Get.to(PageChangeEmail()),
+                      onTap: () => Get.to(() => PageChangeEmail()),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -119,7 +130,7 @@ class PageProfile extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () => Get.to(PageChangePassword()),
+                      onTap: () => Get.to(() => PageChangePassword()),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

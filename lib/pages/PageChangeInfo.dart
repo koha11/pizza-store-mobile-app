@@ -25,10 +25,14 @@ class PageChangeInfo extends StatelessWidget {
       ),
       body: GetBuilder(
         init: UserController.get(),
-        id: "user",
+        id: "changeInfo",
         builder: (controller) {
-          txtName.text = controller.appUser?.userName ?? "";
-          txtPhoneNumber.text = controller.appUser?.phoneNumber ?? "";
+          final user = controller.appUser;
+          if (user == null) {
+            return Text("Null");
+          }
+          txtName.text = user.userName;
+          txtPhoneNumber.text = user.phoneNumber;
           return Padding(
             padding: const EdgeInsets.all(24),
             child: SingleChildScrollView(
@@ -49,7 +53,13 @@ class PageChangeInfo extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await controller.updateInfo(
+                            context: context,
+                            txtUserName: txtName,
+                            txtPhoneNumber: txtPhoneNumber,
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
                           backgroundColor: Colors.orange,
