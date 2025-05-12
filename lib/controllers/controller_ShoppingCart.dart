@@ -32,51 +32,55 @@ class ShoppingCartController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('ShoppingCartController initialized');
     _initializeCart();
   }
 
   Future<void> _initializeCart() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) return;
-
     try {
-      // Tìm order_id của giỏ hàng hiện tại
+      print('Initializing cart...');
+      // Tìm giỏ hàng đang pending của user UI0002
       final response = await _supabase
           .from('customer_order')
           .select('order_id')
-          .eq('customer_id', user.id)
+          .eq('customer_id', 'UI0002')
           .eq('status', 'pending')
           .maybeSingle();
 
       if (response != null) {
         _currentOrderId = response['order_id'] as String;
+        print('Found existing cart: $_currentOrderId');
         await _loadCartItems();
       } else {
-        // Tạo order mới nếu chưa có
+        print('No existing cart found, creating new one');
         await _createNewOrder();
       }
     } catch (e) {
       print('Error initializing cart: $e');
-      await _createNewOrder();
     }
   }
 
   Future<void> _createNewOrder() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) return;
-
     try {
-      final response = await _supabase.from('customer_order').insert({
-        'customer_id': user.id,
-        'status': 'pending',
-        'order_time': DateTime.now().toIso8601String(),
-        'total': 0,
-        'shipping_fee': 0,
-        'payment_method': false,
-        'shipping_address': '',
-      }).select('order_id').single();
+      final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
+      print('Creating new order: $orderId');
 
-      _currentOrderId = response['order_id'] as String;
+      await _supabase.from('customer_order').insert({
+        'order_id': orderId,
+        'customer_id': 'UI0002',
+        'manager_id': null,
+        'shipper_id': null,
+        'order_time': null,
+        'status': 'pending',
+        'payment_method': false,
+        'total_amount': 0,
+        'shipping_fee': 0,
+        'note': null,
+        'shipping_address': null,
+      });
+
+      _currentOrderId = orderId;
+      print('New order created: $_currentOrderId');
       update();
     } catch (e) {
       print('Error creating new order: $e');
@@ -84,53 +88,96 @@ class ShoppingCartController extends GetxController {
   }
 
   Future<void> _loadCartItems() async {
-    if (_currentOrderId == null) return;
+    if (_currentOrderId == null) {
+      print('No current order ID, cannot load items');
+      return;
+    }
 
     try {
+      print('Loading items for order: $_currentOrderId');
       final response = await _supabase
           .from('order_detail')
-          .select('*, item(*)')
+          .select('*, item:item_id(*)')
           .eq('order_id', _currentOrderId!);
 
-      _cartItems = {};
+      print('Raw response from Supabase: $response');
+
+      final Map<String, OrderDetail> newItems = {};
       for (var item in response) {
-        _cartItems[item['item_id'] as String] = OrderDetail.fromJson(item);
+        if (item != null) {
+          try {
+            final Map<String, dynamic> orderDetailData = Map<String, dynamic>.from(item);
+            print('Processing order detail data: $orderDetailData');
+            
+            final orderDetail = OrderDetail.fromJson(orderDetailData);
+            newItems[orderDetail.itemId] = orderDetail;
+            print('Successfully added item to cart: ${orderDetail.itemId}');
+          } catch (e) {
+            print('Error parsing item: $e');
+            print('Item data: $item');
+          }
+        }
       }
-      update(['cart', 'badge']); // Thêm id 'badge' để cập nhật badge
+      
+      _cartItems = newItems;
+      print('Loaded ${_cartItems.length} items');
+      update(['cart_items']); // Cập nhật UI
     } catch (e) {
-      print('lỗi cập nhật cart items: $e');
+      print('Error loading cart items: $e');
     }
   }
 
   Future<void> addToCart(Item item, int amount) async {
-    if (_currentOrderId == null) {
-      await _createNewOrder();
-    }
-
     try {
-      final existingItem = _cartItems[item.itemId];
+      if (_currentOrderId == null) {
+        print('No current order ID, creating new order');
+        await _createNewOrder();
+      }
+
+      print('Adding item ${item.itemId} to cart');
+      
+      // Kiểm tra item đã tồn tại trong database
+      final existingItem = await _supabase
+          .from('order_detail')
+          .select()
+          .eq('order_id', _currentOrderId!)
+          .eq('item_id', item.itemId)
+          .maybeSingle();
+
       if (existingItem != null) {
-        // Cập nhật số lượng nếu sản phẩm đã có trong giỏ
+        print('Item exists in database, updating amount');
+        final currentAmount = existingItem['amount'] as int;
         await _supabase
             .from('order_detail')
-            .update({'amount': existingItem.amount + amount})
+            .update({'amount': currentAmount + amount})
             .eq('order_id', _currentOrderId!)
             .eq('item_id', item.itemId);
       } else {
-        // Thêm sản phẩm mới vào giỏ
+        print('Item is new, inserting');
         await _supabase.from('order_detail').insert({
           'order_id': _currentOrderId,
           'item_id': item.itemId,
           'amount': amount,
           'actual_price': item.price,
-          'note': '',
+          'note': null,
         });
       }
 
+      // Load lại cart items sau khi thêm
       await _loadCartItems();
-      update(['cart', 'badge']); // Thêm id 'badge'
+      
+      Get.snackbar(
+        'Thành công',
+        'Đã thêm sản phẩm vào giỏ hàng',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
       print('Error adding to cart: $e');
+      Get.snackbar(
+        'Lỗi',
+        'Không thể thêm sản phẩm vào giỏ hàng',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -145,7 +192,6 @@ class ShoppingCartController extends GetxController {
           .eq('item_id', itemId);
 
       await _loadCartItems();
-      update(['cart', 'badge']); // Thêm id 'badge'
     } catch (e) {
       print('Error removing from cart: $e');
     }
@@ -167,7 +213,6 @@ class ShoppingCartController extends GetxController {
           .eq('item_id', itemId);
 
       await _loadCartItems();
-      update(['cart', 'badge']); // Thêm id 'badge'
     } catch (e) {
       print('Error updating item amount: $e');
     }
@@ -183,7 +228,6 @@ class ShoppingCartController extends GetxController {
           .eq('order_id', _currentOrderId!);
 
       await _loadCartItems();
-      update(['cart', 'badge']); // Thêm id 'badge'
     } catch (e) {
       print('Error clearing cart: $e');
     }

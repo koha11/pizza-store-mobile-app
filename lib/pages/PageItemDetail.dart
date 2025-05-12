@@ -159,13 +159,9 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                final cartController = Get.find<ShoppingCartController>();
+                final cartController = Get.put(ShoppingCartController());
                 cartController.addToCart(item, amount);
-                Get.snackbar(
-                  'Thành công',
-                  'Đã thêm sản phẩm vào giỏ hàng',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
+                // Get.back();
               },
               icon: Icon(Icons.shopping_cart),
               label: Text("Thêm vào giỏ hàng"),
@@ -174,6 +170,7 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40),
+
                 ),
               ),
             ),
