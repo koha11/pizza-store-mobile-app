@@ -15,7 +15,7 @@ class LocationController extends GetxController {
   var isLoading = false.obs;
   var hamlet = ''.obs; // Thôn
   var commune = ''.obs; // Xã
-  var selectedAddress = ''.obs;
+  var selectedAddress = 'Chọn vị trí'.obs;
 
   Future<void> fetchLocation() async {
     try {

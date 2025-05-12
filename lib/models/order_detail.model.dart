@@ -1,11 +1,13 @@
 import '../helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/Item.model.dart';
 
 class OrderDetail {
   String orderId, itemId;
   int amount, actualPrice;
   String? note;
+  Item? item;
 
-  static String tableName = "category";
+  static String tableName = "order_detail";
 
   OrderDetail({
     required this.orderId,
@@ -13,6 +15,7 @@ class OrderDetail {
     required this.amount,
     this.note,
     required this.actualPrice,
+    this.item,
   });
 
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -20,8 +23,9 @@ class OrderDetail {
       orderId: json["order_id"],
       itemId: json["item_id"],
       amount: json["amount"],
-      actualPrice: json["note"],
-      note: json["actual_price"],
+      actualPrice: json["actual_price"],
+      note: json["note"],
+      item: json["item"] != null ? Item.fromJson(json["item"]) : null,
     );
   }
 
@@ -32,6 +36,7 @@ class OrderDetail {
       "amount": amount,
       "note": note,
       "actual_price": actualPrice,
+      "item": item?.toJson(),
     };
   }
 }

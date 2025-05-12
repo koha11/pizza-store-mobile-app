@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 
+import '../controllers/controller_ShoppingCart.dart';
 import '../models/Item.model.dart';
 
 class PageItemDetail extends StatelessWidget {
@@ -157,7 +158,15 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                final cartController = Get.find<ShoppingCartController>();
+                cartController.addToCart(item, amount);
+                Get.snackbar(
+                  'Thành công',
+                  'Đã thêm sản phẩm vào giỏ hàng',
+                  snackPosition: SnackPosition.BOTTOM,
+                );
+              },
               icon: Icon(Icons.shopping_cart),
               label: Text("Thêm vào giỏ hàng"),
               style: ElevatedButton.styleFrom(

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/cotroller_shoppingcart.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/pages/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
 
 import '../controllers/controller_home.dart';
 import '../controllers/controller_search.dart';
-import '../controllers/cotroller_location.dart';
+import '../controllers/controller_location.dart';
 
 class MainLayout extends StatelessWidget {
- // final LocationController controller = Get.put(LocationController());
+  // final LocationController controller = Get.put(LocationController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,8 +30,7 @@ class MainLayout extends StatelessWidget {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Text(
-                      "Chọn vị trí ${controller.selectedAddress.value}"
-                      ,
+                      controller.selectedAddress.value,
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -46,20 +46,25 @@ class MainLayout extends StatelessWidget {
             },
             icon: Icon(Icons.search),
           ),
-          GetBuilder(
-            init: HomePizzaStoreController.get(),
-            id: "1",
-            builder:
-                (controller) => Stack(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                         Get.to(PageShoppingCart(),binding: BindingsShoppingcart());
-                      },
-                      icon: Icon(Icons.shopping_cart),
-                    ),
-                  ],
+          GetBuilder<ShoppingCartController>(
+            id: 'badge',
+            init: Get.put(ShoppingCartController()),
+            builder: (controller) {
+              return badges.Badge(
+                position: badges.BadgePosition.topEnd(top: 0, end: 3),
+                showBadge: controller.totalItems > 0,
+                badgeContent: Text(
+                  '${controller.totalItems}',
+                  style: TextStyle(color: Colors.white),
                 ),
+                child: IconButton(
+                  onPressed: () {
+                    Get.to(PageShoppingCart(), binding: BindingsShoppingcart());
+                  },
+                  icon: Icon(Icons.shopping_cart),
+                ),
+              );
+            },
           ),
         ],
       ),
