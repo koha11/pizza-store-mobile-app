@@ -7,7 +7,7 @@ class CustomerOrder {
   String orderId, customerId, shippingAddress;
   String? managerId, shipperId, voucherId, note;
   OrderStatus status = OrderStatus.pending;
-  DateTime orderTime;
+  DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
   bool paymentMethod;
   int total = 0, shippingFee;
