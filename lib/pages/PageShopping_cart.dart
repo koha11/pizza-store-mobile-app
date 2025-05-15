@@ -9,24 +9,24 @@ class PageShoppingCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Đảm bảo controller được khởi tạo
-    final controller = Get.put(ShoppingCartController());
-    
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MainLayout()),
-        );
-        return false;
-      },
-      child: Scaffold(
+    //final controller = Get.put(ShoppingCartController());
+
+    // return WillPopScope(
+    //   onWillPop: () async {
+    //     Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (context) => MainLayout()),
+    //     );
+    //     return false;
+    //   },
+      return Scaffold(
         appBar: AppBar(
           title: const Center(child: Text("Giỏ hàng")),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
         body: GetBuilder<ShoppingCartController>(
-          id: 'cart_items',  // ID để cập nhật UI
+          //id: 'cart_items',  // ID để cập nhật UI
           builder: (controller) {
-            print('Building cart with ${controller.cartItems.length} items');
+           // print('Building cart with ${controller.cartItems.length} items');
             if (controller.cartItems.isEmpty) {
               return Center(
                 child: Column(
@@ -68,11 +68,11 @@ class PageShoppingCart extends StatelessWidget {
                         child: ListTile(
                           leading: item.item?.itemImage != null
                               ? Image.network(
-                                  item.item!.itemImage!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
+                            item.item!.itemImage!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
                               : const Icon(Icons.fastfood, size: 40),
                           title: Text(item.item?.itemName ?? "Không rõ tên"),
                           subtitle: Text("${item.actualPrice} vnđ"),
@@ -82,6 +82,7 @@ class PageShoppingCart extends StatelessWidget {
                               IconButton(
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
+
                                   controller.updateItemAmount(
                                     item.itemId,
                                     item.amount - 1,
@@ -179,7 +180,7 @@ class PageShoppingCart extends StatelessWidget {
             );
           },
         ),
-      ),
-    );
+      );
+   // );
   }
 }
