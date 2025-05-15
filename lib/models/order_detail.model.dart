@@ -1,11 +1,13 @@
 import '../helpers/supabase.helper.dart';
+import 'Item.model.dart';
 
 class OrderDetail {
   String orderId, itemId;
   int amount, actualPrice;
   String? note;
+  Item? item;
 
-  static String tableName = "category";
+  static String tableName = "order_detail";
 
   OrderDetail({
     required this.orderId,
@@ -13,17 +15,44 @@ class OrderDetail {
     required this.amount,
     this.note,
     required this.actualPrice,
+    this.item,
   });
 
+  // factory OrderDetail.fromJson(Map<String, dynamic> json) {
+  //   return OrderDetail(
+  //     orderId: json["order_id"],
+  //     itemId: json["item_id"],
+  //     amount: json["amount"],
+  //     actualPrice: json["actual_price"],
+  //     note: json["note"],
+  //     item: json["item"] != null && json["item"] is Map<String, dynamic>
+  //         ? Item.fromJson(json["item"])
+  //         : null,
+  //   );
+  // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
+    Item? itemParsed;
+    try {
+      if (json["item"] != null && json["item"] is Map<String, dynamic>) {
+        itemParsed = Item.fromJson(json["item"]);
+      } else {
+        itemParsed = null;
+      }
+    } catch (e) {
+      print("Lỗi parse item: $e");
+      itemParsed = null;
+    }
+
     return OrderDetail(
       orderId: json["order_id"],
       itemId: json["item_id"],
       amount: json["amount"],
-      actualPrice: json["note"],
-      note: json["actual_price"],
+      actualPrice: json["actual_price"],
+      note: json["note"],
+      item: itemParsed,
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
