@@ -2,7 +2,7 @@ import '../helpers/supabase.helper.dart';
 
 class Category {
   String categoryId, categoryName;
-  String? categoryImage, description;
+  String? categoryImage;
 
   static String tableName = "category";
 
@@ -10,7 +10,6 @@ class Category {
     required this.categoryId,
     required this.categoryName,
     this.categoryImage,
-    this.description,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -18,7 +17,6 @@ class Category {
       categoryId: json["category_id"],
       categoryName: json["category_name"],
       categoryImage: json["category_image"],
-      description: json["description"],
     );
   }
 
@@ -27,7 +25,6 @@ class Category {
       "category_id": categoryId,
       "category_name": categoryName,
       "category_image": categoryImage,
-      "description": description,
     };
   }
 

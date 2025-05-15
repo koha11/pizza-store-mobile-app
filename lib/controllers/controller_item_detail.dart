@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/models/Item_variant.model.dart';
+import 'package:pizza_store_app/models/variant.model.dart';
 
 class ItemDetailController extends GetxController {
   int amount = 1;
@@ -7,9 +8,13 @@ class ItemDetailController extends GetxController {
 
   ItemDetailController(this.categoryId, this.tag);
 
-  Map<String, ItemVariant>? _variantMaps;
+  Map<String, Variant>? _variantMaps;
+  Iterable<ItemVariant>? _itemVariants;
+
+  Map<String, Variant> _myVariants = {};
+
   static ItemDetailController get(String id) => Get.find(tag: id);
-  Iterable<ItemVariant>? get variants => _variantMaps?.values;
+  Iterable<Variant>? get variants => _variantMaps?.values;
 
   // get cart
 
@@ -18,13 +23,18 @@ class ItemDetailController extends GetxController {
     // TODO: implement onInit
     super.onInit();
 
-    _variantMaps = await ItemVariantSnapshot.getMapItemVariants(
+    _itemVariants = await ItemVariantSnapshot.getItemVariants(
       columnName: "category_id",
       columnValue: categoryId,
     );
 
-    print(_variantMaps);
-    print(variants);
+    _variantMaps = await VariantSnapshot.getMapVariants();
+
+    _variantMaps!.forEach((variantId, variant) {
+      if (_itemVariants == true) {
+        _myVariants.assign(variant.variantType.variantTypeName, variant);
+      }
+    });
 
     update([tag]);
   }
@@ -40,7 +50,7 @@ class BindingsItemDetail extends Bindings {
     Get.put<ItemDetailController>(
       ItemDetailController(categoryId, id),
       tag: id,
-      permanent: true,
+      // permanent: true,
     );
   }
 }

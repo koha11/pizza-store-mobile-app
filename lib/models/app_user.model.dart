@@ -50,14 +50,6 @@ class AppUserSnapshot {
     );
   }
 
-  static Future<AppUser?> getUserById(String userId) async {
-    List<AppUser> users = await AppUserSnapshot.getAppUsers();
-    print("User total: ${users.length}");
-    users.forEach((element) => print(element));
-    print(users.firstWhereOrNull((user) => user.userId == userId));
-    return users.firstWhereOrNull((user) => user.userId == userId);
-  }
-
   static Future<Map<String, AppUser>> getMapAppUsers() {
     return SupabaseSnapshot.getMapT<String, AppUser>(
       table: AppUser.tableName,

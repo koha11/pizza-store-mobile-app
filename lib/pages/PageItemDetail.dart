@@ -66,10 +66,10 @@ class PageItemDetail extends StatelessWidget {
                             controller.variants!
                                 .map(
                                   (e) => RadioListTile(
-                                    value: e.variant.variantId,
+                                    value: e.variantId,
                                     groupValue: "test",
                                     onChanged: (value) {},
-                                    title: Text(e.variant.variantName),
+                                    title: Text(e.variantName),
                                   ),
                                 )
                                 .toList(),
