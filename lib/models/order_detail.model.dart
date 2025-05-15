@@ -1,5 +1,5 @@
 import '../helpers/supabase.helper.dart';
-import 'package:pizza_store_app/models/Item.model.dart';
+import 'Item.model.dart';
 
 class OrderDetail {
   String orderId, itemId;
@@ -18,16 +18,41 @@ class OrderDetail {
     this.item,
   });
 
+  // factory OrderDetail.fromJson(Map<String, dynamic> json) {
+  //   return OrderDetail(
+  //     orderId: json["order_id"],
+  //     itemId: json["item_id"],
+  //     amount: json["amount"],
+  //     actualPrice: json["actual_price"],
+  //     note: json["note"],
+  //     item: json["item"] != null && json["item"] is Map<String, dynamic>
+  //         ? Item.fromJson(json["item"])
+  //         : null,
+  //   );
+  // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
+    Item? itemParsed;
+    try {
+      if (json["item"] != null && json["item"] is Map<String, dynamic>) {
+        itemParsed = Item.fromJson(json["item"]);
+      } else {
+        itemParsed = null;
+      }
+    } catch (e) {
+      print("Lỗi parse item: $e");
+      itemParsed = null;
+    }
+
     return OrderDetail(
       orderId: json["order_id"],
       itemId: json["item_id"],
       amount: json["amount"],
       actualPrice: json["actual_price"],
       note: json["note"],
-      item: json["item"] != null ? Item.fromJson(json["item"]) : null,
+      item: itemParsed,
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -36,7 +61,6 @@ class OrderDetail {
       "amount": amount,
       "note": note,
       "actual_price": actualPrice,
-      "item": item?.toJson(),
     };
   }
 }
