@@ -3,22 +3,21 @@ import 'package:pizza_store_app/models/variant.model.dart';
 import '../helpers/supabase.helper.dart';
 
 class ItemVariant {
-  String categoryId;
-  Variant variant;
+  String categoryId, variantId;
 
   static String tableName = "item_variant";
 
-  ItemVariant({required this.variant, required this.categoryId});
+  ItemVariant({required this.variantId, required this.categoryId});
 
   factory ItemVariant.fromJson(Map<String, dynamic> json) {
     return ItemVariant(
-      variant: Variant.fromJson(json["variant"]),
+      variantId: json["variant_id"],
       categoryId: json["category_id"],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {"variant": variant.toJson(), "categoryId": categoryId};
+    return {"variant_id": variantId, "categoryId": categoryId};
   }
 }
 
@@ -36,8 +35,6 @@ class ItemVariantSnapshot {
       fromJson: ItemVariant.fromJson,
       columnName: columnName,
       columnValue: columnValue,
-      selectString:
-          "*, variant(variant_id, variant_name, description, price_change)",
     );
   }
 
@@ -48,11 +45,9 @@ class ItemVariantSnapshot {
     return SupabaseSnapshot.getMapT<String, ItemVariant>(
       table: ItemVariant.tableName,
       fromJson: ItemVariant.fromJson,
-      getId: (p0) => p0.variant.variantId,
+      getId: (p0) => p0.variantId,
       columnName: columnName,
       columnValue: columnValue,
-      selectString:
-          "*, variant(variant_id, variant_name, price_change, description)",
     );
   }
 }

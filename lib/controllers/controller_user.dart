@@ -36,10 +36,9 @@ class UserController extends GetxController {
   }
 }
 
-class BindingUserController extends Bindings {
+class BindingsUserController extends Bindings {
   @override
   void dependencies() {
-    // TODO: implement dependencies
     Get.lazyPut<UserController>(() => UserController());
   }
 }

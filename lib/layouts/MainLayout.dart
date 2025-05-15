@@ -47,7 +47,6 @@ class MainLayout extends StatelessWidget {
             icon: Icon(Icons.search),
           ),
           GetBuilder<ShoppingCartController>(
-
             init: Get.put(ShoppingCartController()),
             builder: (controller) {
               return badges.Badge(
