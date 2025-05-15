@@ -30,6 +30,16 @@ class Category {
       "description": description,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Category &&
+              runtimeType == other.runtimeType &&
+              categoryId == other.categoryId;
+
+  @override
+  int get hashCode => categoryId.hashCode;
 }
 
 class CategorySnapshot {
