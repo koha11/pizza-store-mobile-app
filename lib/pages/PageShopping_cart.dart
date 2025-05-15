@@ -18,6 +18,7 @@ class PageShoppingCart extends StatelessWidget {
     //     );
     //     return false;
     //   },
+    HEAD
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("Giỏ hàng")),
@@ -44,6 +45,102 @@ class PageShoppingCart extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => MainLayout()),
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Center(child: Text("Giỏ hàng")),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: GetBuilder<ShoppingCartController>(
+          //id: 'cart_items',  // ID để cập nhật UI
+          builder: (controller) {
+           // print('Building cart with ${controller.cartItems.length} items');
+            if (controller.cartItems.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset("asset/images/anhnen.png", width: 150),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Giỏ hàng trống!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => MainLayout()),
+                        );
+                      },
+                      child: const Text("Tìm kiếm món ăn"),
+                    )
+                  ],
+                ),
+              );
+            }
+
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: controller.cartItems.length,
+                    itemBuilder: (context, index) {
+                      final item = controller.cartItems.values.elementAt(index);
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: controller.checkedItems[item.itemId] ?? false,
+                                onChanged: (bool? value) {
+                                  controller.toggleItemCheck(item.itemId);
+                                },
+                              ),
+                              item.item?.itemImage != null
+                                  ? Image.network(
+                                    item.item!.itemImage!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                  : const Icon(Icons.fastfood, size: 40),
+                            ],
+                          ),
+                          title: Text(item.item?.itemName ?? "Không rõ tên"),
+                          subtitle: Text("${item.actualPrice} vnđ"),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  controller.decrementAmount(item.itemId);
+                                },
+                              ),
+                              Text("${item.amount}"),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  controller.incrementAmount(item.itemId);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  controller.removeFromCart(item.itemId);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+ f38babb (update fix bug cart, add check box, alrealy snapshot customer_oder and item_oder, but controller 240 line)
                       );
                     },
                     child: const Text("Tìm kiếm món ăn"),
@@ -111,6 +208,7 @@ class PageShoppingCart extends StatelessWidget {
                     );
                   },
                 ),
+ HEAD
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -140,6 +238,61 @@ class PageShoppingCart extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.inversePrimary,
+
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: controller.checkAllItems,
+                                child: const Text("Chọn tất cả"),
+                              ),
+                              TextButton(
+                                onPressed: controller.uncheckAllItems,
+                                child: const Text("Bỏ chọn tất cả"),
+                              ),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: controller.removeSelectedItems,
+                            child: const Text("Xóa đã chọn"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Tổng tiền:",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "${controller.totalSelectedAmount} vnđ",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.inversePrimary,
+                            ),
+ f38babb (update fix bug cart, add check box, alrealy snapshot customer_oder and item_oder, but controller 240 line)
                           ),
                         ),
                       ],
