@@ -48,7 +48,6 @@ class UserController extends GetxController {
   }
 
   Future<void> signOut() async {
-    final supabase = Supabase.instance.client;
     await supabase.auth.signOut();
     appUser = null;
     update(["1"]);
@@ -59,7 +58,6 @@ class UserController extends GetxController {
     required TextEditingController txtUserName,
     required TextEditingController txtPhoneNumber,
   }) async {
-    final supabase = Supabase.instance.client;
     final userName = txtUserName.text;
     final phoneNumber = txtPhoneNumber.text;
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -69,28 +67,24 @@ class UserController extends GetxController {
       ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
       return;
     }
-    final Map<String, dynamic> updates = {};
-    updates['user_name'] = userName;
-    updates['phone_number'] = phoneNumber;
 
-    if (updates.isNotEmpty) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
+    try {
+      await AppUserSnapshot.updateInfoAppUser(
+        userName: userName,
+        phoneNumber: phoneNumber,
+        userId: appUser!.userId,
+      );
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
-      try {
-        await supabase
-            .from('app_user')
-            .update(updates)
-            .eq('user_id', appUser!.userId);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Cập nhật thành công")));
-        await fetchUser();
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
-      }
+      ).showSnackBar(SnackBar(content: Text("Cập nhật thành công")));
+      await fetchUser();
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
     }
     update(["changeInfo"]);
   }

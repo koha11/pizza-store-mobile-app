@@ -36,7 +36,9 @@ class PageAddress extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () async {},
+                      onPressed: () {
+                        Get.to(() => PageAddAddress());
+                      },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         backgroundColor: Colors.orange,
@@ -46,12 +48,19 @@ class PageAddress extends StatelessWidget {
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      child: Text(
-                        "Lưu",
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_circle_outline, size: 25),
+                          SizedBox(width: 10),
+                          Text(
+                            "Thêm địa chỉ",
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

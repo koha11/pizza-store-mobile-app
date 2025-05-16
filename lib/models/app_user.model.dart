@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../helpers/supabase.helper.dart';
@@ -63,5 +65,16 @@ class AppUserSnapshot {
       fromJson: AppUser.fromJson,
       getId: (p0) => p0.userId,
     );
+  }
+
+  static Future<void> updateInfoAppUser({
+    required String userName,
+    required String phoneNumber,
+    required String userId,
+  }) async {
+    final Map<String, dynamic> updates = {};
+    updates['user_name'] = userName;
+    updates['phone_number'] = phoneNumber;
+    await supabase.from('app_user').update(updates).eq('user_id', userId);
   }
 }
