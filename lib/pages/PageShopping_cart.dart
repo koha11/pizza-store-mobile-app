@@ -8,25 +8,13 @@ class PageShoppingCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Đảm bảo controller được khởi tạo
-    //final controller = Get.put(ShoppingCartController());
-
-    // return WillPopScope(
-    //   onWillPop: () async {
-    //     Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(builder: (context) => MainLayout()),
-    //     );
-    //     return false;
-    //   },
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("Giỏ hàng")),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: GetBuilder<ShoppingCartController>(
-        //id: 'cart_items',  // ID để cập nhật UI
         builder: (controller) {
-          // print('Building cart with ${controller.cartItems.length} items');
           if (controller.cartItems.isEmpty) {
             return Center(
               child: Column(
@@ -61,20 +49,27 @@ class PageShoppingCart extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final item = controller.cartItems.values.elementAt(index);
                     return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       child: ListTile(
-                        leading:
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: controller.checkedItems[item.itemId] ?? false,
+                              onChanged: (bool? value) {
+                                controller.toggleItemCheck(item.itemId);
+                              },
+                            ),
                             item.item?.itemImage != null
                                 ? Image.network(
-                                  item.item!.itemImage!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
+                              item.item!.itemImage!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
                                 : const Icon(Icons.fastfood, size: 40),
+                          ],
+                        ),
                         title: Text(item.item?.itemName ?? "Không rõ tên"),
                         subtitle: Text("${item.actualPrice} vnđ"),
                         trailing: Row(
@@ -83,20 +78,14 @@ class PageShoppingCart extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.remove),
                               onPressed: () {
-                                controller.updateItemAmount(
-                                  item.itemId,
-                                  item.amount - 1,
-                                );
+                                controller.decrementAmount(item.itemId);
                               },
                             ),
                             Text("${item.amount}"),
                             IconButton(
                               icon: const Icon(Icons.add),
                               onPressed: () {
-                                controller.updateItemAmount(
-                                  item.itemId,
-                                  item.amount + 1,
-                                );
+                                controller.incrementAmount(item.itemId);
                               },
                             ),
                             IconButton(
@@ -113,17 +102,41 @@ class PageShoppingCart extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 5,
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: controller.checkAllItems,
+                              child: const Text("Chọn tất cả"),
+                            ),
+                            TextButton(
+                              onPressed: controller.uncheckAllItems,
+                              child: const Text("Bỏ chọn tất cả"),
+                            ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: controller.removeSelectedItems,
+                          child: const Text("Xóa đã chọn"),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -135,7 +148,7 @@ class PageShoppingCart extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "${controller.totalAmount} vnđ",
+                          "${controller.totalSelectedAmount} vnđ",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -156,8 +169,7 @@ class PageShoppingCart extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.inversePrimary,
+                          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40),
@@ -180,6 +192,5 @@ class PageShoppingCart extends StatelessWidget {
         },
       ),
     );
-    // );
   }
 }

@@ -2,14 +2,18 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pizza_store_app/models/customer_order.model.dart';
+import 'package:pizza_store_app/helpers/supabase.helper.dart';
 
 class ShoppingCartController extends GetxController {
   final SupabaseClient _supabase = Supabase.instance.client;
   Map<String, OrderDetail> _cartItems = {};
+  Map<String, bool> _checkedItems = {};
   String? _currentOrderId;
 
   Map<String, OrderDetail> get cartItems => _cartItems;
   String? get currentOrderId => _currentOrderId;
+  Map<String, bool> get checkedItems => _checkedItems;
 
   // Thêm getter để lấy tổng số lượng sản phẩm
   int get totalItems {
@@ -28,143 +32,121 @@ class ShoppingCartController extends GetxController {
     });
     return total;
   }
+
+  // Getter để lấy tổng số lượng sản phẩm đã chọn
+  int get totalSelectedItems {
+    int total = 0;
+    _cartItems.forEach((key, item) {
+      if (_checkedItems[key] == true) {
+        total += item.amount;
+      }
+    });
+    return total;
+  }
+
+  // Getter để lấy tổng tiền của các sản phẩm đã chọn
+  int get totalSelectedAmount {
+    int total = 0;
+    _cartItems.forEach((key, item) {
+      if (_checkedItems[key] == true) {
+        total += item.actualPrice * item.amount;
+      }
+    });
+    return total;
+  }
+
+  // Phương thức để toggle trạng thái check của một item
+  void toggleItemCheck(String itemId) {
+    _checkedItems[itemId] = !(_checkedItems[itemId] ?? false);
+    update();
+  }
+
+  // Phương thức để check tất cả items
+  void checkAllItems() {
+    _cartItems.forEach((key, _) {
+      _checkedItems[key] = true;
+    });
+    update();
+  }
+
+  // Phương thức để uncheck tất cả items
+  void uncheckAllItems() {
+    _cartItems.forEach((key, _) { // key,_ tại không cần check value
+      _checkedItems[key] = false;
+    });
+    update();
+  }
+
+  // Phương thức xóa các items đã được check
+  Future<void> removeSelectedItems() async {
+    if (_currentOrderId == null) return;
+
+    try {
+      final itemsToRemove = _checkedItems.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+
+      for (var itemId in itemsToRemove) {
+        await removeFromCart(itemId);
+        _checkedItems.remove(itemId);
+      }
+      update();
+    } catch (e) {
+      print('Lỗi xóa item đã chọn: $e');
+      await _loadCartItems();
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
-    //print('ShoppingCartController initialized');
     _initializeCart();
   }
 
   Future<void> _initializeCart() async {
     try {
-      //print('Initializing cart...');
-      // Tìm giỏ hàng đang pending của user UI0002
-      final response = await _supabase
-          .from('customer_order')
-          .select('order_id')
-          .eq('customer_id', 'UI0002')
-          .eq('status', 'pending')
-          .maybeSingle();
-
-      if (response != null) {
-        _currentOrderId = response['order_id'] as String;
-       // print('Found existing cart: $_currentOrderId');
-        await _loadCartItems();
-      } else {
-        print('No existing cart found, creating new one');
-        await _createNewOrder();
+      _currentOrderId = await SupabaseHelper.getPendingOrderId('UI0002');
+      if (_currentOrderId == null) {
+        _currentOrderId = await CustomerOrderSnapshot.createNewOrder('UI0002');
       }
+      await _loadCartItems();
     } catch (e) {
-      print('Error initializing cart: $e');
-    }
-  }
-
-  Future<void> _createNewOrder() async {
-    try {
-      final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
-      print('Creating new order: $orderId');
-
-      await _supabase.from('customer_order').insert({
-        'order_id': orderId,
-        'customer_id': 'UI0002',
-        'manager_id': null,
-        'shipper_id': null,
-        'order_time': null,
-        'status': 'pending',
-        'payment_method': false,
-        'total_amount': 0,
-        'shipping_fee': 0,
-        'note': null,
-        'shipping_address': null,
-      });
-
-      _currentOrderId = orderId;
-     // print('New order created: $_currentOrderId');
-      update();
-    } catch (e) {
-      print('Error creating new order: $e');
+      print('Lỗi khởi tạo giỏ hàng: $e');
     }
   }
 
   Future<void> _loadCartItems() async {
-    if (_currentOrderId == null) {
-     // print('No current order ID, cannot load items');
-      return;
-    }
-
-    try {
-     // print('Loading items for order: $_currentOrderId');
-      final response = await _supabase
-          .from('order_detail')
-          .select('*, item:item_id(item_id, item_name, item_image, price, description, category_id)')
-          .eq('order_id', _currentOrderId!);
-
-      //print('Raw response from Supabase: $response');
-
-      final Map<String, OrderDetail> newItems = {};
-      for (var item in response) {
-        if (item != null) {
-          try {
-            final Map<String, dynamic> orderDetailData = Map<String, dynamic>.from(item);
-           // print('Processing order detail data: $orderDetailData');
-
-            final orderDetail = OrderDetail.fromJson(orderDetailData);
-            newItems[orderDetail.itemId] = orderDetail;
-            print('Successfully added item to cart: ${orderDetail.itemId}');
-          } catch (e) {
-            print('Error parsing item: $e');
-            print('Item data: $item');
-          }
-        }
-      }
-
-      _cartItems = newItems;
-      update(); // Cập nhật UI
-    } catch (e) {
-      print('Error loading cart items: $e');
-    }
+    if (_currentOrderId == null) return;
+    _cartItems = await CustomerOrderSnapshot.getCartItems(_currentOrderId!);
+    // Khởi tạo trạng thái check cho các items mới
+    _cartItems.forEach((key, _) {
+      _checkedItems[key] = false;
+    });
+    update();
   }
 
   Future<void> addToCart(Item item, int amount) async {
     try {
       if (_currentOrderId == null) {
-        print('No current order ID, creating new order');
-        await _createNewOrder();
+        _currentOrderId = await CustomerOrderSnapshot.createNewOrder('UI0002');
       }
 
-      print('Adding item ${item.itemId} to cart');
-
-      // Kiểm tra item đã tồn tại trong database
-      final existingItem = await _supabase
-          .from('order_detail')
-          .select()
-          .eq('order_id', _currentOrderId!)
-          .eq('item_id', item.itemId)
-          .maybeSingle();
-
-      if (existingItem != null) {
-        print('Item exists in database, updating amount');
-        final currentAmount = existingItem['amount'] as int;
-        await _supabase
-            .from('order_detail')
-            .update({'amount': currentAmount + amount})
-            .eq('order_id', _currentOrderId!)
-            .eq('item_id', item.itemId);
+      if (_cartItems.containsKey(item.itemId)) {
+        final newAmount = _cartItems[item.itemId]!.amount + amount;
+        _cartItems[item.itemId]!.amount = newAmount;
+        await OrderDetailSnapshot.updateItemAmount(_currentOrderId!, item.itemId, newAmount);
       } else {
-        print('Item is new, inserting');
-        await _supabase.from('order_detail').insert({
-          'order_id': _currentOrderId,
-          'item_id': item.itemId,
-          'amount': amount,
-          'actual_price': item.price,
-          'note': null,
-        });
+        _cartItems[item.itemId] = OrderDetail(
+          orderId: _currentOrderId!,
+          itemId: item.itemId,
+          amount: amount,
+          actualPrice: item.price,
+          item: item,
+        );
+        await OrderDetailSnapshot.addItemToCart(_currentOrderId!, item, amount);
       }
-
-      // Load lại cart items sau khi thêm
-      await _loadCartItems();
-      update(); // hoặc update(['cart_items'])
-
+      update();
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
@@ -172,11 +154,7 @@ class ShoppingCartController extends GetxController {
       );
     } catch (e) {
       print('Error adding to cart: $e');
-      Get.snackbar(
-        'Lỗi',
-        'Không thể thêm sản phẩm vào giỏ hàng',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      await _loadCartItems();
     }
   }
 
@@ -196,7 +174,7 @@ class ShoppingCartController extends GetxController {
       print('Error removing from cart: $e');
     }
   }
-
+  // update số lượng khi thêm vào giỏ hàng
   Future<void> updateItemAmount(String itemId, int newAmount) async {
     if (_currentOrderId == null) return;
 
@@ -205,33 +183,52 @@ class ShoppingCartController extends GetxController {
         await removeFromCart(itemId);
         return;
       }
-
-      await _supabase
-          .from('order_detail')
-          .update({'amount': newAmount})
-          .eq('order_id', _currentOrderId!)
-          .eq('item_id', itemId);
-
-      await _loadCartItems();
-      update(); // hoặc update(['cart_items'])
+      if (_cartItems.containsKey(itemId)) {
+        _cartItems[itemId]!.amount = newAmount;
+        update();
+        await _updateAmountInDatabase(itemId, newAmount);
+      }
     } catch (e) {
-      print('Error updating item amount: $e');
+      print('Lỗi cập nhật số lượng: $e');
+      await _loadCartItems();
     }
   }
 
-  Future<void> clearCart() async {
+  //  phương thức tăng số lượng
+  void incrementAmount(String itemId) {
+    if (_cartItems.containsKey(itemId)) {
+      _cartItems[itemId]!.amount++;
+      update();
+      _updateAmountInDatabase(itemId, _cartItems[itemId]!.amount);
+    }
+  }
+
+  // phương thức giảm số lượng
+  void decrementAmount(String itemId) {
+    if (_cartItems.containsKey(itemId)) {
+      if (_cartItems[itemId]!.amount > 1) {
+        _cartItems[itemId]!.amount--;
+        update();
+        _updateAmountInDatabase(itemId, _cartItems[itemId]!.amount);
+      } else {
+        removeFromCart(itemId);
+      }
+    }
+  }
+
+  // Phương thức private cập nhật số lượng trong database
+  Future<void> _updateAmountInDatabase(String itemId, int newAmount) async {
     if (_currentOrderId == null) return;
 
     try {
       await _supabase
           .from('order_detail')
-          .delete()
-          .eq('order_id', _currentOrderId!);
-
-      await _loadCartItems();
-      update(); // hoặc update(['cart_items'])
+          .update({'amount': newAmount})
+          .eq('order_id', _currentOrderId!)
+          .eq('item_id', itemId);
     } catch (e) {
-      print('Error clearing cart: $e');
+      print('Lỗi cập nhật số lượng trong database: $e');
+      await _loadCartItems(); // Load lại dữ liệu nếu có lỗi
     }
   }
 }

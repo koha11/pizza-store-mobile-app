@@ -34,7 +34,8 @@ class OrderDetail {
     Item? itemParsed;
     try {
       if (json["item"] != null && json["item"] is Map<String, dynamic>) {
-        itemParsed = Item.fromJson(json["item"]);
+        final itemData = Map<String, dynamic>.from(json["item"]);
+        itemParsed = Item.fromJson(itemData);
       } else {
         itemParsed = null;
       }
@@ -83,5 +84,38 @@ class OrderDetailSnapshot {
       fromJson: OrderDetail.fromJson,
       getId: (p0) => p0.orderId,
     );
+  }
+
+  static Future<void> updateItemAmount(String orderId, String itemId, int amount) async {
+    await supabase
+        .from('order_detail')
+        .update({'amount': amount})
+        .eq('order_id', orderId)
+        .eq('item_id', itemId);
+  }
+
+  static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+    await supabase.from('order_detail').insert({
+      'order_id': orderId,
+      'item_id': item.itemId,
+      'amount': amount,
+      'actual_price': item.price,
+      'note': null,
+    });
+  }
+
+  static Future<void> removeItemFromCart(String orderId, String itemId) async {
+    await supabase
+        .from('order_detail')
+        .delete()
+        .eq('order_id', orderId)
+        .eq('item_id', itemId);
+  }
+
+  static Future<void> clearCart(String orderId) async {
+    await supabase
+        .from('order_detail')
+        .delete()
+        .eq('order_id', orderId);
   }
 }
