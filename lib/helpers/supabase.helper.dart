@@ -36,10 +36,10 @@ Future<String> uploadImage({
   await supabase.storage
       .from(bucket)
       .upload(
-    path,
-    image,
-    fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-  );
+        path,
+        image,
+        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+      );
 
   final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
 
@@ -58,51 +58,51 @@ Stream<List<T>> getDataStream<T>({
   var stream = supabase.from(table).stream(primaryKey: ids);
 
   return stream.map(
-        (mapList) => mapList.map((mapObj) => fromJson(mapObj)).toList(),
+    (mapList) => mapList.map((mapObj) => fromJson(mapObj)).toList(),
   );
 }
 
 listenDataChange<T>(
-    Map<int, T> maps, {
-      required String channel,
-      required String schema,
-      required String table,
-      required T Function(Map<String, dynamic> json) fromJson,
-      required int Function(T) getId,
-      Function()? updateUI,
-    }) async {
+  Map<int, T> maps, {
+  required String channel,
+  required String schema,
+  required String table,
+  required T Function(Map<String, dynamic> json) fromJson,
+  required int Function(T) getId,
+  Function()? updateUI,
+}) async {
   final supabase = Supabase.instance.client;
 
   supabase
       .channel(channel)
       .onPostgresChanges(
-    event: PostgresChangeEvent.all,
-    schema: schema,
-    table: table,
-    callback: (payload) {
-      switch (payload.eventType) {
-      // case "INSERT" "UPDATE":
-        case PostgresChangeEvent.insert:
-        case PostgresChangeEvent.update:
-          {
-            T t = fromJson(payload.newRecord);
-            maps[getId(t)] = t;
-            updateUI?.call();
-            break;
-          }
+        event: PostgresChangeEvent.all,
+        schema: schema,
+        table: table,
+        callback: (payload) {
+          switch (payload.eventType) {
+            // case "INSERT" "UPDATE":
+            case PostgresChangeEvent.insert:
+            case PostgresChangeEvent.update:
+              {
+                T t = fromJson(payload.newRecord);
+                maps[getId(t)] = t;
+                updateUI?.call();
+                break;
+              }
 
-        case PostgresChangeEvent.delete:
-          {
-            maps.remove(payload.oldRecord["id"]);
-            updateUI?.call();
-            break;
-          }
+            case PostgresChangeEvent.delete:
+              {
+                maps.remove(payload.oldRecord["id"]);
+                updateUI?.call();
+                break;
+              }
 
-        default:
-          {}
-      }
-    },
-  )
+            default:
+              {}
+          }
+        },
+      )
       .subscribe();
 }
 
@@ -156,20 +156,63 @@ class SupabaseSnapshot {
 
     return _maps;
   }
+
+  static Future<T> insert<T>({
+    required String table,
+    required Map<String, dynamic> insertObject,
+  }) async {
+    var data = await supabase.from(table).insert(insertObject);
+
+    return data;
+  }
+
+  static Future<void> update<T1, T2>({
+    required String table,
+    required Map<String, dynamic> updateObject,
+    Map<String, dynamic>? equalObject,
+  }) async {
+    var query = supabase.from(table).update(updateObject);
+
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    await query;
+  }
+
+  static Future<void> delete<T1, T2>({
+    required String table,
+    Map<String, dynamic>? equalObject,
+  }) async {
+    var query = supabase.from(table).delete();
+
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    await query;
+  }
 }
+
 // dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
 class SupabaseHelper {
   static Future<String?> getPendingOrderId(String customerId) async {
-    final response = await supabase
-        .from('customer_order')
-        .select('order_id')
-        .eq('customer_id', customerId)
-        .eq('status', 'pending')
-        .maybeSingle();
-    
+    final response =
+        await supabase
+            .from('customer_order')
+            .select('order_id')
+            .eq('customer_id', customerId)
+            .eq('status', 'pending')
+            .maybeSingle();
+
     return response?['order_id'] as String?;
   }
-// tính tiền
+
+  // tính tiền
   static Future<void> updateOrderTotal(String orderId, int total) async {
     await supabase
         .from('customer_order')
@@ -178,7 +221,11 @@ class SupabaseHelper {
   }
 
   // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  static Future<void> updateCartItemAmount(String orderId, String itemId, int newAmount) async {
+  static Future<void> updateCartItemAmount(
+    String orderId,
+    String itemId,
+    int newAmount,
+  ) async {
     try {
       await supabase
           .from('order_detail')
@@ -204,6 +251,7 @@ class SupabaseHelper {
       rethrow;
     }
   }
+
   //
   // // Phương thức xóa nhiều sản phẩm khỏi giỏ hàng
   // static Future<void> removeCartItems(String orderId, List<String> itemIds) async {
