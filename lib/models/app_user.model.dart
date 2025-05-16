@@ -4,6 +4,7 @@ import '../helpers/supabase.helper.dart';
 
 class AppUser {
   String userId, userName, phoneNumber, roleId;
+  String? avatar, email;
 
   static String tableName = "app_user";
 
@@ -12,6 +13,8 @@ class AppUser {
     required this.userName,
     required this.phoneNumber,
     required this.roleId,
+    this.email,
+    this.avatar,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -20,6 +23,8 @@ class AppUser {
       userName: json["user_name"],
       phoneNumber: json["phone_number"],
       roleId: json["role_id"],
+      avatar: json["user_avatar"],
+      email: json["user_email"],
     );
   }
 
@@ -29,6 +34,8 @@ class AppUser {
       "user_name": userName,
       "phone_number": phoneNumber,
       "role_id": roleId,
+      "user_avatar": avatar,
+      "user_email": email,
     };
   }
 }
