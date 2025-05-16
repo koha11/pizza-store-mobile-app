@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/admin/item_admin/PageAddItem.dart';
+import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: MainLayout(),
+      home: PageAdmin(),
       debugShowCheckedModeBanner: false,
     );
   }
