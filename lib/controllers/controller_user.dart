@@ -58,34 +58,13 @@ class UserController extends GetxController {
     required TextEditingController txtUserName,
     required TextEditingController txtPhoneNumber,
   }) async {
-    final userName = txtUserName.text;
-    final phoneNumber = txtPhoneNumber.text;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    if (userName.isEmpty || phoneNumber.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
-      return;
-    }
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
-    try {
-      await AppUserSnapshot.updateInfoAppUser(
-        userName: userName,
-        phoneNumber: phoneNumber,
-        userId: appUser!.userId,
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Cập nhật thành công")));
-      await fetchUser();
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
-    }
+    await AppUserSnapshot.updateInfoAppUser(
+      context: context,
+      txtUserName: txtUserName,
+      txtPhoneNumber: txtPhoneNumber,
+      userId: appUser!.userId,
+    );
+    await fetchUser();
     update(["changeInfo"]);
   }
 
@@ -95,53 +74,13 @@ class UserController extends GetxController {
     required TextEditingController txtNewPw,
     required TextEditingController txtConfirmNewPw,
   }) async {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    final currPwd = txtCurrPw.text;
-    final newPwd = txtNewPw.text;
-    final confirmPwd = txtConfirmNewPw.text;
-
-    if (currPwd.isEmpty || newPwd.isEmpty || confirmPwd.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
-      return;
-    }
-    if (confirmPwd != newPwd) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Mật khẩu mới không khớp")));
-      return;
-    }
-    final email = getCurrentUser()!.email;
-    if (email == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Không tìm thấy tài khoản")));
-      return;
-    }
-    try {
-      final res = await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: currPwd,
-      );
-
-      await supabase.auth.updateUser(UserAttributes(password: newPwd));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đổi mật khẩu thành công")));
-      txtCurrPw.clear();
-      txtNewPw.clear();
-      txtConfirmNewPw.clear();
-      update(["changePassword"]);
-    } on AuthApiException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Mật khẩu cũ không đúng")));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
-    }
+    await AppUserSnapshot.updatePassword(
+      context: context,
+      txtCurrPw: txtCurrPw,
+      txtNewPw: txtNewPw,
+      txtConfirmNewPw: txtConfirmNewPw,
+    );
+    update(["changePassword"]);
   }
 
   Future<void> addNewAddress({
@@ -149,35 +88,47 @@ class UserController extends GetxController {
     required TextEditingController txtAddress,
     required TextEditingController txtNickName,
   }) async {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    final address = txtAddress.text;
-    final nickName = txtNickName.text;
-    if (address.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng nhập đẩy đủ thông tin")));
-      return;
-    }
-    try {
-      final Map<String, dynamic> updates = {};
-      updates['user_id'] = appUser!.userId;
-      updates['address'] = address;
-      updates['address_nickname'] = nickName;
+    await UserAddressSnapshot.addNewAddress(
+      context: context,
+      txtAddress: txtAddress,
+      txtNickName: txtNickName,
+      userId: appUser!.userId,
+    );
+    await fetchAddress();
+    update(["addAddress"]);
+    update(["address"]);
+  }
 
-      await supabase.from("user_address").insert(updates);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Thêm địa chỉ thành công")));
-      txtAddress.clear();
-      txtNickName.clear();
-      await fetchAddress();
-      update(["addAddress"]);
-      update(["address"]);
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${e}")));
-    }
+  Future<void> updateAddress({
+    required BuildContext context,
+    required TextEditingController txtNewAddress,
+    required TextEditingController txtNickName,
+    required TextEditingController txtCurrAddress,
+  }) async {
+    await UserAddressSnapshot.updateAddress(
+      context: context,
+      txtNewAddress: txtNewAddress,
+      txtCurrAddress: txtCurrAddress,
+      txtNickName: txtNickName,
+      userId: appUser!.userId,
+    );
+    await fetchAddress();
+    update(["addAddress"]);
+    update(["address"]);
+  }
+
+  Future<void> deleteAddress({
+    required BuildContext context,
+    required TextEditingController txtAddress,
+  }) async {
+    await UserAddressSnapshot.deleteAddress(
+      context: context,
+      txtAddress: txtAddress,
+      userId: appUser!.userId,
+    );
+    await fetchAddress();
+    update(["addAddress"]);
+    update(["address"]);
   }
 }
 

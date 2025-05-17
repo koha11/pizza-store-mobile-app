@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../helpers/supabase.helper.dart';
 
@@ -68,13 +69,93 @@ class AppUserSnapshot {
   }
 
   static Future<void> updateInfoAppUser({
-    required String userName,
-    required String phoneNumber,
+    required BuildContext context,
+    required TextEditingController txtUserName,
+    required TextEditingController txtPhoneNumber,
     required String userId,
   }) async {
+    final userName = txtUserName.text;
+    final phoneNumber = txtPhoneNumber.text;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (userName.isEmpty || phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
+      return;
+    }
     final Map<String, dynamic> updates = {};
     updates['user_name'] = userName;
     updates['phone_number'] = phoneNumber;
-    await supabase.from('app_user').update(updates).eq('user_id', userId);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
+    try {
+      await SupabaseSnapshot.update(
+        table: AppUser.tableName,
+        updateObject: updates,
+        equalObject: {'user_id': userId},
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Cập nhật thành công")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
+    }
+  }
+
+  static Future<void> updatePassword({
+    required BuildContext context,
+    required TextEditingController txtCurrPw,
+    required TextEditingController txtNewPw,
+    required TextEditingController txtConfirmNewPw,
+  }) async {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    final currPwd = txtCurrPw.text;
+    final newPwd = txtNewPw.text;
+    final confirmPwd = txtConfirmNewPw.text;
+
+    if (currPwd.isEmpty || newPwd.isEmpty || confirmPwd.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
+      return;
+    }
+    if (confirmPwd != newPwd) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Mật khẩu mới không khớp")));
+      return;
+    }
+    final email = getCurrentUser()!.email;
+    if (email == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Bạn chưa đăng nhập")));
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Đang xử lý...")));
+    try {
+      await supabase.auth.signInWithPassword(email: email, password: currPwd);
+
+      await supabase.auth.updateUser(UserAttributes(password: newPwd));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Đổi mật khẩu thành công")));
+      txtCurrPw.clear();
+      txtNewPw.clear();
+      txtConfirmNewPw.clear();
+    } on AuthApiException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Mật khẩu cũ không đúng")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
+    }
   }
 }

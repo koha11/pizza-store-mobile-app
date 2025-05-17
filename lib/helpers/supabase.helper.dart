@@ -196,6 +196,15 @@ class SupabaseSnapshot {
 
     await query;
   }
+
+  Stream<List<T>> getDataStream<T>({
+    required String table,
+    required List<String> ids,
+    required T Function(Map<String, dynamic> json) fromJson,
+  }) {
+    var stream = supabase.from(table).stream(primaryKey: ids);
+    return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
+  }
 }
 
 // dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách

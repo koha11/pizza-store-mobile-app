@@ -10,6 +10,8 @@ import 'package:pizza_store_app/pages/PageChangeEmail.dart';
 import 'package:pizza_store_app/pages/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/PageChangePassword.dart';
 import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/PageOrderDetailManager.dart';
+import 'package:pizza_store_app/pages/PageOrdersList.dart';
 
 class PageProfile extends StatelessWidget {
   PageProfile({super.key});
@@ -32,7 +34,7 @@ class PageProfile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
+                    child: Text("Bạn chưa đăng nhập, click để đăng nhập "),
                     onTap: () => Get.off(PageLogin()),
                   ),
                 ],
@@ -161,6 +163,29 @@ class PageProfile extends StatelessWidget {
                               SizedBox(width: 15),
                               Text(
                                 "Địa chỉ",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Icon(Icons.arrow_forward_ios, size: 20),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: () => Get.to(() => PageOrdersList()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.card_travel, size: 25),
+                              SizedBox(width: 15),
+                              Text(
+                                "Danh sách đơn",
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w400,
