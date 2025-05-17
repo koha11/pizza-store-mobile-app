@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
+import 'package:pizza_store_app/enums/OrderStatus.dart';
+
 class CustomerOrderInfo {
   final String orderId;
   final String shippingAddress;
-  final String status;
+  final OrderStatus status;
   final DateTime orderTime;
   final String customerName;
   final String phoneNumber;
-
-  // Shipper Info
   final String shipperId;
   final String shipperName;
   final String shipperPhone;
@@ -24,19 +25,37 @@ class CustomerOrderInfo {
   });
 
   factory CustomerOrderInfo.fromJson(Map<String, dynamic> json) {
-    final customer = json['app_user'] ?? {};
-    final shipper = json['shipper'];
+    final customer = json['app_user'] as Map<String, dynamic>? ?? {};
+    final shipper = json['shipper'] as Map<String, dynamic>? ?? {};
 
     return CustomerOrderInfo(
-      orderId: json['order_id'] ?? '',
-      shippingAddress: json['shipping_address'] ?? '',
-      status: json['status'] ?? '',
-      orderTime: DateTime.tryParse(json['order_time'] ?? '') ?? DateTime.now(),
-      customerName: customer['user_name'] ?? '',
-      phoneNumber: customer['phone_number'] ?? '',
-      shipperId: shipper != null ? (shipper['user_id'] ?? '') : '',
-      shipperName: shipper != null ? (shipper['user_name'] ?? '') : '',
-      shipperPhone: shipper != null ? (shipper['phone_number'] ?? '') : '',
+      orderId: json['order_id']?.toString() ?? '',
+      shippingAddress: json['shipping_address']?.toString() ?? '',
+      status: OrderStatus.fromString(json['status']?.toString() ?? 'pending'),
+      orderTime: DateTime.tryParse(json['order_time']?.toString() ?? '') ?? DateTime.now(),
+      customerName: customer['user_name']?.toString() ?? '',
+      phoneNumber: customer['phone_number']?.toString() ?? '',
+      shipperId: shipper['user_id']?.toString() ?? '',
+      shipperName: shipper['user_name']?.toString() ?? '',
+      shipperPhone: shipper['phone_number']?.toString() ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'order_id': orderId,
+      'shipping_address': shippingAddress,
+      'status': status.name, // Lưu tên enum thay vì đối tượng
+      'order_time': orderTime.toIso8601String(),
+      'app_user': {
+        'user_name': customerName,
+        'phone_number': phoneNumber,
+      },
+      'shipper': {
+        'user_id': shipperId,
+        'user_name': shipperName,
+        'phone_number': shipperPhone,
+      },
+    };
   }
 }
