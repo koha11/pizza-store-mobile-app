@@ -9,7 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/category.model.dart';
 import '../admin_dialogs/admin_dialogs.dart';
 import '../helpers/supabase_helper.dart';
-import '../model/app_user.admin.model.dart';
 
 class ItemAdminController {
   final BuildContext context;

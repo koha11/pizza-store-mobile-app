@@ -6,6 +6,8 @@ import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
+import 'package:pizza_store_app/pages/PageChangeInfo.dart';
+import 'package:pizza_store_app/pages/PageItem.dart';
 import 'package:pizza_store_app/pages/PageOrderDetails.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;

@@ -1,91 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pizza_store_app/models/customer_order_info.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:pizza_store_app/pages/PageOrderDetails.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../controllers/controller_pending_order.dart';
+import '../enums/OrderStatus.dart';
 
 class PagePendingOrder extends StatefulWidget {
-  const PagePendingOrder({super.key});
+  PagePendingOrder({super.key});
 
   @override
   State<PagePendingOrder> createState() => _PagePendingOrderState();
 }
 
 class _PagePendingOrderState extends State<PagePendingOrder> {
-  List<CustomerOrderInfo> orders = [];
-  bool isLoading = true;
+  final OrderController orderController = Get.put(OrderController());
 
-  @override
-  void initState() {
-    super.initState();
-    fetchOrders();
-  }
-
-  Future<void> fetchOrders() async {
-    try {
-      final response = await Supabase.instance.client
-          .from('customer_order')
-          .select('''
-      order_id,
-      shipping_address,
-      shipper_id,
-      order_time,
-      status,
-      app_user!customer_order_customer_id_fkey (
-        user_name,
-        phone_number
-      ),
-      shipper:app_user!customer_order_shipper_id_fkey (
-        user_id,
-        user_name,
-        phone_number
-      )
-    ''');
-
-
-      print("Dữ liệu trả về: $response");
-
-      if (response is List) {
-        setState(() {
-          orders = response.map((json) => CustomerOrderInfo.fromJson(json)).toList();
-          isLoading = false;
-        });
-      } else {
-        throw Exception("Dữ liệu không hợp lệ");
-      }
-    } catch (e) {
-      print("❌ Lỗi khi lấy dữ liệu: $e");
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  int index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Danh Sách Đơn Hàng"),
+        title: Center(child:
+          Text("IL MIO",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+              color: Colors.white70,
+            ),
+          )
+        ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[300]!, width: 1),
-                  ),
+      body: _buildBody(index),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index,
+        items: [
+          BottomNavigationBarItem(
+            label: "Đơn hàng",
+            icon: Icon(Icons.home, color: Colors.blue,),
+          ),
+          BottomNavigationBarItem(
+            label: "Lịch sử",
+            icon: Icon(Icons.access_time, color: Colors.red,),
+          ),
+          BottomNavigationBarItem(
+            label: "Thông tin",
+            icon: Icon(Icons.person, color: Colors.green,),
+          ),
+        ],
+        onTap: (value){
+          setState(() {
+            index = value;
+          });
+        },
+      ),
+    );
+  }
+
+  //Danh sách đơn hàng
+  Widget _buildHome() {
+    return StreamBuilder<List<CustomerOrderInfo>>(
+      stream: orderController.pendingOrderStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Lỗi: ${snapshot.error}'));
+        }
+        final orders = snapshot.data ?? [];
+        return _buildOrderList(orders); // Pass the pending orders list
+      },
+    );
+  }
+  Widget _buildOrderList(List<CustomerOrderInfo> orders) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green[300]!, width: 1),
+                ),
+                child: Center(
                   child: Text(
-                    "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
+                    "DANH SÁCH ĐƠN HÀNG (${orders.length})", // Update count based on the passed list
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -94,254 +101,239 @@ class _PagePendingOrderState extends State<PagePendingOrder> {
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      margin: EdgeInsets.zero,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          height: 150,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200], // Màu nền dự phòng nếu ảnh lỗi
-                          ),
-                          child: Image.asset(
-                            'asset/images/avt.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    flex: 2,
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return Card(
+                  margin: const EdgeInsets.only(top: 10),
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Dòng mã nhân viên
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.badge, size: 20, color: Colors.blue),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(orders.isNotEmpty ? orders[0].shipperId : '',
-                                    style: TextStyle(
-                                      fontSize: 17,
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Đơn hàng: ${order.orderId}",
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.blue[800],
+                                      fontSize: 18,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  _buildInfoRow(Icons.person, order.customerName,
+                                      iconColor: Colors.blue),
+                                  _buildInfoRow(Icons.location_on,
+                                      order.shippingAddress,
+                                      iconColor: Colors.red),
+                                  _buildInfoRow(Icons.phone, order.phoneNumber,
+                                      iconColor: Colors.green),
+                                  _buildInfoRow(
+                                    Icons.calendar_today,
+                                    "${order.orderTime.day}/${order.orderTime.month}/${order.orderTime.year}",
+                                    iconColor: Colors.orange,
+                                  ),
+                                ],
+                              ),
                             ),
-
-                            SizedBox(height: 12),
-
-                            // Dòng họ tên
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.person, size: 20, color: Colors.blue),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    orders.isNotEmpty ? orders[0].shipperName : '',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            SizedBox(height: 12),
-
-                            // Dòng số điện thoại
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.phone, size: 20, color: Colors.blue),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    orders.isNotEmpty ? orders[0].shipperPhone : '',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: _buildStatusBadge(order.status),
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 15),
-              Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[300]!, width: 1),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "DANH SÁCH ĐƠN HÀNG (${orders.length})", // Thêm tổng số đơn ở đây
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[800],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return Card(
-                    margin: EdgeInsets.only(top: 10),
-                    elevation: 2,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                flex:2,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Đơn hàng: ${order.orderId}", style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),),
-                                    _buildInfoRow(Icons.person, order.customerName, iconColor: Colors.blue),
-                                    _buildInfoRow(Icons.location_on, order.shippingAddress, iconColor: Colors.red),
-                                    _buildInfoRow(Icons.phone, order.phoneNumber, iconColor: Colors.green),
-                                    _buildInfoRow(
-                                      Icons.calendar_today,
-                                      "${order.orderTime.day}/${order.orderTime.month}/${order.orderTime.year}",
-                                      iconColor: Colors.orange,
-                                    ),
-                                  ],
-                                )
-                              ),
-                              SizedBox(width: 10,),
-                              Center(
-                                child: Expanded(
-                                  flex: 1,
-                                  child: _buildStatusBadge(order.status),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 7,),
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => PageOrderDetails(orderId: order.orderId)), // Thay PageHome() bằng màn hình bạn muốn điều hướng đến
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[500], // Màu nền
-                                foregroundColor: Colors.white, // Màu chữ
-                                elevation: 5, // Độ nổi của button
-                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10), // Bo góc
-                                ),
-                              ),
-                              child: Text(
-                                "<< Xem chi tiết >>",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic,
-                                ),
+                        const SizedBox(height: 7),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.to(() => PageOrderDetails(orderId: order.orderId));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green[500],
+                              foregroundColor: Colors.white,
+                              elevation: 5,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                          )
-                        ],
-                      ),
+                            child: const Text(
+                              "<< Xem chi tiết >>",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
-
   Widget _buildInfoRow(IconData icon, String text, {Color? iconColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Icon(icon, size: 20, color: iconColor ?? Colors.grey[700]),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 18),
-            ),
-          )
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 18),
+          ),
         ],
       ),
     );
   }
-
-  Widget _buildStatusBadge(String status) {
-    Color bgColor;
-    if (status == "finished") {
-      bgColor = Colors.green;
-    } else if (status == "shipping") {
-      bgColor = Colors.orange;
-    } else {
-      bgColor = Colors.red;
-    }
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      decoration:
-      BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
-      child: Text(
-        status,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  //Thông tin Shipper
+  Widget _buildShipperInfoSection(OrderController controller) {
+    return Center(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green[300]!, width: 1),
+              ),
+              child: Text(
+                "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[800],
+                ),
+              ),
+            ),
+          ),
+          //Hình ảnh nhân viên
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 3 / 4,
+              child: Image.asset(
+                'asset/images/avt.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          //Thông tin nhân viên
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 3 / 4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildShipperInfoRow(
+                    Icons.badge,
+                    controller.shipperId.value,
+                    Colors.blue,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildShipperInfoRow(
+                    Icons.person,
+                    controller.shipperName.value,
+                    Colors.blue,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildShipperInfoRow(
+                    Icons.phone,
+                    controller.shipperPhone.value,
+                    Colors.blue,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+        ],
       ),
     );
   }
-}
+  Widget _buildShipperInfoRow(IconData icon, String text, Color iconColor) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 20, color: iconColor),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+  //Lịch sử đơn hàng
+  Widget _buildHistory() {
+    return StreamBuilder<List<CustomerOrderInfo>>(
+      stream: orderController.historyOrderStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Lỗi: ${snapshot.error}'));
+        }
+        final orders = snapshot.data ?? [];
+        return _buildOrderList(orders); // Pass the history orders list
+      },
+    );
+  }
 
+  Widget _buildStatusBadge(OrderStatus status) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      decoration: BoxDecoration(
+        color: status.color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        status.displayText,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(int index){
+    switch(index) {
+      case 0: return _buildHome();
+      case 1: return _buildHistory();
+      case 2: return _buildShipperInfoSection(orderController);
+      default: return _buildHome();
+    }
+  }
+}

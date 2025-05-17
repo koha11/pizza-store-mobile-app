@@ -49,6 +49,7 @@ dependencies:
   geolocator: ^14.0.0
   intl:
   provider:
+  url_launcher:
 
 dev_dependencies:
   flutter_test:

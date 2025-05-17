@@ -4,6 +4,7 @@ import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
+import 'package:pizza_store_app/pages/PagePendingOrder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PageChangeInfo extends StatelessWidget {
@@ -78,6 +79,20 @@ class PageChangeInfo extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20,),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => PagePendingOrder(),
+                              )
+                            );
+                          },
+                          child: Text ("Giao hàng")
+                      ),
+                    )
                   ],
                 ),
               ),
