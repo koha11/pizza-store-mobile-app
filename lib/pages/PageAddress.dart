@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:pizza_store_app/pages/PageAddAddress.dart';
+import 'package:pizza_store_app/pages/PageEditAddress.dart';
 
 import '../controllers/controller_user.dart';
 
@@ -73,25 +75,59 @@ class PageAddress extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  ListView.builder(
+                  ListView.separated(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: listAddress.length,
                     itemBuilder: (context, index) {
                       final address = listAddress[index];
-                      return ListTile(
-                        leading: Icon(
-                          Icons.location_on,
-                          size: 35,
-                          color: Colors.redAccent,
+                      txtAddress.text = address.address;
+                      return Slidable(
+                        key: ValueKey(0),
+                        endActionPane: ActionPane(
+                          extentRatio: 0.6,
+                          motion: ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                Get.to(() => PageEditAddress(address: address));
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Sửa',
+                            ),
+                            SlidableAction(
+                              onPressed: (context) async {
+                                await controller.deleteAddress(
+                                  context: context,
+                                  txtAddress: txtAddress,
+                                );
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Xoá',
+                            ),
+                          ],
                         ),
-                        title: Text(address.addressNickName ?? "Chưa có tên"),
-                        subtitle: Text(
-                          address.address,
-                          style: TextStyle(fontSize: 18),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.location_on,
+                            size: 35,
+                            color: Colors.redAccent,
+                          ),
+                          title: Text(address.addressNickName ?? "Chưa có tên"),
+                          subtitle: Text(
+                            address.address,
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                       );
                     },
+                    separatorBuilder:
+                        (BuildContext context, int index) =>
+                            Divider(thickness: 1.5),
                   ),
                   SizedBox(height: 30),
 
