@@ -113,6 +113,7 @@ class PageRegister extends StatelessWidget {
                           'user_id': user.id,
                           'user_name': nameTxt.text,
                           'phone_number': phoneTxt.text,
+                          'email': user.email,
                           'role_id': "CUSTOMER",
                         });
 
