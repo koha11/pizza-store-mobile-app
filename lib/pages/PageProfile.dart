@@ -32,9 +32,7 @@ class PageProfile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    child: Text(
-                      "Bạn chưa đăng nhập, click để đăng nhập ${getCurrentUser()!.id}",
-                    ),
+                    child: Text("Bạn chưa đăng nhập, click để đăng nhập"),
                     onTap: () => Get.off(PageLogin()),
                   ),
                 ],
