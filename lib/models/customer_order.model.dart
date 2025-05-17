@@ -77,6 +77,14 @@ class CustomerOrderSnapshot {
 
   CustomerOrderSnapshot(this.customerOrder);
 
+  static Stream<List<CustomerOrder>> getOrdersStream() {
+    return getDataStream(
+      table: CustomerOrder.tableName,
+      ids: ["orders"],
+      fromJson: CustomerOrder.fromJson,
+    );
+  }
+
   static Future<List<CustomerOrder>> getOrders() async {
     return SupabaseSnapshot.getList(
       table: CustomerOrder.tableName,
@@ -114,7 +122,9 @@ class CustomerOrderSnapshot {
   static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
     final response = await supabase
         .from('order_detail')
-        .select('*, item:item_id(item_id, item_name, item_image, price, description, category_id)')
+        .select(
+          '*, item:item_id(item_id, item_name, item_image, price, description, category_id)',
+        )
         .eq('order_id', orderId);
 
     final Map<String, OrderDetail> items = {};
