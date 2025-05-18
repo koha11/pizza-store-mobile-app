@@ -176,7 +176,7 @@ class PageProfile extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () => Get.to(() => PageOrdersList()),
+                      onTap: () => Get.toNamed("/orders"),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
