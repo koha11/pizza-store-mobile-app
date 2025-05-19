@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
+import 'package:pizza_store_app/pages/PageDetail_ItemShoppingCart.dart';
 
 class PageShoppingCart extends StatelessWidget {
   const PageShoppingCart({super.key});
@@ -48,53 +49,59 @@ class PageShoppingCart extends StatelessWidget {
                   itemCount: controller.cartItems.length,
                   itemBuilder: (context, index) {
                     final item = controller.cartItems.values.elementAt(index);
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: ListTile(
-                        leading: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Checkbox(
-                              value: controller.checkedItems[item.itemId] ?? false,
-                              onChanged: (bool? value) {
-                                controller.toggleItemCheck(item.itemId);
-                              },
-                            ),
-                            item.item?.itemImage != null
-                                ? Image.network(
-                              item.item!.itemImage!,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
-                                : const Icon(Icons.fastfood, size: 40),
-                          ],
-                        ),
-                        title: Text(item.item?.itemName ?? "Không rõ tên"),
-                        subtitle: Text("${item.actualPrice} vnđ"),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: () {
-                                controller.decrementAmount(item.itemId);
-                              },
-                            ),
-                            Text("${item.amount}"),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () {
-                                controller.incrementAmount(item.itemId);
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                controller.removeFromCart(item.itemId);
-                              },
-                            ),
-                          ],
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(PageDetailItemCart(item: item));
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: ListTile(
+
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: controller.checkedItems[item.itemId] ?? false,
+                                onChanged: (bool? value) {
+                                  controller.toggleItemCheck(item.itemId);
+                                },
+                              ),
+                              item.item?.itemImage != null
+                                  ? Image.network(
+                                item.item!.itemImage!,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              )
+                                  : const Icon(Icons.fastfood, size: 40),
+                            ],
+                          ),
+                          title: Text(item.item?.itemName ?? "Không rõ tên"),
+                          subtitle: Text("${item.actualPrice} vnđ"),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  controller.decrementAmount(item.itemId);
+                                },
+                              ),
+                              Text("${item.amount}"),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  controller.incrementAmount(item.itemId);
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  controller.removeFromCart(item.itemId);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

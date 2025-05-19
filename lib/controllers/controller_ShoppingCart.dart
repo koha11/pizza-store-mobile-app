@@ -24,7 +24,7 @@ class ShoppingCartController extends GetxController {
     return total;
   }
 
-  // Thêm getter để lấy tổng tiền đã có bên page shopping cart
+  // Thêm getter để lấy tổng tiền
   int get totalAmount {
     int total = 0;
     _cartItems.forEach((key, item) {
