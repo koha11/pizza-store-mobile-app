@@ -5,9 +5,9 @@ import '../helpers/supabase.helper.dart';
 import 'order_detail.model.dart';
 
 class CustomerOrder {
-  String orderId, customerId, shippingAddress;
-  String? managerId, shipperId, voucherId, note;
-  OrderStatus status = OrderStatus.pending;
+  String orderId, customerId;
+  String? managerId, shipperId, voucherId, note, shippingAddress;
+  String status;
   DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
   bool paymentMethod;
@@ -40,13 +40,25 @@ class CustomerOrder {
       managerId: json["manager_id"],
       shipperId: json["shipper_id"],
       voucherId: json["voucher_id"],
-      orderTime: json["order_time"],
-      acceptTime: json["accept_time"],
-      deliveryTime: json["delivery_time"],
-      finishTime: json["finish_time"],
+      orderTime:
+          json["order_time"] != null
+              ? DateTime.parse(json["order_time"])
+              : null,
+      acceptTime:
+          json["accept_time"] != null
+              ? DateTime.parse(json["accept_time"])
+              : null,
+      deliveryTime:
+          json["delivery_time"] != null
+              ? DateTime.parse(json["delivery_time"])
+              : null,
+      finishTime:
+          json["finish_time"] != null
+              ? DateTime.parse(json["finish_time"])
+              : null,
       status: json["status"],
       paymentMethod: json["payment_method"],
-      total: json["total"],
+      total: json["total_amount"],
       shippingFee: json["shipping_fee"],
       shippingAddress: json["shipping_address"],
     );
@@ -65,7 +77,7 @@ class CustomerOrder {
       "finish_time": finishTime,
       "status": status,
       "payment_method": paymentMethod,
-      "total": total,
+      "total_amount": total,
       "shipping_fee": shippingFee,
       "shipping_address": shippingAddress,
     };
@@ -80,7 +92,7 @@ class CustomerOrderSnapshot {
   static Stream<List<CustomerOrder>> getOrdersStream() {
     return getDataStream(
       table: CustomerOrder.tableName,
-      ids: ["orders"],
+      ids: ["order_id"],
       fromJson: CustomerOrder.fromJson,
     );
   }
