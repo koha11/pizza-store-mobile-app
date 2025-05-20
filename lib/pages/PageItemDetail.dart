@@ -64,13 +64,40 @@ class PageItemDetail extends StatelessWidget {
                       ListView(
                         shrinkWrap: true,
                         children:
-                            controller.variants!
+                            controller.variants!.keys
                                 .map(
-                                  (e) => RadioListTile(
-                                    value: e.variantId,
-                                    groupValue: "test",
-                                    onChanged: (value) {},
-                                    title: Text(e.variantName),
+                                  (variantTypeName) => ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(
+                                      variantTypeName,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      children:
+                                          controller.variants![variantTypeName]!
+                                              .map(
+                                                (variant) => RadioListTile(
+                                                  value: variant.variantId,
+                                                  title: Text(
+                                                    variant.variantName,
+                                                  ),
+                                                  groupValue:
+                                                      controller
+                                                          .variantCheckList[variantTypeName],
+                                                  onChanged: (value) {
+                                                    controller.checkVariant(
+                                                      variantTypeName:
+                                                          variantTypeName,
+                                                      variantId: value!,
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                              .toList(),
+                                    ),
                                   ),
                                 )
                                 .toList(),
@@ -170,7 +197,6 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40),
-
                 ),
               ),
             ),

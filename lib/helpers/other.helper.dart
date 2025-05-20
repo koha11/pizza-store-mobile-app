@@ -78,5 +78,5 @@ String formatDateString({required DateTime datetime, bool onlyDate = true}) {
     dateString.write(yearStr);
   }
 
-  return "";
+  return dateString.toString();
 }
