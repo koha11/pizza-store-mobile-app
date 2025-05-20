@@ -32,7 +32,15 @@ Future<String> generateId({required String tableName}) async {
   }
 
   if (tableName == CustomerOrder.tableName) {
-    int lastIndex = await SupabaseSnapshot.getLengthOfTable(table: tableName);
+    DateTime today = DateTime.now();
+    DateTime start = DateTime(today.year, today.month, today.day, 0, 0, 0);
+    DateTime end = DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+    int lastIndex = await SupabaseSnapshot.getLengthOfTable(
+      table: tableName,
+      ltObject: {"order_time": end},
+      gtObject: {"order_time": start},
+    );
 
     String lastIndexText = lastIndex.toString();
     id.write(formatDateString(datetime: DateTime.now()));

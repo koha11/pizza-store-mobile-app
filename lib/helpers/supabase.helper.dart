@@ -111,12 +111,20 @@ class SupabaseSnapshot {
     required String table,
     String selectString = "",
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var query = supabase.from(table).select(selectString);
 
     if (equalObject != null) {
       for (var entry in equalObject.entries) {
         query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    if (ltObject != null) {
+      for (var entry in ltObject.entries) {
+        query = query.lt(entry.key, entry.value);
       }
     }
 
@@ -130,6 +138,8 @@ class SupabaseSnapshot {
     required T Function(Map<String, dynamic> json) fromJson,
     String selectString = "",
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     List<T> ts = [];
 
@@ -154,6 +164,8 @@ class SupabaseSnapshot {
     required T1 Function(T2) getId,
     String selectString = "",
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var data = await getList(
       table: table,
@@ -175,6 +187,8 @@ class SupabaseSnapshot {
     required String table,
     required Map<String, dynamic> insertObject,
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var data = await supabase.from(table).insert(insertObject);
 
@@ -185,6 +199,8 @@ class SupabaseSnapshot {
     required String table,
     required Map<String, dynamic> updateObject,
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var query = supabase.from(table).update(updateObject);
 
@@ -200,6 +216,8 @@ class SupabaseSnapshot {
   static Future<void> delete<T1, T2>({
     required String table,
     Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var query = supabase.from(table).delete();
 
