@@ -38,14 +38,12 @@ class UserAddressSnapshot {
   UserAddressSnapshot(this.userAddress);
 
   static Future<List<UserAddress>> getUserAddress({
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) async {
     return SupabaseSnapshot.getList(
       table: UserAddress.tableName,
       fromJson: UserAddress.fromJson,
-      columnName: columnName,
-      columnValue: columnValue,
+      equalObject: equalObject,
     );
   }
 

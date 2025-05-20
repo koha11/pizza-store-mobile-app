@@ -31,18 +31,44 @@ Future<String> generateId({required String tableName}) async {
       break;
   }
 
-  int lastIndex = await SupabaseSnapshot.getLengthOfTable(table: tableName);
-
-  String lastIndexText = lastIndex.toString();
-
   if (tableName == CustomerOrder.tableName) {
-    id.write(DateTime.now());
+    int lastIndex = await SupabaseSnapshot.getLengthOfTable(table: tableName);
+
+    String lastIndexText = lastIndex.toString();
+    id.write(formatDateString(datetime: DateTime.now()));
     id.write("0" * (4 - lastIndexText.length));
+    id.write(lastIndex + 1);
   } else {
+    int lastIndex = await SupabaseSnapshot.getLengthOfTable(table: tableName);
+
+    String lastIndexText = lastIndex.toString();
     id.write("0" * (6 - id.length - lastIndexText.length));
+    id.write(lastIndex + 1);
   }
 
-  id.write(lastIndex + 1);
-
   return id.toString();
+}
+
+String formatDateString({required DateTime datetime, bool onlyDate = true}) {
+  StringBuffer dateString = StringBuffer();
+
+  int year = datetime.year;
+  int month = datetime.month;
+  int day = datetime.day;
+  int hour = datetime.hour;
+  int minute = datetime.minute;
+  int second = datetime.second;
+
+  if (onlyDate) {
+    String dayStr = "$day".length == 1 ? "0$day" : "$day";
+    dateString.write(dayStr);
+
+    String monthStr = "$month".length == 1 ? "0$month" : "$month";
+    dateString.write(monthStr);
+
+    String yearStr = "$year".substring(2);
+    dateString.write(yearStr);
+  }
+
+  return "";
 }

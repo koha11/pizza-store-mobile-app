@@ -24,8 +24,7 @@ class ItemDetailController extends GetxController {
     super.onInit();
 
     _itemVariants = await ItemVariantSnapshot.getItemVariants(
-      columnName: "category_id",
-      columnValue: categoryId,
+      equalObject: {"category_id": categoryId},
     );
 
     _variantMaps = await VariantSnapshot.getMapVariants();

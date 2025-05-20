@@ -110,19 +110,17 @@ class SupabaseSnapshot {
   static Future<int> getLengthOfTable<T>({
     required String table,
     String selectString = "",
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) async {
-    PostgrestList data;
+    var query = supabase.from(table).select(selectString);
 
-    if (columnName == "") {
-      data = await supabase.from(table).select(selectString);
-    } else {
-      data = await supabase
-          .from(table)
-          .select(selectString)
-          .eq(columnName, columnValue);
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
     }
+
+    var data = await query;
 
     return data.length;
   }
@@ -131,21 +129,19 @@ class SupabaseSnapshot {
     required String table,
     required T Function(Map<String, dynamic> json) fromJson,
     String selectString = "",
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) async {
     List<T> ts = [];
 
-    PostgrestList data;
+    var query = supabase.from(table).select(selectString);
 
-    if (columnName == "") {
-      data = await supabase.from(table).select(selectString);
-    } else {
-      data = await supabase
-          .from(table)
-          .select(selectString)
-          .eq(columnName, columnValue);
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
     }
+
+    var data = await query;
 
     ts = data.map(fromJson).toList();
 
@@ -157,15 +153,13 @@ class SupabaseSnapshot {
     required T2 Function(Map<String, dynamic> json) fromJson,
     required T1 Function(T2) getId,
     String selectString = "",
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) async {
     var data = await getList(
       table: table,
       fromJson: fromJson,
       selectString: selectString,
-      columnName: columnName,
-      columnValue: columnValue,
+      equalObject: equalObject,
     );
 
     Map<T1, T2> _maps = Map.fromIterable(
@@ -180,6 +174,7 @@ class SupabaseSnapshot {
   static Future<T> insert<T>({
     required String table,
     required Map<String, dynamic> insertObject,
+    Map<String, dynamic>? equalObject,
   }) async {
     var data = await supabase.from(table).insert(insertObject);
 
