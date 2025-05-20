@@ -8,7 +8,7 @@ class Item {
   String? itemImage, description;
   int price;
 
-  static String tableName = "item";
+  static const String tableName = "item";
 
   Item({
     required this.itemId,
@@ -26,11 +26,14 @@ class Item {
       itemImage: json["item_image"],
       description: json["description"],
       price: json["price"],
-      category: json["category"] != null ? Category.fromJson(json["category"]) : Category(
-        categoryId: json["category_id"] ?? "",
-        categoryName: "",
-        categoryImage: "",
-      ),
+      category:
+          json["category"] != null
+              ? Category.fromJson(json["category"])
+              : Category(
+                categoryId: json["category_id"] ?? "",
+                categoryName: "",
+                categoryImage: "",
+              ),
     );
   }
 
@@ -55,8 +58,7 @@ class ItemSnapshot {
     return SupabaseSnapshot.getList(
       table: Item.tableName,
       fromJson: Item.fromJson,
-      selectString:
-          "*, category(category_id, category_name, category_image)",
+      selectString: "*, category(category_id, category_name, category_image)",
     );
   }
 
@@ -65,8 +67,7 @@ class ItemSnapshot {
       table: Item.tableName,
       fromJson: Item.fromJson,
       getId: (p0) => p0.itemId,
-      selectString:
-          "*, category(category_id, category_name, category_image)",
+      selectString: "*, category(category_id, category_name, category_image)",
     );
   }
 }

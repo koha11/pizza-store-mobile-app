@@ -107,6 +107,26 @@ listenDataChange<T>(
 }
 
 class SupabaseSnapshot {
+  static Future<int> getLengthOfTable<T>({
+    required String table,
+    String selectString = "",
+    String columnName = "",
+    String columnValue = "",
+  }) async {
+    PostgrestList data;
+
+    if (columnName == "") {
+      data = await supabase.from(table).select(selectString);
+    } else {
+      data = await supabase
+          .from(table)
+          .select(selectString)
+          .eq(columnName, columnValue);
+    }
+
+    return data.length;
+  }
+
   static Future<List<T>> getList<T>({
     required String table,
     required T Function(Map<String, dynamic> json) fromJson,

@@ -13,7 +13,7 @@ class CustomerOrder {
   bool paymentMethod;
   int total = 0, shippingFee;
 
-  static String tableName = "customer_order";
+  static const String tableName = "customer_order";
 
   CustomerOrder({
     required this.orderId,
