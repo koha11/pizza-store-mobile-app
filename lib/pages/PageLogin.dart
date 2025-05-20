@@ -98,9 +98,12 @@ class PageLogin extends StatelessWidget {
                           binding: BindingsHomePizzaStore(),
                         );
                       } on AuthException catch (e) {
-                        print(e.message);
-                        print(e.message == "Email not confirmed");
                         if (e.message == "Email not confirmed") {
+                          final supabase = Supabase.instance.client;
+                          await supabase.auth.signInWithOtp(
+                            email: emailTxt.text,
+                          );
+
                           Get.to(PageVerifyEmail(email: emailTxt.text));
                         }
                       }
