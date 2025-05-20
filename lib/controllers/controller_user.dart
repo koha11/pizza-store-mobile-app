@@ -24,8 +24,7 @@ class UserController extends GetxController {
     User? user = getCurrentUser();
     if (user != null) {
       List<AppUser> res = await AppUserSnapshot.getAppUsers(
-        columnName: "user_id",
-        columnValue: user.id,
+        equalObject: {"user_id": user.id},
       );
       if (res.isNotEmpty) {
         appUser = res.first;
@@ -39,8 +38,7 @@ class UserController extends GetxController {
   Future<void> fetchAddress() async {
     if (appUser != null) {
       userAddress = await UserAddressSnapshot.getUserAddress(
-        columnName: "user_id",
-        columnValue: appUser!.userId,
+        equalObject: {"user_id": appUser!.userId},
       );
 
       update(["address"]);
