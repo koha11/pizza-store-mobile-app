@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/admin/admin_dialogs/admin_dialogs.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
-import 'package:pizza_store_app/pages/PageDetail_ItemShoppingCart.dart';
+import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
+import 'package:pizza_store_app/pages/PageLogin.dart';
+
 
 class PageShoppingCart extends StatelessWidget {
-  const PageShoppingCart({super.key});
+ PageShoppingCart({super.key});
+ late BuildContext mycontext;
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +18,33 @@ class PageShoppingCart extends StatelessWidget {
       appBar: AppBar(
         title: const Center(child: Text("Giỏ hàng")),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          // Nút chọn/bỏ chọn tất cả
+          IconButton(
+            icon: const Icon(Icons.check_box_outline_blank),
+            onPressed: () {
+              final controller = Get.find<ShoppingCartController>();
+              controller.checkAndUnAllItems();
+            },
+            tooltip: 'Chọn/Bỏ chọn tất cả',
+          ),
+          // Nút xóa các mục đã chọn
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () async {
+              final controller = Get.find<ShoppingCartController>();
+              bool? xacNhan = await showConfirmDialog(
+                context,
+                "Bạn có muốn xóa các mục đã chọn?",
+              );
+              if (xacNhan == true) {
+                await controller.removeSelectedItems();
+                showSnackBar(context, message: "Đã xóa các mục đã chọn");
+              }
+            },
+            tooltip: 'Xóa mục đã chọn',
+          ),
+        ],
       ),
       body: GetBuilder<ShoppingCartController>(
         builder: (controller) {
@@ -31,12 +63,15 @@ class PageShoppingCart extends StatelessWidget {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => MainLayout()),
-                      );
+                      Get.to(MainLayout());
                     },
                     child: const Text("Tìm kiếm món ăn"),
+
                   ),
+                  // GestureDetector(
+                  //   child: Text("Bạn chưa đăng nhập, click để đăng nhập "),
+                  //   onTap: () => Get.off(PageLogin()),
+                  // ),
                 ],
               ),
             );
@@ -48,15 +83,36 @@ class PageShoppingCart extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: controller.cartItems.length,
                   itemBuilder: (context, index) {
+                        mycontext = context;
                     final item = controller.cartItems.values.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        Get.to(PageDetailItemCart(item: item));
-                      },
+                    return Slidable(
+                      key: ValueKey(item.itemId),
+                      endActionPane: ActionPane(
+                        extentRatio: 0.3,
+                        motion: ScrollMotion(),
+                        children: [
+                          SlidableAction(
+
+                            onPressed: (context) async {
+                              bool? xacNhan = await showConfirmDialog(mycontext,
+                                  "Bạn có muốn xóa ${item.item?.itemName}?");
+                              if (xacNhan == true) {
+                                await controller.removeFromCart(item.itemId);
+                                showSnackBar(mycontext, message: "Đã xóa ${item.item?.itemName}");
+                              }
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete_forever,
+                            label: 'Xóa',
+                            autoClose: true,
+                            flex: 1,
+                          ),
+                        ],
+                      ),
                       child: Card(
                         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         child: ListTile(
-
                           leading: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -77,7 +133,14 @@ class PageShoppingCart extends StatelessWidget {
                             ],
                           ),
                           title: Text(item.item?.itemName ?? "Không rõ tên"),
-                          subtitle: Text("${item.actualPrice} vnđ"),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("${item.actualPrice} vnđ"),
+                              Text("${item.item?.category.categoryName}")
+                            ],
+                          ),
+
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -94,17 +157,13 @@ class PageShoppingCart extends StatelessWidget {
                                   controller.incrementAmount(item.itemId);
                                 },
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  controller.removeFromCart(item.itemId);
-                                },
-                              ),
+
                             ],
                           ),
                         ),
                       ),
                     );
+
                   },
                 ),
               ),
@@ -122,28 +181,6 @@ class PageShoppingCart extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: controller.checkAllItems,
-                              child: const Text("Chọn tất cả"),
-                            ),
-                            TextButton(
-                              onPressed: controller.uncheckAllItems,
-                              child: const Text("Bỏ chọn tất cả"),
-                            ),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: controller.removeSelectedItems,
-                          child: const Text("Xóa đã chọn"),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -169,11 +206,12 @@ class PageShoppingCart extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          Get.snackbar(
-                            'Thông báo',
-                            'Chức năng đặt hàng đang phát triển',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
+                          final selectedItems = controller.getSelectedItems();
+                          if (selectedItems.isEmpty) {
+                            showSnackBar(context, message: "Vui lòng chọn ít nhất một món");
+                            return;
+                          }
+                          Get.to(() => PageConfirmBuy(selectedItems: selectedItems));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.inversePrimary,

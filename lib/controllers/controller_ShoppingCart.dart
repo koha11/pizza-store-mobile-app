@@ -1,17 +1,19 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 
+
 class ShoppingCartController extends GetxController {
   final SupabaseClient _supabase = Supabase.instance.client;
-  Map<String, OrderDetail> _cartItems = {};// itemID
+  Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
   String? _currentOrderId;
 
-  Map<String, OrderDetail> get cartItems => _cartItems;// getter truy vấn ngoài class tránh tùy chỉnh dữ liệu
+  Map<String, OrderDetail> get cartItems => _cartItems;
   String? get currentOrderId => _currentOrderId;
   Map<String, bool> get checkedItems => _checkedItems;
 
@@ -55,36 +57,56 @@ class ShoppingCartController extends GetxController {
     return total;
   }
 
+  // Phương thức để lấy danh sách các mục đã chọn
+  List<OrderDetail> getSelectedItems() {
+    return _cartItems.entries
+        .where((entry) => _checkedItems[entry.key] == true)
+        .map((entry) => entry.value)
+        .toList();
+  }
+
   // Phương thức để đảo trạng thái check của một item
   void toggleItemCheck(String itemId) {
     _checkedItems[itemId] = !(_checkedItems[itemId] ?? false);
     update();
   }
 
-  // Phương thức để check tất cả items
-  void checkAllItems() {
+  // Phương thức để  chọn/bỏ chọn tất cả items
+  void checkAndUnAllItems() {
+    // Kiểm tra xem tất cả items đã được chọn chưa
+    bool allChecked = _cartItems.keys.every((key) => _checkedItems[key] == true);
+    
+    // Nếu tất cả đã được chọn thì bỏ chọn tất cả, ngược lại thì chọn tất cả
     _cartItems.forEach((key, _) {
-      _checkedItems[key] = true;
+      _checkedItems[key] = !allChecked;
     });
     update();
   }
 
-  // Phương thức để uncheck tất cả items
-  void uncheckAllItems() {
-    _cartItems.forEach((key, _) { // key,_ tại không cần check value
-      _checkedItems[key] = false;
-    });
-    update();
-  }
+  // // Phương thức để check tất cả items
+  // void checkAllItems() {
+  //   _cartItems.forEach((key, _) {
+  //     _checkedItems[key] = true;
+  //   });
+  //   update();
+  // }
+  //
+  // // Phương thức để uncheck tất cả items
+  // void uncheckAllItems() {
+  //   _cartItems.forEach((key, _) {
+  //     _checkedItems[key] = false;
+  //   });
+  //   update();
+  // }
 
   // Phương thức xóa các items đã được check
   Future<void> removeSelectedItems() async {
     if (_currentOrderId == null) return;
 
     try {
-      final itemsToRemove = _checkedItems.entries//Duyệt qua _checkedItems.entries để tìm các mục có giá trị true (đã chọn).
-          .where((entry) => entry.value)//Dùng .where((entry) => entry.value) để lọc các mục đã chọn.
-          .map((entry) => entry.key)//Dùng .map((entry) => entry.key).toList() để lấy danh sách itemId cần xóa.
+      final itemsToRemove = _checkedItems.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
           .toList();
 
       for (var itemId in itemsToRemove) {
@@ -106,9 +128,11 @@ class ShoppingCartController extends GetxController {
 
   Future<void> _initializeCart() async {
     try {
-      _currentOrderId = await SupabaseHelper.getPendingOrderId('UI0002');
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return; // Không đăng nhập thì không làm gì cả
+      _currentOrderId = await HelperCart.getPendingCustomerOrder(userId);
       if (_currentOrderId == null) {
-        _currentOrderId = await CustomerOrderSnapshot.createNewOrder('UI0002');
+        _currentOrderId = await CustomerOrderSnapshot.createNewOrder(userId);
       }
       await _loadCartItems();
     } catch (e) {
@@ -119,7 +143,6 @@ class ShoppingCartController extends GetxController {
   Future<void> _loadCartItems() async {
     if (_currentOrderId == null) return;
     _cartItems = await CustomerOrderSnapshot.getCartItems(_currentOrderId!);
-    // Khởi tạo trạng thái check cho các items mới
     _cartItems.forEach((key, _) {
       _checkedItems[key] = false;
     });
@@ -128,8 +151,14 @@ class ShoppingCartController extends GetxController {
 
   Future<void> addToCart(Item item, int amount) async {
     try {
+      final userId = Get.find<UserController>().appUser?.userId;
+      if (userId == null) {
+        // Có thể show dialog yêu cầu đăng nhập
+        Get.snackbar('Thông báo', 'Bạn cần đăng nhập để sử dụng giỏ hàng');
+        return;
+      }
       if (_currentOrderId == null) {
-        _currentOrderId = await CustomerOrderSnapshot.createNewOrder('UI0002');
+        _currentOrderId = await CustomerOrderSnapshot.createNewOrder(userId);
       }
 
       if (_cartItems.containsKey(item.itemId)) {
@@ -137,14 +166,8 @@ class ShoppingCartController extends GetxController {
         _cartItems[item.itemId]!.amount = newAmount;
         await OrderDetailSnapshot.updateItemAmount(_currentOrderId!, item.itemId, newAmount);
       } else {
-        _cartItems[item.itemId] = OrderDetail(
-          orderId: _currentOrderId!,
-          itemId: item.itemId,
-          amount: amount,
-          actualPrice: item.price,
-          item: item,
-        );
-        await OrderDetailSnapshot.addItemToCart(_currentOrderId!, item, amount);
+        await CustomerOrderSnapshot.addItemToCart(_currentOrderId!, item, amount);
+        await _loadCartItems();
       }
       update();
       Get.snackbar(
@@ -169,12 +192,12 @@ class ShoppingCartController extends GetxController {
           .eq('item_id', itemId);
 
       await _loadCartItems();
-      update(); // hoặc update(['cart_items'])
+      update();
     } catch (e) {
       print('Error removing from cart: $e');
     }
   }
-  // update số lượng khi thêm vào giỏ hàng
+
   Future<void> updateItemAmount(String itemId, int newAmount) async {
     if (_currentOrderId == null) return;
 
@@ -194,7 +217,6 @@ class ShoppingCartController extends GetxController {
     }
   }
 
-  //  phương thức tăng số lượng
   void incrementAmount(String itemId) {
     if (_cartItems.containsKey(itemId)) {
       _cartItems[itemId]!.amount++;
@@ -203,7 +225,6 @@ class ShoppingCartController extends GetxController {
     }
   }
 
-  // phương thức giảm số lượng
   void decrementAmount(String itemId) {
     if (_cartItems.containsKey(itemId)) {
       if (_cartItems[itemId]!.amount > 1) {
@@ -216,7 +237,6 @@ class ShoppingCartController extends GetxController {
     }
   }
 
-  // Phương thức private cập nhật số lượng trong database
   Future<void> _updateAmountInDatabase(String itemId, int newAmount) async {
     if (_currentOrderId == null) return;
 
@@ -228,8 +248,24 @@ class ShoppingCartController extends GetxController {
           .eq('item_id', itemId);
     } catch (e) {
       print('Lỗi cập nhật số lượng trong database: $e');
-      await _loadCartItems(); // Load lại dữ liệu nếu có lỗi
+      await _loadCartItems();
     }
+  }
+  Future<void> placeOrder() async {
+    final userId = Get.find<UserController>().appUser?.userId;
+    if (userId == null) return;
+    final oldOrderId = _currentOrderId;
+    // Tính tổng tiền từ giỏ hàng hiện tại
+    int totalAmount = _cartItems.values.fold(0, (sum, item) => sum + (item.actualPrice * item.amount));
+    // Cập nhật tổng tiền cho đơn hàng cũ (vừa đặt)
+    if (oldOrderId != null) {
+      await CustomerOrderSnapshot.updateOrderStatusAndTotal(oldOrderId, "pending", totalAmount);
+    }
+    // Tạo orderId mới cho giỏ hàng tiếp theo
+    final newOrderId = await CustomerOrderSnapshot.createNewOrder(userId);
+    _currentOrderId = newOrderId;
+    await _loadCartItems();
+    update();
   }
 }
 

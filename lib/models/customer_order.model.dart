@@ -1,5 +1,8 @@
 import 'dart:ffi';
 
+import 'package:pizza_store_app/helpers/other.helper.dart';
+import 'package:pizza_store_app/models/Item.model.dart';
+
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';
 import 'order_detail.model.dart';
@@ -113,7 +116,7 @@ class CustomerOrderSnapshot {
   }
 
   static Future<String> createNewOrder(String customerId) async {
-    final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
+    final orderId = await generateId(tableName: CustomerOrder.tableName);
     await supabase.from('customer_order').insert({
       'order_id': orderId,
       'customer_id': customerId,
@@ -128,6 +131,18 @@ class CustomerOrderSnapshot {
       'shipping_address': null,
     });
     return orderId;
+  }
+// cập nhật trạng thái
+  static Future<void> updateOrderStatus(String orderId, String status) async {
+    await supabase.from('customer_order')
+      .update({'status': status})
+      .eq('order_id', orderId);
+  }
+
+  static Future<void> updateOrderStatusAndTotal(String orderId, String status, int totalAmount) async {
+    await supabase.from('customer_order')
+      .update({'status': status, 'total_amount': totalAmount})
+      .eq('order_id', orderId);
   }
 
   // Lấy thông tin sản phẩm trong giỏ hàng
@@ -152,78 +167,19 @@ class CustomerOrderSnapshot {
     }
     return items;
   }
-  //
-  // // Cập nhật số lượng sản phẩm trong giỏ hàng
-  // static Future<void> updateCartItemAmount(String orderId, String itemId, int newAmount) async {
-  //   try {
-  //     await supabase
-  //         .from('order_detail')
-  //         .update({'amount': newAmount})
-  //         .eq('order_id', orderId)
-  //         .eq('item_id', itemId);
-  //
-  //     // Cập nhật tổng tiền đơn hàng
-  //     await updateOrderTotal(orderId);
-  //   } catch (e) {
-  //     print('Lỗi cập nhật số lượng trong database: $e');
-  //     rethrow;
-  //   }
-  // }
-  //
-  // // Xóa sản phẩm khỏi giỏ hàng
-  // static Future<void> removeCartItem(String orderId, String itemId) async {
-  //   try {
-  //     await supabase
-  //         .from('order_detail')
-  //         .delete()
-  //         .eq('order_id', orderId)
-  //         .eq('item_id', itemId);
-  //
-  //     // Cập nhật tổng tiền đơn hàng
-  //     await updateOrderTotal(orderId);
-  //   } catch (e) {
-  //     print('Lỗi xóa sản phẩm khỏi giỏ hàng: $e');
-  //     rethrow;
-  //   }
-  // }
 
-  // // Xóa nhiều sản phẩm khỏi giỏ hàng
-  // static Future<void> removeCartItems(String orderId, List<String> itemIds) async {
-  //   try {
-  //     await supabase
-  //         .from('order_detail')
-  //         .delete()
-  //         .eq('order_id', orderId)
-  //         .in_('item_id', itemIds);
-  //
-  //     // Cập nhật tổng tiền đơn hàng
-  //     await updateOrderTotal(orderId);
-  //   } catch (e) {
-  //     print('Lỗi xóa nhiều sản phẩm khỏi giỏ hàng: $e');
-  //     rethrow;
-  //   }
-  // }
-
-  // // Cập nhật tổng tiền đơn hàng
-  // static Future<void> updateOrderTotal(String orderId) async {
-  //   try {
-  //     final response = await supabase
-  //         .from('order_detail')
-  //         .select('amount, actual_price')
-  //         .eq('order_id', orderId);
-  //
-  //     int total = 0;
-  //     for (var item in response) {
-  //       total += item['amount'] * item['actual_price'];
-  //     }
-  //
-  //     await supabase
-  //         .from('customer_order')
-  //         .update({'total_amount': total})
-  //         .eq('order_id', orderId);
-  //   } catch (e) {
-  //     print('Lỗi cập nhật tổng tiền đơn hàng: $e');
-  //     rethrow;
-  //   }
-  // }
+  static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+    try {
+      await supabase.from('order_detail').insert({
+        'order_id': orderId,
+        'item_id': item.itemId,
+        'amount': amount,
+        'actual_price': item.price,
+        'note': null,
+      });
+    } catch (e) {
+      print('Lỗi thêm sản phẩm vào giỏ hàng: $e');
+      rethrow;
+    }
+  }
 }

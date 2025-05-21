@@ -6,6 +6,7 @@ class OrderDetail {
   int amount, actualPrice;
   String? note;
   Item? item;
+  String? selectedVariantId;
 
   static String tableName = "order_detail";
 
@@ -16,6 +17,7 @@ class OrderDetail {
     this.note,
     required this.actualPrice,
     this.item,
+    this.selectedVariantId,
   });
 
   // factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class OrderDetail {
       actualPrice: json["actual_price"],
       note: json["note"],
       item: itemParsed,
+      selectedVariantId: json["selected_variant_id"],
     );
   }
 
@@ -62,6 +65,7 @@ class OrderDetail {
       "amount": amount,
       "note": note,
       "actual_price": actualPrice,
+      "selected_variant_id": selectedVariantId,
     };
   }
 }
@@ -95,12 +99,19 @@ class OrderDetailSnapshot {
   }
 
   static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+    // Lấy thông tin biến thể có sẵn cho sản phẩm
+    final variants = await supabase
+        .from('item_variant')
+        .select('variant_id')
+        .eq('category_id', item..category.categoryId);
+
     await supabase.from('order_detail').insert({
       'order_id': orderId,
       'item_id': item.itemId,
       'amount': amount,
       'actual_price': item.price,
       'note': null,
+      'selected_variant_id': variants.isNotEmpty ? variants[0]['variant_id'] : null,
     });
   }
 
