@@ -3,7 +3,7 @@ import '../helpers/supabase.helper.dart';
 class VariantType {
   String variantTypeId, variantTypeName;
 
-  static String tableName = "variant_type";
+  static const String tableName = "variant_type";
 
   VariantType({required this.variantTypeId, required this.variantTypeName});
 

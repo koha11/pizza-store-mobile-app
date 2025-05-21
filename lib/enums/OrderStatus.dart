@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 enum OrderStatus {
-  confirmed,
   pending,
+  confirmed,
   shipping,
   finished;
   // cancelled;

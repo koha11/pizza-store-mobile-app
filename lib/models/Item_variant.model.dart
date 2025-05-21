@@ -27,27 +27,23 @@ class ItemVariantSnapshot {
   ItemVariantSnapshot(this.itemVariant);
 
   static Future<List<ItemVariant>> getItemVariants({
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) async {
     return SupabaseSnapshot.getList(
       table: ItemVariant.tableName,
       fromJson: ItemVariant.fromJson,
-      columnName: columnName,
-      columnValue: columnValue,
+      equalObject: equalObject,
     );
   }
 
   static Future<Map<String, ItemVariant>> getMapItemVariants({
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
   }) {
     return SupabaseSnapshot.getMapT<String, ItemVariant>(
       table: ItemVariant.tableName,
       fromJson: ItemVariant.fromJson,
       getId: (p0) => p0.variantId,
-      columnName: columnName,
-      columnValue: columnValue,
+      equalObject: equalObject,
     );
   }
 }

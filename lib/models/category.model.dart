@@ -4,7 +4,7 @@ class Category {
   String categoryId, categoryName;
   String? categoryImage;
 
-  static String tableName = "category";
+  static const String tableName = "category";
 
   Category({
     required this.categoryId,
@@ -31,9 +31,9 @@ class Category {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Category &&
-              runtimeType == other.runtimeType &&
-              categoryId == other.categoryId;
+      other is Category &&
+          runtimeType == other.runtimeType &&
+          categoryId == other.categoryId;
 
   @override
   int get hashCode => categoryId.hashCode;
