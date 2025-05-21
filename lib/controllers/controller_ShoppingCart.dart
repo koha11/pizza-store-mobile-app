@@ -7,11 +7,11 @@ import 'package:pizza_store_app/helpers/supabase.helper.dart';
 
 class ShoppingCartController extends GetxController {
   final SupabaseClient _supabase = Supabase.instance.client;
-  Map<String, OrderDetail> _cartItems = {};
+  Map<String, OrderDetail> _cartItems = {};// itemID
   Map<String, bool> _checkedItems = {};
   String? _currentOrderId;
 
-  Map<String, OrderDetail> get cartItems => _cartItems;
+  Map<String, OrderDetail> get cartItems => _cartItems;// getter truy vấn ngoài class tránh tùy chỉnh dữ liệu
   String? get currentOrderId => _currentOrderId;
   Map<String, bool> get checkedItems => _checkedItems;
 
@@ -55,7 +55,7 @@ class ShoppingCartController extends GetxController {
     return total;
   }
 
-  // Phương thức để toggle trạng thái check của một item
+  // Phương thức để đảo trạng thái check của một item
   void toggleItemCheck(String itemId) {
     _checkedItems[itemId] = !(_checkedItems[itemId] ?? false);
     update();
@@ -82,9 +82,9 @@ class ShoppingCartController extends GetxController {
     if (_currentOrderId == null) return;
 
     try {
-      final itemsToRemove = _checkedItems.entries
-          .where((entry) => entry.value)
-          .map((entry) => entry.key)
+      final itemsToRemove = _checkedItems.entries//Duyệt qua _checkedItems.entries để tìm các mục có giá trị true (đã chọn).
+          .where((entry) => entry.value)//Dùng .where((entry) => entry.value) để lọc các mục đã chọn.
+          .map((entry) => entry.key)//Dùng .map((entry) => entry.key).toList() để lấy danh sách itemId cần xóa.
           .toList();
 
       for (var itemId in itemsToRemove) {
