@@ -193,14 +193,11 @@ class PageOrdersList extends StatelessWidget {
                                         ),
                                         SizedBox(width: 6),
                                         Text(
-                                          "Trạng thái: ${OrderStatus.fromString(order.status).displayText}",
+                                          "Trạng thái: ${order.status.displayText}",
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500,
-                                            color:
-                                                (OrderStatus.fromString(
-                                                  order.status,
-                                                ).color),
+                                            color: order.status.color,
                                           ),
                                         ),
                                       ],
