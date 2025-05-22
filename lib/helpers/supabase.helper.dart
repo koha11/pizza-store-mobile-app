@@ -239,3 +239,56 @@ class SupabaseSnapshot {
     return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
   }
 }
+
+// dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
+class HelperCart {
+  static Future<String?> getPendingCustomerOrder(String customerId) async {
+    final response =
+    await supabase
+        .from('customer_order')
+        .select('order_id')
+        .eq('customer_id', customerId)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+    return response?['order_id'] as String?;
+  }
+
+  // tính tiền
+  static Future<void> updateOrderTotal(String orderId, int total) async {
+    await supabase
+        .from('customer_order')
+        .update({'total_amount': total})
+        .eq('order_id', orderId);
+  }
+
+  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
+  static Future<void> updateCartItemAmount(String orderId,
+      String itemId,
+      int newAmount,) async {
+    try {
+      await supabase
+          .from('order_detail')
+          .update({'amount': newAmount})
+          .eq('order_id', orderId)
+          .eq('item_id', itemId);
+    } catch (e) {
+      print('Lỗi cập nhật số lượng trong database: $e');
+      rethrow;
+    }
+  }
+
+  // Phương thức xóa sản phẩm khỏi giỏ hàng
+  static Future<void> removeCartItem(String orderId, String itemId) async {
+    try {
+      await supabase
+          .from('order_detail')
+          .delete()
+          .eq('order_id', orderId)
+          .eq('item_id', itemId);
+    } catch (e) {
+      print('Lỗi xóa sản phẩm khỏi giỏ hàng: $e');
+      rethrow;
+    }
+  }
+}

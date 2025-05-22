@@ -24,7 +24,6 @@ class CustomerOrder {
     required this.orderTime,
     this.managerId,
     this.shipperId,
-    this.voucherId,
     this.note,
     required this.shippingAddress,
     required this.status,
@@ -41,7 +40,6 @@ class CustomerOrder {
       customerId: json["customer_id"],
       managerId: json["manager_id"],
       shipperId: json["shipper_id"],
-      voucherId: json["voucher_id"],
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -71,7 +69,6 @@ class CustomerOrder {
       "customer_id": customerId,
       "manager_id": managerId,
       "shipper_id": shipperId,
-      "voucher_id": voucherId,
       "order_time": orderTime,
       "accept_time": acceptTime,
       "delivery_time": deliveryTime,
