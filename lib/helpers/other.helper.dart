@@ -38,8 +38,8 @@ Future<String> generateId({required String tableName}) async {
 
     int lastIndex = await SupabaseSnapshot.getLengthOfTable(
       table: tableName,
-      ltObject: {"order_time": end},
-      gtObject: {"order_time": start},
+      ltObject: {"order_time": end.toIso8601String()},
+      gtObject: {"order_time": start.toIso8601String()},
     );
 
     String lastIndexText = lastIndex.toString();
