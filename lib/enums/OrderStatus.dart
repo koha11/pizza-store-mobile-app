@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 enum OrderStatus {
+  cart,
   pending,
   confirmed,
   shipping,
@@ -32,6 +33,8 @@ enum OrderStatus {
   // Thêm phương thức để hiển thị text tương ứng
   String get displayText {
     switch (this) {
+      case OrderStatus.cart:
+        return 'Gio hang';
       case OrderStatus.confirmed:
         return 'Đã xác nhận';
       case OrderStatus.pending:
@@ -48,10 +51,12 @@ enum OrderStatus {
   // Thêm phương thức để lấy màu tương ứng
   Color get color {
     switch (this) {
+      case OrderStatus.cart:
+        return Colors.grey;
       case OrderStatus.confirmed:
         return Colors.redAccent;
       case OrderStatus.pending:
-        return Colors.purple;
+        return Colors.red;
       case OrderStatus.shipping:
         return Colors.blue;
       case OrderStatus.finished:
