@@ -4,7 +4,7 @@ import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:pizza_store_app/pages/PageItem.dart';
-import 'package:pizza_store_app/pages/PagePendingCart.dart';
+import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
 import 'package:pizza_store_app/pages/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,8 +16,8 @@ class HomePizzaStoreController extends GetxController {
   String _currentCategoryId = "CI0001";
   final List<Widget> _pages = [
     PageHome(),
-    PagePendingOrder(),
-    //PagePendingCart(),
+    //./PagePendingOrder(),
+    PagePendingCart(),
     PageProfile(),
     PageItem(),
   ];
