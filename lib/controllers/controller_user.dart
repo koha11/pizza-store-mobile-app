@@ -133,6 +133,6 @@ class UserController extends GetxController {
 class BindingsUserController extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<UserController>(() => UserController());
+    Get.put<UserController>(UserController());
   }
 }
