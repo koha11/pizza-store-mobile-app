@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 import '../models/user_address.model.dart';
-
 
 class PageConfirmBuy extends StatefulWidget {
   final List<OrderDetail> selectedItems;
@@ -19,11 +19,13 @@ class PageConfirmBuy extends StatefulWidget {
 class _PageConfirmBuyState extends State<PageConfirmBuy> {
   int shippingFee = (10 + Random().nextInt(11)) * 1000;
   String? selectedAddressId;
-  String _currentOrderId = "";
 
   @override
   Widget build(BuildContext context) {
-    int subTotal = widget.selectedItems.fold(0, (sum, item) => sum + (item.actualPrice * item.amount));
+    int subTotal = widget.selectedItems.fold(
+      0,
+      (sum, item) => sum + (item.actualPrice * item.amount),
+    );
     int total = subTotal + shippingFee;
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +45,9 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
               const SizedBox(height: 12),
               Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -56,55 +60,81 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                           2: FlexColumnWidth(2),
                           3: FlexColumnWidth(2),
                         },
-                        border: const TableBorder(horizontalInside: BorderSide(width: 0.5, color: Colors.black12)),
+                        border: const TableBorder(
+                          horizontalInside: BorderSide(
+                            width: 0.5,
+                            color: Colors.black12,
+                          ),
+                        ),
                         children: [
                           const TableRow(
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("Món", style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  "Món",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("SL", style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  "SL",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("Đơn giá", style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  "Đơn giá",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("Thành tiền", style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  "Thành tiền",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ],
                           ),
-                          ...widget.selectedItems.map((item) => TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text(item.item?.itemName ?? "Không rõ tên"),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("${item.amount}"),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("${item.actualPrice}đ"),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text("${item.actualPrice * item.amount}đ"),
-                              ),
-                            ],
-                          )),
+                          ...widget.selectedItems.map(
+                            (item) => TableRow(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 6),
+                                  child: Text(
+                                    item.item?.itemName ?? "Không rõ tên",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 6),
+                                  child: Text("${item.amount}"),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 6),
+                                  child: Text("${item.actualPrice}đ"),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 6),
+                                  child: Text(
+                                    "${item.actualPrice * item.amount}đ",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Tạm tính:", style: TextStyle(fontWeight: FontWeight.w500)),
+                          const Text(
+                            "Tạm tính:",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
                           Text("${subTotal}đ"),
                         ],
                       ),
@@ -112,7 +142,10 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Phí vận chuyển:", style: TextStyle(fontWeight: FontWeight.w500)),
+                          const Text(
+                            "Phí vận chuyển:",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
                           Text("${shippingFee}đ"),
                         ],
                       ),
@@ -120,8 +153,17 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text("Tổng cộng:", style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text("${total}đ", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                          const Text(
+                            "Tổng cộng:",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "${total}đ",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -139,32 +181,47 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                 builder: (userController) {
                   final addresses = userController.userAddress ?? [];
                   return Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       child: Row(
                         children: [
                           const Icon(Icons.location_on, color: Colors.red),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: addresses.isEmpty
-                                ? const Text("Không có địa chỉ")
-                                : DropdownButton<String>(
-                                    isExpanded: true,
-                                    value: selectedAddressId,
-                                    items: addresses.map((address) {
-                                      return DropdownMenuItem<String>(
-                                        value: address.userId,
-                                        child: Text(address.address),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedAddressId = value;
-                                      });
-                                    },
-                                    underline: Container(),
-                                  ),
+                            child:
+                                addresses.isEmpty
+                                    ? const Text("Không có địa chỉ")
+                                    : DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: selectedAddressId,
+                                      items:
+                                          addresses.map((address) {
+                                            return DropdownMenuItem<String>(
+                                              value: address.address,
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    address.addressNickName ??
+                                                        "",
+                                                  ),
+                                                  Text(address.address),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedAddressId = value;
+                                        });
+                                      },
+                                      underline: Container(),
+                                    ),
                           ),
                         ],
                       ),
@@ -176,22 +233,32 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () async {
-                      await Get.find<ShoppingCartController>().placeOrder();
-                      Get.snackbar("Thành công", "Đơn hàng đã được đặt!", snackPosition: SnackPosition.BOTTOM);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
+                  onPressed: () async {
+                    await ShoppingCartController.get().placeOrder(
+                      shippingFee: shippingFee,
+                      address: selectedAddressId!,
+                    );
+
+                    Get.snackbar(
+                      "Thành công",
+                      "Đơn hàng đã được đặt!",
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    //Get.to(PagePendingCart());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
                     ),
+                  ),
                   child: const Text(
                     "Đặt Hàng",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),),
-              )
+                  ),
+                ),
+              ),
             ],
           ),
         ),
