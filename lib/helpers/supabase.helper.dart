@@ -244,12 +244,12 @@ class SupabaseSnapshot {
 class HelperCart {
   static Future<String?> getPendingCustomerOrder(String customerId) async {
     final response =
-    await supabase
-        .from('customer_order')
-        .select('order_id')
-        .eq('customer_id', customerId)
-        .eq('status', 'pending')
-        .maybeSingle();
+        await supabase
+            .from('customer_order')
+            .select('order_id')
+            .eq('customer_id', customerId)
+            .eq('status', 'pending')
+            .maybeSingle();
 
     return response?['order_id'] as String?;
   }
@@ -263,9 +263,11 @@ class HelperCart {
   }
 
   // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  static Future<void> updateCartItemAmount(String orderId,
-      String itemId,
-      int newAmount,) async {
+  static Future<void> updateCartItemAmount(
+    String orderId,
+    String itemId,
+    int newAmount,
+  ) async {
     try {
       await supabase
           .from('order_detail')
