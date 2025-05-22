@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/PageRegister.dart';
 import 'package:pizza_store_app/pages/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -93,6 +95,11 @@ class PageLogin extends StatelessWidget {
 
                         await UserController.get().fetchUser();
                         HomePizzaStoreController.get().setCurrUser(user);
+                        await SupabaseSnapshot.update(
+                          table: AppUser.tableName,
+                          updateObject: {"is_active": true},
+                          equalObject: {"user_id": user.id},
+                        );
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),
