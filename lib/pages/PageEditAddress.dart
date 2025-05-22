@@ -22,7 +22,7 @@ class PageEditAddress extends StatelessWidget {
           backgroundColor: Colors.white,
           appBar: AppBar(
             title: Text("Sửa địa chỉ"),
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             leading: IconButton(
               onPressed: () => Get.back(),
               icon: Icon(Icons.arrow_back),
@@ -58,7 +58,7 @@ class PageEditAddress extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.lightGreen,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(

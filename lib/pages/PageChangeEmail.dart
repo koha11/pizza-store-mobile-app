@@ -15,7 +15,7 @@ class PageChangeEmail extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Thay đổi email"),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           onPressed: () => Get.back(),
           icon: Icon(Icons.arrow_back),
@@ -38,7 +38,7 @@ class PageChangeEmail extends StatelessWidget {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.lightGreen,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(

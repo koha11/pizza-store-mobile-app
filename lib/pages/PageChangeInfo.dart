@@ -18,7 +18,7 @@ class PageChangeInfo extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Sửa hồ sơ"),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           onPressed: () => Get.back(),
           icon: Icon(Icons.arrow_back),
@@ -63,7 +63,7 @@ class PageChangeInfo extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.lightGreen,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -79,20 +79,21 @@ class PageChangeInfo extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (context) => PagePendingOrder(),
-                              )
-                            );
-                          },
-                          child: Text ("Giao hàng")
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PagePendingOrder(),
+                            ),
+                          );
+                        },
+                        child: Text("Giao hàng"),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
