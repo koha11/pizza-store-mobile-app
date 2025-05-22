@@ -57,7 +57,6 @@ class OrderDetail {
     );
   }
 
-
   Map<String, dynamic> toJson() {
     return {
       "order_id": orderId,
@@ -90,7 +89,11 @@ class OrderDetailSnapshot {
     );
   }
 
-  static Future<void> updateItemAmount(String orderId, String itemId, int amount) async {
+  static Future<void> updateItemAmount(
+    String orderId,
+    String itemId,
+    int amount,
+  ) async {
     await supabase
         .from('order_detail')
         .update({'amount': amount})
@@ -98,7 +101,11 @@ class OrderDetailSnapshot {
         .eq('item_id', itemId);
   }
 
-  static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+  static Future<void> addItemToCart(
+    String orderId,
+    Item item,
+    int amount,
+  ) async {
     // Lấy thông tin biến thể có sẵn cho sản phẩm
     final variants = await supabase
         .from('item_variant')
@@ -111,7 +118,8 @@ class OrderDetailSnapshot {
       'amount': amount,
       'actual_price': item.price,
       'note': null,
-      'selected_variant_id': variants.isNotEmpty ? variants[0]['variant_id'] : null,
+      'selected_variant_id':
+          variants.isNotEmpty ? variants[0]['variant_id'] : null,
     });
   }
 
@@ -124,9 +132,6 @@ class OrderDetailSnapshot {
   }
 
   static Future<void> clearCart(String orderId) async {
-    await supabase
-        .from('order_detail')
-        .delete()
-        .eq('order_id', orderId);
+    await supabase.from('order_detail').delete().eq('order_id', orderId);
   }
 }
