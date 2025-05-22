@@ -5,12 +5,18 @@ import 'package:pizza_store_app/admin/admin_dialogs/admin_dialogs.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
+import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:pizza_store_app/pages/PageLogin.dart';
 
+class PageShoppingCart extends StatefulWidget {
+  const PageShoppingCart({super.key});
 
-class PageShoppingCart extends StatelessWidget {
- PageShoppingCart({super.key});
- late BuildContext mycontext;
+  @override
+  State<PageShoppingCart> createState() => _PageShoppingCartState();
+}
+
+class _PageShoppingCartState extends State<PageShoppingCart> {
+  late BuildContext mycontext;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +72,6 @@ class PageShoppingCart extends StatelessWidget {
                       Get.to(MainLayout());
                     },
                     child: const Text("Tìm kiếm món ăn"),
-
                   ),
                   // GestureDetector(
                   //   child: Text("Bạn chưa đăng nhập, click để đăng nhập "),
@@ -83,7 +88,7 @@ class PageShoppingCart extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: controller.cartItems.length,
                   itemBuilder: (context, index) {
-                        mycontext = context;
+                    mycontext = context;
                     final item = controller.cartItems.values.elementAt(index);
                     return Slidable(
                       key: ValueKey(item.itemId),
@@ -92,13 +97,17 @@ class PageShoppingCart extends StatelessWidget {
                         motion: ScrollMotion(),
                         children: [
                           SlidableAction(
-
                             onPressed: (context) async {
-                              bool? xacNhan = await showConfirmDialog(mycontext,
-                                  "Bạn có muốn xóa ${item.item?.itemName}?");
+                              bool? xacNhan = await showConfirmDialog(
+                                mycontext,
+                                "Bạn có muốn xóa ${item.item?.itemName}?",
+                              );
                               if (xacNhan == true) {
                                 await controller.removeFromCart(item.itemId);
-                                showSnackBar(mycontext, message: "Đã xóa ${item.item?.itemName}");
+                                showSnackBar(
+                                  mycontext,
+                                  message: "Đã xóa ${item.item?.itemName}",
+                                );
                               }
                             },
                             backgroundColor: Colors.red,
@@ -111,24 +120,29 @@ class PageShoppingCart extends StatelessWidget {
                         ],
                       ),
                       child: Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         child: ListTile(
                           leading: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Checkbox(
-                                value: controller.checkedItems[item.itemId] ?? false,
+                                value:
+                                    controller.checkedItems[item.itemId] ??
+                                    false,
                                 onChanged: (bool? value) {
                                   controller.toggleItemCheck(item.itemId);
                                 },
                               ),
                               item.item?.itemImage != null
                                   ? Image.network(
-                                item.item!.itemImage!,
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                              )
+                                    item.item!.itemImage!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
                                   : const Icon(Icons.fastfood, size: 40),
                             ],
                           ),
@@ -137,7 +151,7 @@ class PageShoppingCart extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("${item.actualPrice} vnđ"),
-                              Text("${item.item?.category.categoryName}")
+                              Text("${item.item?.category.categoryName}"),
                             ],
                           ),
 
@@ -157,26 +171,22 @@ class PageShoppingCart extends StatelessWidget {
                                   controller.incrementAmount(item.itemId);
                                 },
                               ),
-
                             ],
                           ),
                         ),
                       ),
                     );
-
                   },
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5,
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -208,13 +218,19 @@ class PageShoppingCart extends StatelessWidget {
                         onPressed: () {
                           final selectedItems = controller.getSelectedItems();
                           if (selectedItems.isEmpty) {
-                            showSnackBar(context, message: "Vui lòng chọn ít nhất một món");
+                            showSnackBar(
+                              context,
+                              message: "Vui lòng chọn ít nhất một món",
+                            );
                             return;
                           }
-                          Get.to(() => PageConfirmBuy(selectedItems: selectedItems));
+                          Get.to(
+                            () => PageConfirmBuy(selectedItems: selectedItems),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.inversePrimary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40),
