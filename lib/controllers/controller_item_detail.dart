@@ -63,7 +63,7 @@ class ItemDetailController extends GetxController {
     required String variantId,
   }) {
     variantCheckList[variantTypeName] = variantId;
-    update([categoryId]);
+    update([tag]);
   }
 }
 
