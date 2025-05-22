@@ -2,8 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
+import 'package:pizza_store_app/pages/PageOrderDetailManager.dart';
 
 class PageOrdersList extends StatelessWidget {
   PageOrdersList({super.key});
@@ -21,7 +23,6 @@ class PageOrdersList extends StatelessWidget {
           controller.orderStatus,
         );
         final orders = controller.orders;
-        print(selectStatus);
         final filterOrders =
             selectStatus == null
                 ? orders
@@ -32,23 +33,21 @@ class PageOrdersList extends StatelessWidget {
         filterOrders.forEach(
           (element) => print("${element.status} - ${element.orderId}"),
         );
-        if (controller.isLoading) {
-          return Center(child: CircularProgressIndicator());
-        }
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.grey[100],
           appBar: AppBar(
-            title: Text("Danh sách đơn hàng"),
-            backgroundColor: Colors.orange,
-            foregroundColor: Colors.white,
+            title: Text("Danh sách các đơn hàng"),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           ),
           body:
-              filterOrders.isEmpty
+              controller.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : filterOrders.isEmpty
                   ? Center(child: Text("Chưa có đơn hàng nào"))
                   : Column(
                     children: [
-                      SizedBox(height: 20),
+                      SizedBox(height: 15),
                       CarouselSlider(
                         items:
                             controller.statuses.map((status) {
@@ -59,13 +58,10 @@ class PageOrdersList extends StatelessWidget {
                                 },
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor:
-                                      isSelect ? Colors.orange : Colors.white,
+                                      isSelect ? Colors.green : Colors.white,
                                   foregroundColor:
-                                      isSelect ? Colors.white : Colors.orange,
-                                  side: BorderSide(
-                                    color: Colors.orange,
-                                    width: 1.5,
-                                  ),
+                                      isSelect ? Colors.white : Colors.green,
+                                  side: BorderSide.none,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
@@ -91,121 +87,167 @@ class PageOrdersList extends StatelessWidget {
                           enableInfiniteScroll: false,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       Expanded(
                         child: ListView.separated(
                           padding: const EdgeInsets.all(12),
                           itemCount: filterOrders.length,
                           separatorBuilder:
-                              (context, index) => SizedBox(height: 15),
+                              (context, index) => SizedBox(height: 8),
                           itemBuilder: (context, index) {
                             final order = filterOrders[index];
-                            return Card(
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              elevation: 3,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Mã đơn: ${order.orderId}',
-                                          style: TextStyle(
-                                            fontSize: 19,
-                                            fontWeight: FontWeight.bold,
+                            return GestureDetector(
+                              onTap: () {
+                                Get.to(
+                                  () => PageOrderDetailManager(),
+                                  binding: BindingOrderDetailManager(
+                                    order.orderId,
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(14),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "Mã đơn hàng",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                              maxLines: 1,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          order.orderTime != null
-                                              ? dateFormat.format(
-                                                order.orderTime!,
-                                              )
-                                              : "Null",
-                                          style: TextStyle(
-                                            color: Colors.grey[800],
-                                            fontSize: 15,
+                                          Expanded(
+                                            child: Text(
+                                              "${order.orderId}",
+                                              style: TextStyle(fontSize: 18),
+                                              textAlign: TextAlign.right,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                              maxLines: 1,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.payment,
-                                          color: Colors.blueAccent,
-                                        ),
-                                        SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Thời gian đặt",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            order.orderTime != null
+                                                ? dateFormat.format(
+                                                  order.orderTime!,
+                                                )
+                                                : "Null",
+                                            style: TextStyle(
+                                              color: Colors.grey[800],
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Trạng thái thanh toán",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
                                             order.paymentMethod
                                                 ? 'Đã thanh toán'
                                                 : 'Chưa thanh toán',
                                             style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on_outlined,
-                                          color: Colors.redAccent,
-                                        ),
-                                        SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            order.shippingAddress ??
-                                                'Không có địa chỉ',
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              "Địa chỉ nhận hàng",
+                                              style: TextStyle(fontSize: 16),
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              "${order.shippingAddress}",
+                                              style: TextStyle(fontSize: 16),
+                                              textAlign: TextAlign.right,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Số lượng món",
                                             style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.fastfood,
-                                          color: Colors.green,
-                                        ),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          "Số lượng: ${order.total}",
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.info_outline,
-                                          color: Colors.blue,
-                                        ),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          "Trạng thái: ${OrderStatus.fromString(order.status).displayText}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color:
-                                                (OrderStatus.fromString(
-                                                  order.status,
-                                                ).color),
+                                          Text(
+                                            "${order.total}",
+                                            style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                      SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Trạng thái",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            "${OrderStatus.fromString(order.status).displayText}",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color:
+                                                  (OrderStatus.fromString(
+                                                    order.status,
+                                                  ).color),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
