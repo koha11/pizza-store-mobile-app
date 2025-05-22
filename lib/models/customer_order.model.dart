@@ -9,7 +9,7 @@ import 'order_detail.model.dart';
 
 class CustomerOrder {
   String orderId, customerId;
-  String? managerId, shipperId, voucherId, note, shippingAddress;
+  String? managerId, shipperId, note, shippingAddress;
   String status;
   DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
@@ -24,7 +24,6 @@ class CustomerOrder {
     required this.orderTime,
     this.managerId,
     this.shipperId,
-    this.voucherId,
     this.note,
     required this.shippingAddress,
     required this.status,
@@ -42,7 +41,6 @@ class CustomerOrder {
       customerId: json["customer_id"],
       managerId: json["manager_id"],
       shipperId: json["shipper_id"],
-      voucherId: json["voucher_id"],
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -61,8 +59,8 @@ class CustomerOrder {
               : null,
       status: json["status"],
       paymentMethod: json["payment_method"],
-      total: json["total_amount"],
-      shippingFee: json["shipping_fee"],
+      total: json["total_amount"] ?? 0,
+      shippingFee: (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
     );
   }
@@ -73,7 +71,6 @@ class CustomerOrder {
       "customer_id": customerId,
       "manager_id": managerId,
       "shipper_id": shipperId,
-      "voucher_id": voucherId,
       "order_time": orderTime,
       "accept_time": acceptTime,
       "delivery_time": deliveryTime,
@@ -132,17 +129,24 @@ class CustomerOrderSnapshot {
     });
     return orderId;
   }
-// cập nhật trạng thái
+
+  // cập nhật trạng thái
   static Future<void> updateOrderStatus(String orderId, String status) async {
-    await supabase.from('customer_order')
-      .update({'status': status})
-      .eq('order_id', orderId);
+    await supabase
+        .from('customer_order')
+        .update({'status': status})
+        .eq('order_id', orderId);
   }
 
-  static Future<void> updateOrderStatusAndTotal(String orderId, String status, int totalAmount) async {
-    await supabase.from('customer_order')
-      .update({'status': status, 'total_amount': totalAmount})
-      .eq('order_id', orderId);
+  static Future<void> updateOrderStatusAndTotal(
+    String orderId,
+    String status,
+    int totalAmount,
+  ) async {
+    await supabase
+        .from('customer_order')
+        .update({'status': status, 'total_amount': totalAmount})
+        .eq('order_id', orderId);
   }
 
   // Lấy thông tin sản phẩm trong giỏ hàng
@@ -168,7 +172,11 @@ class CustomerOrderSnapshot {
     return items;
   }
 
-  static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+  static Future<void> addItemToCart(
+    String orderId,
+    Item item,
+    int amount,
+  ) async {
     try {
       await supabase.from('order_detail').insert({
         'order_id': orderId,
