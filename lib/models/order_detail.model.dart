@@ -6,7 +6,6 @@ class OrderDetail {
   int amount, actualPrice;
   String? note;
   Item? item;
-  String? selectedVariantId;
 
   static String tableName = "order_detail";
 
@@ -17,7 +16,6 @@ class OrderDetail {
     this.note,
     required this.actualPrice,
     this.item,
-    this.selectedVariantId,
   });
 
   // factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -53,10 +51,8 @@ class OrderDetail {
       actualPrice: json["actual_price"],
       note: json["note"],
       item: itemParsed,
-      selectedVariantId: json["selected_variant_id"],
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -65,7 +61,6 @@ class OrderDetail {
       "amount": amount,
       "note": note,
       "actual_price": actualPrice,
-      "selected_variant_id": selectedVariantId,
     };
   }
 }
@@ -90,7 +85,30 @@ class OrderDetailSnapshot {
     );
   }
 
-  static Future<void> updateItemAmount(String orderId, String itemId, int amount) async {
+  static Future<void> createOrderDetail({
+    required OrderDetail orderDetail,
+  }) async {
+    await SupabaseSnapshot.insert(
+      table: OrderDetail.tableName,
+      insertObject: orderDetail.toJson(),
+    );
+  }
+
+  static Future<void> deleteOrderDetail({
+    required String orderId,
+    required String itemId,
+  }) async {
+    await SupabaseSnapshot.delete(
+      table: OrderDetail.tableName,
+      equalObject: {"order_id": orderId, "item_id": itemId},
+    );
+  }
+
+  static Future<void> updateItemAmount(
+    String orderId,
+    String itemId,
+    int amount,
+  ) async {
     await supabase
         .from('order_detail')
         .update({'amount': amount})
@@ -98,12 +116,16 @@ class OrderDetailSnapshot {
         .eq('item_id', itemId);
   }
 
-  static Future<void> addItemToCart(String orderId, Item item, int amount) async {
+  static Future<void> addItemToCart(
+    String orderId,
+    Item item,
+    int amount,
+  ) async {
     // Lấy thông tin biến thể có sẵn cho sản phẩm
-    final variants = await supabase
-        .from('item_variant')
-        .select('variant_id')
-        .eq('category_id', item..category.categoryId);
+    // final variants = await supabase
+    //     .from('item_variant')
+    //     .select('variant_id')
+    //     .eq('category_id', item..category.categoryId);
 
     await supabase.from('order_detail').insert({
       'order_id': orderId,
@@ -111,7 +133,6 @@ class OrderDetailSnapshot {
       'amount': amount,
       'actual_price': item.price,
       'note': null,
-      'selected_variant_id': variants.isNotEmpty ? variants[0]['variant_id'] : null,
     });
   }
 
@@ -124,9 +145,29 @@ class OrderDetailSnapshot {
   }
 
   static Future<void> clearCart(String orderId) async {
-    await supabase
-        .from('order_detail')
-        .delete()
-        .eq('order_id', orderId);
+    await supabase.from('order_detail').delete().eq('order_id', orderId);
+  }
+
+  static Future<void> editOrderDetail({
+    required String orderId,
+    required String itemId,
+  }) async {
+    await SupabaseSnapshot.update(
+      table: OrderDetail.tableName,
+      updateObject: {"order_id": orderId},
+      equalObject: {"item_id": itemId},
+    );
+  }
+
+  static Future<List<OrderDetail>> getOrderDetailsByOrderId({
+    required String orderId,
+  }) async {
+    var data = await SupabaseSnapshot.getList(
+      table: OrderDetail.tableName,
+      fromJson: OrderDetail.fromJson,
+      equalObject: {"order_id": orderId},
+    );
+
+    return data;
   }
 }

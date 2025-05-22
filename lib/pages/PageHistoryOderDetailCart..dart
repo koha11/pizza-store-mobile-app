@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
-import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
-import '../controllers/controller_ShoppingCart.dart';
-import '../controllers/controller_user.dart';
-import '../models/user_address.model.dart';
 
-class PageConfirmBuy extends StatefulWidget {
+class PagePendingDetailCart extends StatefulWidget {
   final List<OrderDetail> selectedItems;
-  PageConfirmBuy({super.key, required this.selectedItems});
-
+  PagePendingDetailCart({
+    super.key,
+    required this.selectedItems,
+    required this.order,
+  });
+  final CustomerOrder order;
   @override
-  State<PageConfirmBuy> createState() => _PageConfirmBuyState();
+  State<PagePendingDetailCart> createState() => _PagePendingDetailCartState();
 }
 
-class _PageConfirmBuyState extends State<PageConfirmBuy> {
-  int shippingFee = (10 + Random().nextInt(11)) * 1000;
-  String? selectedAddressId;
-
+class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
   @override
   Widget build(BuildContext context) {
     int subTotal = widget.selectedItems.fold(
       0,
       (sum, item) => sum + (item.actualPrice * item.amount),
     );
-    int total = subTotal + shippingFee;
+    int total = subTotal + widget.order.shippingFee;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chi tiết đơn hàng"),
@@ -127,6 +125,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,7 +145,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                             "Phí vận chuyển:",
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Text("${shippingFee}đ"),
+                          Text("${widget.order.shippingFee}đ"),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -179,7 +178,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
               GetBuilder<UserController>(
                 id: "address",
                 builder: (userController) {
-                  final addresses = userController.userAddress ?? [];
+                  final addresses = userController.userAddress?.first.address;
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -193,36 +192,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                         children: [
                           const Icon(Icons.location_on, color: Colors.red),
                           const SizedBox(width: 8),
-                          Expanded(
-                            child:
-                                addresses.isEmpty
-                                    ? const Text("Không có địa chỉ")
-                                    : DropdownButton<String>(
-                                      isExpanded: true,
-                                      value: selectedAddressId,
-                                      items:
-                                          addresses.map((address) {
-                                            return DropdownMenuItem<String>(
-                                              value: address.address,
-                                              child: Column(
-                                                children: [
-                                                  Text(
-                                                    address.addressNickName ??
-                                                        "",
-                                                  ),
-                                                  Text(address.address),
-                                                ],
-                                              ),
-                                            );
-                                          }).toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedAddressId = value;
-                                        });
-                                      },
-                                      underline: Container(),
-                                    ),
-                          ),
+                          Expanded(child: Text("Địa chỉ: ${addresses}")),
                         ],
                       ),
                     ),
@@ -234,17 +204,11 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    await ShoppingCartController.get().placeOrder(
-                      shippingFee: shippingFee,
-                      address: selectedAddressId!,
-                    );
-
                     Get.snackbar(
                       "Thành công",
-                      "Đơn hàng đã được đặt!",
+                      "Hủy đơn hàng!",
                       snackPosition: SnackPosition.BOTTOM,
                     );
-                    //Get.to(PagePendingCart());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -254,7 +218,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                     ),
                   ),
                   child: const Text(
-                    "Đặt Hàng",
+                    "Hủy đơn hàng",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
