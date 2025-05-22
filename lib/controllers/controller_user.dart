@@ -47,6 +47,11 @@ class UserController extends GetxController {
 
   Future<void> signOut() async {
     await supabase.auth.signOut();
+    await SupabaseSnapshot.update(
+        table: AppUser.tableName,
+        updateObject: {"is_active": false},
+        equalObject: {"user_id": appUser!.userId}
+    );
     appUser = null;
     update(["1"]);
   }

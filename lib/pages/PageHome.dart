@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/pages/PageItemDetail.dart';
 
 import '../controllers/controller_home.dart';
@@ -128,7 +129,7 @@ class ItemsGridView extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          "${item.price} vnđ",
+                          formatMoney(money: item.price),
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
