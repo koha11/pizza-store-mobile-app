@@ -18,6 +18,8 @@ class CustomerOrder {
   List<OrderDetail>? orderDetails = [];
 
   static const String tableName = "customer_order";
+  static const String selectAllStr =
+      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*))";
 
   CustomerOrder({
     required this.orderId,
@@ -41,7 +43,11 @@ class CustomerOrder {
     List<dynamic> orderDetailsJson = json["order_detail"] ?? [];
 
     List<OrderDetail> orderDetails =
-        orderDetailsJson.map((od) => OrderDetail.fromJson(od)).toList();
+        orderDetailsJson.isEmpty
+            ? []
+            : orderDetailsJson
+                .map((odJson) => OrderDetail.fromJson(odJson))
+                .toList();
 
     return CustomerOrder(
       orderId: json["order_id"],
@@ -110,13 +116,14 @@ class CustomerOrderSnapshot {
   static Future<List<CustomerOrder>> getOrders({
     Map<String, String>? equalObject,
   }) async {
-    return SupabaseSnapshot.getList(
+    List<CustomerOrder> orders = await SupabaseSnapshot.getList<CustomerOrder>(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       equalObject: equalObject,
-      selectString:
-          "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail (*)",
+      selectString: CustomerOrder.selectAllStr,
     );
+
+    return orders;
   }
 
   static Future<Map<String, CustomerOrder>> getMapOrders() {
@@ -124,8 +131,7 @@ class CustomerOrderSnapshot {
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       getId: (p0) => p0.orderId,
-      selectString:
-          "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail (*)",
+      selectString: CustomerOrder.selectAllStr,
     );
   }
 
@@ -134,6 +140,7 @@ class CustomerOrderSnapshot {
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       equalObject: {"customer_id": customerId, "status": OrderStatus.cart.name},
+      selectString: CustomerOrder.selectAllStr,
     );
 
     return cart.isEmpty ? null : cart.first.orderId;

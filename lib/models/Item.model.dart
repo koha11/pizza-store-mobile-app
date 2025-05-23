@@ -54,6 +54,16 @@ class ItemSnapshot {
 
   ItemSnapshot(this.item);
 
+  static Future<Item?> getItemById(String itemId) async {
+    return SupabaseSnapshot.getById(
+      table: Item.tableName,
+      fromJson: Item.fromJson,
+      selectString: "*, category(*)",
+      idKey: "item_id",
+      idValue: itemId,
+    );
+  }
+
   static Future<List<Item>> getItems() async {
     return SupabaseSnapshot.getList(
       table: Item.tableName,
