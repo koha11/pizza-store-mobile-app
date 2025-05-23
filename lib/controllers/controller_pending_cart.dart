@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
@@ -7,13 +8,29 @@ class ShoppingCartPending extends GetxController {
   List<CustomerOrder> pendingOrders =
       []; // list chứa các đối tượng CustomerOderId
   Map<String, List<OrderDetail>> orderDetailsMap = {}; // orderid
+  bool _isLoading = true;
 
-  Future<void> fetchPendingOrders(String userId) async {
+  bool get isLoading => _isLoading;
+
+  set isLoading(bool value) {
+    _isLoading = value;
+  }
+
+  static ShoppingCartPending get() => Get.find();
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    fetchPendingOrders();
+  }
+
+  Future<void> fetchPendingOrders() async {
     // Lấy danh sách đơn hàng có status = 'pending'
     final data = await supabase
         .from('customer_order')
         .select()
-        .eq('customer_id', userId)
+        .eq('customer_id', UserController.get().appUser!.userId)
         .eq('status', 'pending');
 
     //chuyển đổi mỗi phần tử JSON thành một đối tượng CustomerOrder thông qua hàm fromJson
@@ -29,6 +46,7 @@ class ShoppingCartPending extends GetxController {
       ); //Lưu chi tiết đơn hàng vào Map với key là orderId (assign gán giá trị mới cho map )
     }
 
+    isLoading = false;
     update();
   }
 

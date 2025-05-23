@@ -56,7 +56,7 @@ class CustomerOrder {
               : null,
       status: OrderStatus.fromString(json["status"]),
       paymentMethod: json["payment_method"],
-      shippingFee: json["shipping_fee"],
+      shippingFee: (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
     );
   }
