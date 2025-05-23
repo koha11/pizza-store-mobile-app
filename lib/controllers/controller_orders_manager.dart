@@ -7,13 +7,10 @@ import 'package:pizza_store_app/models/customer_order.model.dart';
 class OrdersManagerController extends GetxController {
   List<CustomerOrder> orders = [];
   bool isLoading = false;
-  String orderStatus = "Tất cả";
-  List<String> statuses = [
-    "Tất cả",
-    "Đang chờ",
-    "Đã xác nhận",
-    "Đang giao",
-    "Đã hoàn thành",
+  OrderStatus? orderStatus;
+  List<dynamic> statuses = [
+    null,
+    ...OrderStatus.values.where((element) => element != OrderStatus.cart),
   ];
   StreamSubscription<List<CustomerOrder>>? orderSub;
   static OrdersManagerController get() => Get.find();
@@ -24,7 +21,7 @@ class OrdersManagerController extends GetxController {
     listenToGetOrders();
   }
 
-  void setStatus(String status) {
+  void setStatus(OrderStatus? status) {
     orderStatus = status;
     print("Status: ${orderStatus}");
     update(["orders"]);

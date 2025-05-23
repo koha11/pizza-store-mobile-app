@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 
@@ -9,12 +7,12 @@ import 'order_detail.model.dart';
 
 class CustomerOrder {
   String orderId, customerId;
-  String? managerId, shipperId, voucherId, note, shippingAddress;
+  String? managerId, shipperId, note, shippingAddress;
   OrderStatus status;
   DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
   bool paymentMethod;
-  int total = 0, shippingFee;
+  int totalAmount = 0, shippingFee;
 
   static const String tableName = "customer_order";
 
@@ -27,6 +25,7 @@ class CustomerOrder {
     this.note,
     required this.shippingAddress,
     required this.status,
+    required this.totalAmount,
     this.acceptTime,
     this.deliveryTime,
     this.finishTime,
@@ -40,6 +39,7 @@ class CustomerOrder {
       customerId: json["customer_id"],
       managerId: json["manager_id"],
       shipperId: json["shipper_id"],
+      totalAmount: (json["total_amount"] as num).toInt() ?? 0,
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -58,7 +58,7 @@ class CustomerOrder {
               : null,
       status: OrderStatus.fromString(json["status"]),
       paymentMethod: json["payment_method"],
-      shippingFee: json["shipping_fee"],
+      shippingFee: (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
     );
   }
@@ -74,6 +74,7 @@ class CustomerOrder {
       "delivery_time": deliveryTime,
       "finish_time": finishTime,
       "status": status.name,
+      "total_amount": totalAmount,
       "payment_method": paymentMethod,
       "shipping_fee": shippingFee,
       "shipping_address": shippingAddress,
@@ -141,6 +142,7 @@ class CustomerOrderSnapshot {
     required String customerId,
     required String address,
     required int shippingFee,
+    required int totalAmount,
   }) async {
     final orderId = await generateId(tableName: CustomerOrder.tableName);
     //final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
@@ -152,6 +154,7 @@ class CustomerOrderSnapshot {
       'payment_method': false,
       'shipping_fee': shippingFee,
       'shipping_address': address,
+      'total_amount': totalAmount,
     });
     return orderId;
   }
@@ -182,22 +185,23 @@ class CustomerOrderSnapshot {
 
   // Lấy thông tin sản phẩm trong giỏ hàng
   static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
-    final response = await supabase
-        .from('order_detail')
-        .select(
-          '*, item:item_id(item_id, item_name, item_image, price, description, category_id)',
-        )
-        .eq('order_id', orderId);
+    final items = await SupabaseSnapshot.getMapT<String, OrderDetail>(
+      table: OrderDetail.tableName,
+      fromJson: OrderDetail.fromJson,
+      selectString: "*, item(*)",
+      equalObject: {"order_id": orderId},
+      getId: (p0) => p0.itemId,
+    );
 
-    final Map<String, OrderDetail> items = {};
-    for (var item in response) {
-      try {
-        final orderDetail = OrderDetail.fromJson(item);
-        items[orderDetail.itemId] = orderDetail;
-      } catch (e) {
-        print('Lỗi chuyển item: $e');
-      }
-    }
+    // final Map<String, OrderDetail> items = {};
+    // for (var item in response) {
+    //   try {
+    //     final orderDetail = OrderDetail.fromJson(item);
+    //     items[orderDetail.itemId] = orderDetail;
+    //   } catch (e) {
+    //     print('Lỗi chuyển item: $e');
+    //   }
+    // }
     return items;
   }
 
@@ -228,19 +232,24 @@ class CustomerOrderSnapshot {
   //       .eq('order_id', orderId);
   // }
   //
-  // // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  // static Future<void> updateCartItemAmount(String orderId,
-  //     String itemId,
-  //     int newAmount,) async {
+  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
+  // static Future<void> updateCartItemAmount({required String orderId,
+  //   required String itemId,
+  //   required int newAmount,}) async {
   //   try {
-  //     await supabase
-  //         .from('order_detail')
-  //         .update({'amount': newAmount})
-  //         .eq('order_id', orderId)
-  //         .eq('item_id', itemId);
+  //     await SupabaseSnapshot.update(
+  //         table: OrderDetail.tableName,
+  //         updateObject: {
+  //           'total_amount': new
+  //         });
+  //     // await supabase
+  //     //     .from('order_detail')
+  //     //     .update({'amount': newAmount})
+  //     //     .eq('order_id', orderId)
+  //     //     .eq('item_id', itemId);
   //   } catch (e) {
   //     print('Lỗi cập nhật số lượng trong database: $e');
   //     rethrow;
   //   }
-  //}
+  // }
 }
