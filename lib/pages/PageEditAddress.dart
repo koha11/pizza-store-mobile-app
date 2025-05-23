@@ -1,44 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/helpers/supabase.helper.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/models/user_address.model.dart';
 
-class PageChangePassword extends StatelessWidget {
-  PageChangePassword({super.key});
-  TextEditingController txtCurrPw = TextEditingController();
-  TextEditingController txtNewPw = TextEditingController();
-  TextEditingController txtConfirmNewPw = TextEditingController();
+class PageEditAddress extends StatelessWidget {
+  PageEditAddress({super.key, required this.address});
+  TextEditingController txtNewAddress = TextEditingController();
+  TextEditingController txtNickNameAddress = TextEditingController();
+  TextEditingController txtCurrAddress = TextEditingController();
+  UserAddress address;
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
       init: UserController.get(),
-      id: "changePassword",
+      id: "editAddress",
       builder: (controller) {
-        final user = controller.appUser;
-        if (user == null) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    child: Text(
-                      "Bạn chưa đăng nhập, click để đăng nhập ${getCurrentUser()!.id}",
-                    ),
-                    onTap: () => Get.off(PageLogin()),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
+        txtNewAddress.text = address.address;
+        txtCurrAddress.text = address.address;
+        txtNickNameAddress.text = address.addressNickName ?? "";
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            title: Text("Thay mật khẩu"),
+            title: Text("Sửa địa chỉ"),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             leading: IconButton(
               onPressed: () => Get.back(),
@@ -52,33 +35,25 @@ class PageChangePassword extends StatelessWidget {
                 child: Column(
                   children: [
                     TextFormField(
-                      controller: txtCurrPw,
-                      decoration: InputDecoration(
-                        labelText: "Mật khẩu hiện tại",
-                      ),
+                      controller: txtNewAddress,
+                      decoration: InputDecoration(labelText: "Địa chỉ"),
                     ),
                     SizedBox(height: 20),
                     TextFormField(
-                      controller: txtNewPw,
-                      decoration: InputDecoration(labelText: "Mật khẩu mới"),
+                      controller: txtNickNameAddress,
+                      decoration: InputDecoration(labelText: "Nick name"),
                     ),
-                    SizedBox(height: 20),
-                    TextFormField(
-                      controller: txtConfirmNewPw,
-                      decoration: InputDecoration(
-                        labelText: "Xác nhận mật khẩu mới",
-                      ),
-                    ),
+
                     SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          await controller.changePassword(
+                          await controller.updateAddress(
                             context: context,
-                            txtCurrPw: txtCurrPw,
-                            txtNewPw: txtNewPw,
-                            txtConfirmNewPw: txtConfirmNewPw,
+                            txtCurrAddress: txtCurrAddress,
+                            txtNewAddress: txtNewAddress,
+                            txtNickName: txtNickNameAddress,
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -91,7 +66,7 @@ class PageChangePassword extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          "Tiếp theo",
+                          "Cập nhật",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,

@@ -7,7 +7,7 @@ class Variant {
   VariantType variantType;
   int priceChange;
 
-  static String tableName = "variant";
+  static const String tableName = "variant";
 
   Variant({
     required this.variantId,

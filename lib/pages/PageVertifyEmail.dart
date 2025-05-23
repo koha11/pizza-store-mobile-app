@@ -7,6 +7,9 @@ import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
+import '../controllers/controller_user.dart';
+import 'PageLogin.dart';
+
 class PageVerifyEmail extends StatelessWidget {
   final String email;
   const PageVerifyEmail({super.key, required this.email});
@@ -49,6 +52,8 @@ class PageVerifyEmail extends StatelessWidget {
                       AuthResponse res = await verify(otpCode, email);
 
                       if (res.user != null) {
+                        await UserController.get().fetchUser();
+                        HomePizzaStoreController.get().setCurrUser(res.user!);
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),
@@ -64,9 +69,11 @@ class PageVerifyEmail extends StatelessWidget {
                   ),
                   onEditingComplete: () async {
                     if (otpCode.length == 6) {
-                      AuthResponse res = await verify(otpCode, email!);
+                      AuthResponse res = await verify(otpCode, email);
 
                       if (res.user != null) {
+                        await UserController.get().fetchUser();
+                        HomePizzaStoreController.get().setCurrUser(res.user!);
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),

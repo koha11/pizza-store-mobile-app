@@ -10,11 +10,13 @@ class ItemDetailController extends GetxController {
 
   Map<String, Variant>? _variantMaps;
   Iterable<ItemVariant>? _itemVariants;
-
-  Map<String, Variant> _myVariants = {};
+  Map<String, List<Variant>>? _myVariants;
+  Map<String, String> _variantCheckList = {};
 
   static ItemDetailController get(String id) => Get.find(tag: id);
-  Iterable<Variant>? get variants => _variantMaps?.values;
+  // Iterable<Variant>? get variants => _variantMaps?.values;
+  Map<String, List<Variant>>? get variants => _myVariants;
+  Map<String, String> get variantCheckList => _variantCheckList;
 
   // get cart
 
@@ -24,18 +26,43 @@ class ItemDetailController extends GetxController {
     super.onInit();
 
     _itemVariants = await ItemVariantSnapshot.getItemVariants(
-      columnName: "category_id",
-      columnValue: categoryId,
+      equalObject: {"category_id": categoryId},
     );
+
+    List<String> variantIds =
+        _itemVariants == null
+            ? []
+            : _itemVariants!.map((e) => e.variantId).toList();
 
     _variantMaps = await VariantSnapshot.getMapVariants();
 
+    _myVariants = {};
+
     _variantMaps!.forEach((variantId, variant) {
-      if (_itemVariants == true) {
-        _myVariants.assign(variant.variantType.variantTypeName, variant);
+      if (variantIds.contains(variantId)) {
+        if (_myVariants!.containsKey(variant.variantType.variantTypeName)) {
+          _myVariants!.update(variant.variantType.variantTypeName, (
+            variantList,
+          ) {
+            variantList.add(variant);
+            return variantList;
+          });
+        } else {
+          _myVariants!.assign(variant.variantType.variantTypeName, [variant]);
+
+          _variantCheckList.assign(variant.variantType.variantTypeName, "");
+        }
       }
     });
 
+    update([tag]);
+  }
+
+  void checkVariant({
+    required String variantTypeName,
+    required String variantId,
+  }) {
+    variantCheckList[variantTypeName] = variantId;
     update([tag]);
   }
 }

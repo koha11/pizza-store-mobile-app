@@ -36,10 +36,10 @@ Future<String> uploadImage({
   await supabase.storage
       .from(bucket)
       .upload(
-    path,
-    image,
-    fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-  );
+        path,
+        image,
+        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+      );
 
   final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
 
@@ -58,74 +58,100 @@ Stream<List<T>> getDataStream<T>({
   var stream = supabase.from(table).stream(primaryKey: ids);
 
   return stream.map(
-        (mapList) => mapList.map((mapObj) => fromJson(mapObj)).toList(),
+    (mapList) => mapList.map((mapObj) => fromJson(mapObj)).toList(),
   );
 }
 
 listenDataChange<T>(
-    Map<int, T> maps, {
-      required String channel,
-      required String schema,
-      required String table,
-      required T Function(Map<String, dynamic> json) fromJson,
-      required int Function(T) getId,
-      Function()? updateUI,
-    }) async {
+  Map<int, T> maps, {
+  required String channel,
+  required String schema,
+  required String table,
+  required T Function(Map<String, dynamic> json) fromJson,
+  required int Function(T) getId,
+  Function()? updateUI,
+}) async {
   final supabase = Supabase.instance.client;
 
   supabase
       .channel(channel)
       .onPostgresChanges(
-    event: PostgresChangeEvent.all,
-    schema: schema,
-    table: table,
-    callback: (payload) {
-      switch (payload.eventType) {
-      // case "INSERT" "UPDATE":
-        case PostgresChangeEvent.insert:
-        case PostgresChangeEvent.update:
-          {
-            T t = fromJson(payload.newRecord);
-            maps[getId(t)] = t;
-            updateUI?.call();
-            break;
-          }
+        event: PostgresChangeEvent.all,
+        schema: schema,
+        table: table,
+        callback: (payload) {
+          switch (payload.eventType) {
+            // case "INSERT" "UPDATE":
+            case PostgresChangeEvent.insert:
+            case PostgresChangeEvent.update:
+              {
+                T t = fromJson(payload.newRecord);
+                maps[getId(t)] = t;
+                updateUI?.call();
+                break;
+              }
 
-        case PostgresChangeEvent.delete:
-          {
-            maps.remove(payload.oldRecord["id"]);
-            updateUI?.call();
-            break;
-          }
+            case PostgresChangeEvent.delete:
+              {
+                maps.remove(payload.oldRecord["id"]);
+                updateUI?.call();
+                break;
+              }
 
-        default:
-          {}
-      }
-    },
-  )
+            default:
+              {}
+          }
+        },
+      )
       .subscribe();
 }
 
 class SupabaseSnapshot {
+  static Future<int> getLengthOfTable<T>({
+    required String table,
+    String selectString = "",
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
+  }) async {
+    var query = supabase.from(table).select(selectString);
+
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    if (ltObject != null) {
+      for (var entry in ltObject.entries) {
+        query = query.lt(entry.key, entry.value);
+      }
+    }
+
+    var data = await query;
+
+    return data.length;
+  }
+
   static Future<List<T>> getList<T>({
     required String table,
     required T Function(Map<String, dynamic> json) fromJson,
     String selectString = "",
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     List<T> ts = [];
 
-    PostgrestList data;
+    var query = supabase.from(table).select(selectString);
 
-    if (columnName == "") {
-      data = await supabase.from(table).select(selectString);
-    } else {
-      data = await supabase
-          .from(table)
-          .select(selectString)
-          .eq(columnName, columnValue);
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
     }
+
+    var data = await query;
 
     ts = data.map(fromJson).toList();
 
@@ -137,15 +163,15 @@ class SupabaseSnapshot {
     required T2 Function(Map<String, dynamic> json) fromJson,
     required T1 Function(T2) getId,
     String selectString = "",
-    String columnName = "",
-    String columnValue = "",
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
   }) async {
     var data = await getList(
       table: table,
       fromJson: fromJson,
       selectString: selectString,
-      columnName: columnName,
-      columnValue: columnValue,
+      equalObject: equalObject,
     );
 
     Map<T1, T2> _maps = Map.fromIterable(
@@ -155,5 +181,114 @@ class SupabaseSnapshot {
     );
 
     return _maps;
+  }
+
+  static Future<T> insert<T>({
+    required String table,
+    required Map<String, dynamic> insertObject,
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
+  }) async {
+    var data = await supabase.from(table).insert(insertObject);
+
+    return data;
+  }
+
+  static Future<void> update<T1, T2>({
+    required String table,
+    required Map<String, dynamic> updateObject,
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
+  }) async {
+    var query = supabase.from(table).update(updateObject);
+
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    await query;
+  }
+
+  static Future<void> delete<T1, T2>({
+    required String table,
+    Map<String, dynamic>? equalObject,
+    Map<String, dynamic>? ltObject,
+    Map<String, dynamic>? gtObject,
+  }) async {
+    var query = supabase.from(table).delete();
+
+    if (equalObject != null) {
+      for (var entry in equalObject.entries) {
+        query = query.eq(entry.key, entry.value);
+      }
+    }
+
+    await query;
+  }
+
+  Stream<List<T>> getDataStream<T>({
+    required String table,
+    required List<String> ids,
+    required T Function(Map<String, dynamic> json) fromJson,
+  }) {
+    var stream = supabase.from(table).stream(primaryKey: ids);
+    return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
+  }
+}
+
+// dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
+class HelperCart {
+  static Future<String?> getPendingCustomerOrder(String customerId) async {
+    final response =
+    await supabase
+        .from('customer_order')
+        .select('order_id')
+        .eq('customer_id', customerId)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+    return response?['order_id'] as String?;
+  }
+
+  // tính tiền
+  static Future<void> updateOrderTotal(String orderId, int total) async {
+    await supabase
+        .from('customer_order')
+        .update({'total_amount': total})
+        .eq('order_id', orderId);
+  }
+
+  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
+  static Future<void> updateCartItemAmount(String orderId,
+      String itemId,
+      int newAmount,) async {
+    try {
+      await supabase
+          .from('order_detail')
+          .update({'amount': newAmount})
+          .eq('order_id', orderId)
+          .eq('item_id', itemId);
+    } catch (e) {
+      print('Lỗi cập nhật số lượng trong database: $e');
+      rethrow;
+    }
+  }
+
+  // Phương thức xóa sản phẩm khỏi giỏ hàng
+  static Future<void> removeCartItem(String orderId, String itemId) async {
+    try {
+      await supabase
+          .from('order_detail')
+          .delete()
+          .eq('order_id', orderId)
+          .eq('item_id', itemId);
+    } catch (e) {
+      print('Lỗi xóa sản phẩm khỏi giỏ hàng: $e');
+      rethrow;
+    }
   }
 }

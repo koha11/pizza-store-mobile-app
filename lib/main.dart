@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/admin/item_admin/PageAddItem.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/PageItem.dart';
 import 'package:pizza_store_app/pages/PageOrderDetails.dart';
+import 'package:pizza_store_app/pages/PageOrdersList.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;
 
@@ -33,6 +35,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
+      getPages: [
+        GetPage(
+          name: "/orders",
+          binding: BindingsOrderManagerController(),
+          page: () => PageOrdersList(),
+        ),
+      ],
       initialBinding: BindingsBuilder(() {
         BindingsHomePizzaStore().dependencies();
         LocationBinding().dependencies();

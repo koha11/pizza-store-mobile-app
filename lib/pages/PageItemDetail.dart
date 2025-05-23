@@ -4,6 +4,7 @@ import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 
 import '../controllers/controller_ShoppingCart.dart';
+import '../helpers/other.helper.dart';
 import '../models/Item.model.dart';
 
 class PageItemDetail extends StatelessWidget {
@@ -42,7 +43,7 @@ class PageItemDetail extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "${item.price}",
+                        "${formatMoney(money: item.price)}",
                         style: TextStyle(
                           fontSize: 24,
                           color: Theme.of(context).colorScheme.inversePrimary,
@@ -64,13 +65,53 @@ class PageItemDetail extends StatelessWidget {
                       ListView(
                         shrinkWrap: true,
                         children:
-                            controller.variants!
+                            controller.variants!.keys
                                 .map(
-                                  (e) => RadioListTile(
-                                    value: e.variantId,
-                                    groupValue: "test",
-                                    onChanged: (value) {},
-                                    title: Text(e.variantName),
+                                  (variantTypeName) => ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(
+                                      variantTypeName,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      children:
+                                          controller.variants![variantTypeName]!.map((
+                                            variant,
+                                          ) {
+                                            return RadioListTile(
+                                              value: variant.variantId,
+                                              title: Row(
+                                                children: [
+                                                  Text(variant.variantName),
+                                                  SizedBox(width: 10),
+                                                  variant.priceChange != 0
+                                                      ? Text(
+                                                        "+ ${variant.priceChange}",
+                                                        style: TextStyle(
+                                                          backgroundColor:
+                                                              Colors.grey,
+                                                          fontSize: 20,
+                                                        ),
+                                                      )
+                                                      : Text(""),
+                                                ],
+                                              ),
+                                              groupValue:
+                                                  controller
+                                                      .variantCheckList[variantTypeName],
+                                              onChanged: (value) {
+                                                controller.checkVariant(
+                                                  variantTypeName:
+                                                      variantTypeName,
+                                                  variantId: value!,
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
+                                    ),
                                   ),
                                 )
                                 .toList(),
@@ -170,7 +211,6 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(40),
-
                 ),
               ),
             ),

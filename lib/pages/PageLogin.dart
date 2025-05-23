@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/PageRegister.dart';
+import 'package:pizza_store_app/pages/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
@@ -81,21 +84,35 @@ class PageLogin extends StatelessWidget {
                     ),
                     onPressed: () async {
                       final supabase = Supabase.instance.client;
-                      final AuthResponse res = await supabase.auth
-                          .signInWithPassword(
-                            email: emailTxt.text,
-                            password: pwdTxt.text,
-                          );
+                      try {
+                        final AuthResponse res = await supabase.auth
+                            .signInWithPassword(
+                              email: emailTxt.text,
+                              password: pwdTxt.text,
+                            );
 
-                      final User? user = res.user;
+                        final User user = res.user!;
 
-                      if (user != null) {
                         await UserController.get().fetchUser();
                         HomePizzaStoreController.get().setCurrUser(user);
+                        await SupabaseSnapshot.update(
+                          table: AppUser.tableName,
+                          updateObject: {"is_active": true},
+                          equalObject: {"user_id": user.id},
+                        );
                         Get.off(
                           MainLayout(),
                           binding: BindingsHomePizzaStore(),
                         );
+                      } on AuthException catch (e) {
+                        if (e.message == "Email not confirmed") {
+                          final supabase = Supabase.instance.client;
+                          await supabase.auth.signInWithOtp(
+                            email: emailTxt.text,
+                          );
+
+                          Get.to(PageVerifyEmail(email: emailTxt.text));
+                        }
                       }
                     },
                     child: SizedBox(
