@@ -3,7 +3,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
+import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 

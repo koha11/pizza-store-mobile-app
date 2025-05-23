@@ -5,7 +5,7 @@ import 'package:pizza_store_app/admin/admin_dialogs/admin_dialogs.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
+import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 
 class PageShoppingCart extends StatefulWidget {

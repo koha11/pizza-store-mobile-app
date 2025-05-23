@@ -6,7 +6,7 @@ import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../controllers/controller_home.dart';
-import '../PageHome.dart';
+import '../home/PageHome.dart';
 
 class PageRegister extends StatelessWidget {
   PageRegister({super.key});
