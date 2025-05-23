@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
-import 'package:pizza_store_app/pages/PageVertifyEmail.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
+import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../controllers/controller_home.dart';
-import 'PageHome.dart';
+import '../../controllers/controller_home.dart';
+import '../PageHome.dart';
 
 class PageRegister extends StatelessWidget {
   PageRegister({super.key});

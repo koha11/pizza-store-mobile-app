@@ -107,10 +107,13 @@ class CustomerOrderSnapshot {
     );
   }
 
-  static Future<List<CustomerOrder>> getOrders() async {
+  static Future<List<CustomerOrder>> getOrders({
+    Map<String, String>? equalObject,
+  }) async {
     return SupabaseSnapshot.getList(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
+      equalObject: equalObject,
       selectString:
           "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail (*)",
     );

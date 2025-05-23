@@ -3,6 +3,7 @@ import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShoppingCartPending extends GetxController {
   List<CustomerOrder> pendingOrders =
@@ -27,7 +28,9 @@ class ShoppingCartPending extends GetxController {
 
   Future<void> fetchPendingOrders() async {
     // Lấy danh sách đơn hàng có status = 'pending'
-    final pendingOrders = await CustomerOrderSnapshot.getOrders();
+    final pendingOrders = await CustomerOrderSnapshot.getOrders(
+      equalObject: {"customer_id": UserController.get().appUser!.userId},
+    );
 
     //chuyển đổi mỗi phần tử JSON thành một đối tượng CustomerOrder thông qua hàm fromJson
     // pendingOrders = data == null ? [] : data.map((e) => CustomerOrder.fromJson(e)).toList();

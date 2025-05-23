@@ -7,7 +7,7 @@ import 'package:pizza_store_app/pages/PageHome.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
-import '../controllers/controller_user.dart';
+import '../../controllers/controller_user.dart';
 import 'PageLogin.dart';
 
 class PageVerifyEmail extends StatelessWidget {
