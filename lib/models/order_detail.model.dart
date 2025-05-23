@@ -94,7 +94,7 @@ class OrderDetailSnapshot {
     );
   }
 
-  static Future<void> wdeleteOrderDetail({
+  static Future<void> deleteOrderDetail({
     required String orderId,
     required String itemId,
   }) async {
