@@ -6,7 +6,7 @@ import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
 import 'package:pizza_store_app/pages/PageHome.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 
 class PageShoppingCart extends StatefulWidget {
   const PageShoppingCart({super.key});

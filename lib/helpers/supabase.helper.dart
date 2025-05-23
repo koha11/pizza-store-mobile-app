@@ -71,8 +71,6 @@ listenDataChange<T>(
   required int Function(T) getId,
   Function()? updateUI,
 }) async {
-  final supabase = Supabase.instance.client;
-
   supabase
       .channel(channel)
       .onPostgresChanges(

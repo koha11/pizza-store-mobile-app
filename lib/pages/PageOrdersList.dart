@@ -175,7 +175,7 @@ class PageOrdersList extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           Text(
-                                            order.paymentMethod
+                                            order.paymentMethod!
                                                 ? 'Đã thanh toán'
                                                 : 'Chưa thanh toán',
                                             style: TextStyle(fontSize: 16),

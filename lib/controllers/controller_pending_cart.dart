@@ -27,14 +27,10 @@ class ShoppingCartPending extends GetxController {
 
   Future<void> fetchPendingOrders() async {
     // Lấy danh sách đơn hàng có status = 'pending'
-    final data = await supabase
-        .from('customer_order')
-        .select()
-        .eq('customer_id', UserController.get().appUser!.userId)
-        .eq('status', 'pending');
+    final pendingOrders = await CustomerOrderSnapshot.getOrders();
 
     //chuyển đổi mỗi phần tử JSON thành một đối tượng CustomerOrder thông qua hàm fromJson
-    pendingOrders = data.map((e) => CustomerOrder.fromJson(e)).toList();
+    // pendingOrders = data == null ? [] : data.map((e) => CustomerOrder.fromJson(e)).toList();
 
     for (var order in pendingOrders) {
       var myOrderDetail = await OrderDetailSnapshot.getOrderDetailsByOrderId(
