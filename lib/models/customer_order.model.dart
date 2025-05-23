@@ -12,7 +12,7 @@ class CustomerOrder {
   DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
   bool paymentMethod;
-  int total = 0, shippingFee;
+  int totalAmount = 0, shippingFee;
 
   static const String tableName = "customer_order";
 
@@ -139,6 +139,7 @@ class CustomerOrderSnapshot {
     required String customerId,
     required String address,
     required int shippingFee,
+    required int totalAmount,
   }) async {
     final orderId = await generateId(tableName: CustomerOrder.tableName);
     //final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
@@ -150,6 +151,7 @@ class CustomerOrderSnapshot {
       'payment_method': false,
       'shipping_fee': shippingFee,
       'shipping_address': address,
+      'total_amount': totalAmount,
     });
     return orderId;
   }
@@ -226,19 +228,24 @@ class CustomerOrderSnapshot {
   //       .eq('order_id', orderId);
   // }
   //
-  // // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  // static Future<void> updateCartItemAmount(String orderId,
-  //     String itemId,
-  //     int newAmount,) async {
+  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
+  // static Future<void> updateCartItemAmount({required String orderId,
+  //   required String itemId,
+  //   required int newAmount,}) async {
   //   try {
-  //     await supabase
-  //         .from('order_detail')
-  //         .update({'amount': newAmount})
-  //         .eq('order_id', orderId)
-  //         .eq('item_id', itemId);
+  //     await SupabaseSnapshot.update(
+  //         table: OrderDetail.tableName,
+  //         updateObject: {
+  //           'total_amount': new
+  //         });
+  //     // await supabase
+  //     //     .from('order_detail')
+  //     //     .update({'amount': newAmount})
+  //     //     .eq('order_id', orderId)
+  //     //     .eq('item_id', itemId);
   //   } catch (e) {
   //     print('Lỗi cập nhật số lượng trong database: $e');
   //     rethrow;
   //   }
-  //}
+  // }
 }
