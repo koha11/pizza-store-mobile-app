@@ -128,6 +128,12 @@ class SupabaseSnapshot {
       }
     }
 
+    if (gtObject != null) {
+      for (var entry in gtObject.entries) {
+        query = query.gt(entry.key, entry.value);
+      }
+    }
+
     var data = await query;
 
     return data.length;
