@@ -58,7 +58,7 @@ class ItemSnapshot {
     return SupabaseSnapshot.getList(
       table: Item.tableName,
       fromJson: Item.fromJson,
-      selectString: "*, category(category_id, category_name, category_image)",
+      selectString: "*, category(*)",
     );
   }
 
@@ -67,7 +67,7 @@ class ItemSnapshot {
       table: Item.tableName,
       fromJson: Item.fromJson,
       getId: (p0) => p0.itemId,
-      selectString: "*, category(category_id, category_name, category_image)",
+      selectString: "*, category(*)",
     );
   }
 }

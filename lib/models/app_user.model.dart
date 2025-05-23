@@ -26,9 +26,9 @@ class AppUser {
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
-    List<dynamic> userAddressesJson = json["user_address"];
+    List<dynamic>? userAddressesJson = json["user_address"];
 
-    List<UserAddress> userAddresses =
+    List<UserAddress> userAddresses = userAddressesJson == null ? [] :
         userAddressesJson
             .map((address) => UserAddress.fromJson(address))
             .toList();

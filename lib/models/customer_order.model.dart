@@ -38,7 +38,7 @@ class CustomerOrder {
   });
 
   factory CustomerOrder.fromJson(Map<String, dynamic> json) {
-    List<dynamic> orderDetailsJson = json["order_detail"];
+    List<dynamic> orderDetailsJson = json["order_detail"] ?? [];
 
     List<OrderDetail> orderDetails =
         orderDetailsJson.map((od) => OrderDetail.fromJson(od)).toList();
