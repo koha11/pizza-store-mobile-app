@@ -19,9 +19,8 @@ class PageOrdersList extends StatelessWidget {
       id: "orders",
       init: OrdersManagerController.get(),
       builder: (controller) {
-        final selectStatus = OrderStatus.fromDisplayTextToName(
-          controller.orderStatus,
-        );
+        final selectStatus = controller.orderStatus;
+        print(selectStatus);
         final orders = controller.orders;
         final filterOrders =
             selectStatus == null
@@ -30,9 +29,6 @@ class PageOrdersList extends StatelessWidget {
                     .where((element) => element.status == selectStatus)
                     .toList();
         print("${filterOrders.length}");
-        filterOrders.forEach(
-          (element) => print("${element.status} - ${element.orderId}"),
-        );
 
         return Scaffold(
           backgroundColor: Colors.grey[100],
@@ -74,7 +70,9 @@ class PageOrdersList extends StatelessWidget {
                                     fontSize: 15,
                                   ),
                                 ),
-                                child: Text(status),
+                                child: Text(
+                                  "${status == null ? "Tất cả" : status.displayText}",
+                                ),
                               );
                             }).toList(),
                         options: CarouselOptions(
