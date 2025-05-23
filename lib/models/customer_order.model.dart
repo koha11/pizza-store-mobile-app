@@ -7,7 +7,7 @@ import 'order_detail.model.dart';
 
 class CustomerOrder {
   String orderId, customerId;
-  String? managerId, shipperId, voucherId, note, shippingAddress;
+  String? managerId, shipperId, note, shippingAddress;
   OrderStatus status;
   DateTime? orderTime;
   DateTime? acceptTime, deliveryTime, finishTime;
@@ -25,6 +25,7 @@ class CustomerOrder {
     this.note,
     required this.shippingAddress,
     required this.status,
+    required this.totalAmount,
     this.acceptTime,
     this.deliveryTime,
     this.finishTime,
@@ -38,6 +39,7 @@ class CustomerOrder {
       customerId: json["customer_id"],
       managerId: json["manager_id"],
       shipperId: json["shipper_id"],
+      totalAmount: (json["total_amount"] as num).toInt() ?? 0,
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -72,6 +74,7 @@ class CustomerOrder {
       "delivery_time": deliveryTime,
       "finish_time": finishTime,
       "status": status.name,
+      "total_amount": totalAmount,
       "payment_method": paymentMethod,
       "shipping_fee": shippingFee,
       "shipping_address": shippingAddress,
@@ -182,22 +185,23 @@ class CustomerOrderSnapshot {
 
   // Lấy thông tin sản phẩm trong giỏ hàng
   static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
-    final response = await supabase
-        .from('order_detail')
-        .select(
-          '*, item:item_id(item_id, item_name, item_image, price, description, category_id)',
-        )
-        .eq('order_id', orderId);
+    final items = await SupabaseSnapshot.getMapT<String, OrderDetail>(
+      table: OrderDetail.tableName,
+      fromJson: OrderDetail.fromJson,
+      selectString: "*, item(*)",
+      equalObject: {"order_id": orderId},
+      getId: (p0) => p0.itemId,
+    );
 
-    final Map<String, OrderDetail> items = {};
-    for (var item in response) {
-      try {
-        final orderDetail = OrderDetail.fromJson(item);
-        items[orderDetail.itemId] = orderDetail;
-      } catch (e) {
-        print('Lỗi chuyển item: $e');
-      }
-    }
+    // final Map<String, OrderDetail> items = {};
+    // for (var item in response) {
+    //   try {
+    //     final orderDetail = OrderDetail.fromJson(item);
+    //     items[orderDetail.itemId] = orderDetail;
+    //   } catch (e) {
+    //     print('Lỗi chuyển item: $e');
+    //   }
+    // }
     return items;
   }
 
