@@ -218,7 +218,7 @@ class PageOrdersList extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           Text(
-                                            "${order.total}",
+                                            "${order.totalAmount}",
                                             style: TextStyle(fontSize: 16),
                                           ),
                                         ],

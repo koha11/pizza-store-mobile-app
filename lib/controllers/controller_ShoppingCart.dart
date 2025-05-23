@@ -268,6 +268,7 @@ class ShoppingCartController extends GetxController {
   Future<void> placeOrder({
     required int shippingFee,
     required String address,
+    required int totalAmount,
   }) async {
     if (_customerId == null) return;
 
@@ -279,6 +280,7 @@ class ShoppingCartController extends GetxController {
       customerId: _customerId!,
       address: address,
       shippingFee: shippingFee,
+      totalAmount: totalAmount,
     );
     // Chuyen nhung order detail dang co trang thai checked -> order moi (doi id cua nhung order detail do thanh order id moi)
     for (var item in _checkedItems.entries) {
