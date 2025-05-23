@@ -21,7 +21,7 @@ class OrdersManagerController extends GetxController {
     listenToGetOrders();
   }
 
-  void setStatus(OrderStatus status) {
+  void setStatus(OrderStatus? status) {
     orderStatus = status;
     print("Status: ${orderStatus}");
     update(["orders"]);

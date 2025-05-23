@@ -39,8 +39,11 @@ class PagePendingCart extends StatelessWidget {
 
     return Scaffold(
       body: GetBuilder<ShoppingCartPending>(
-        init: ShoppingCartPending()..fetchPendingOrders(userId),
+        init: ShoppingCartPending(),
         builder: (controller) {
+          if (controller.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
           if (controller.pendingOrders.isEmpty) {
             return Center(child: Text("Không có đơn hàng nào!"));
           }
