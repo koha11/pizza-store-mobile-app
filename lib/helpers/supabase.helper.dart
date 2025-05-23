@@ -71,8 +71,6 @@ listenDataChange<T>(
   required int Function(T) getId,
   Function()? updateUI,
 }) async {
-  final supabase = Supabase.instance.client;
-
   supabase
       .channel(channel)
       .onPostgresChanges(
@@ -128,6 +126,12 @@ class SupabaseSnapshot {
       }
     }
 
+    if (gtObject != null) {
+      for (var entry in gtObject.entries) {
+        query = query.gt(entry.key, entry.value);
+      }
+    }
+
     var data = await query;
 
     return data.length;
@@ -151,11 +155,44 @@ class SupabaseSnapshot {
       }
     }
 
+    if (ltObject != null) {
+      for (var entry in ltObject.entries) {
+        query = query.lt(entry.key, entry.value);
+      }
+    }
+
+    if (gtObject != null) {
+      for (var entry in gtObject.entries) {
+        query = query.gt(entry.key, entry.value);
+      }
+    }
+
     var data = await query;
 
     ts = data.map(fromJson).toList();
 
     return ts;
+  }
+
+  static Future<T?> getById<T>({
+    required String table,
+    required T Function(Map<String, dynamic> json) fromJson,
+    String selectString = "",
+    required String idKey,
+    required String idValue,
+  }) async {
+    var data =
+        await supabase
+            .from(table)
+            .select(selectString)
+            .eq(idKey, idValue)
+            .maybeSingle();
+
+    if (data == null) {
+      return null;
+    }
+
+    return fromJson(data);
   }
 
   static Future<Map<T1, T2>> getMapT<T1, T2>({

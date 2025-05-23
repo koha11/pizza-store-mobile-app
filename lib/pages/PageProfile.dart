@@ -10,7 +10,7 @@ import 'package:pizza_store_app/pages/PageAddress.dart';
 import 'package:pizza_store_app/pages/PageChangeEmail.dart';
 import 'package:pizza_store_app/pages/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/PageChangePassword.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/PageOrderDetailManager.dart';
 import 'package:pizza_store_app/pages/PageOrdersList.dart';
 

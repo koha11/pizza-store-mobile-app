@@ -5,7 +5,7 @@ class OrderDetail {
   String orderId, itemId;
   int amount, actualPrice;
   String? note;
-  Item? item;
+  Item item;
 
   static String tableName = "order_detail";
 
@@ -15,7 +15,7 @@ class OrderDetail {
     required this.amount,
     this.note,
     required this.actualPrice,
-    this.item,
+    required this.item,
   });
 
   // factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -31,18 +31,18 @@ class OrderDetail {
   //   );
   // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
-    Item? itemParsed;
-    try {
-      if (json["item"] != null && json["item"] is Map<String, dynamic>) {
-        final itemData = Map<String, dynamic>.from(json["item"]);
-        itemParsed = Item.fromJson(itemData);
-      } else {
-        itemParsed = null;
-      }
-    } catch (e) {
-      print("Lỗi parse item: $e");
-      itemParsed = null;
-    }
+    // Item? itemParsed;
+    // try {
+    //   if (json["item"] != null && json["item"] is Map<String, dynamic>) {
+    //     final itemData = Map<String, dynamic>.from(json["item"]);
+    //     itemParsed = Item.fromJson(itemData);
+    //   } else {
+    //     itemParsed = null;
+    //   }
+    // } catch (e) {
+    //   print("Lỗi parse item: $e");
+    //   itemParsed = null;
+    // }
 
     return OrderDetail(
       orderId: json["order_id"],
@@ -50,7 +50,7 @@ class OrderDetail {
       amount: json["amount"],
       actualPrice: json["actual_price"],
       note: json["note"],
-      item: itemParsed,
+      item: Item.fromJson(json["item"]),
     );
   }
 
@@ -74,6 +74,7 @@ class OrderDetailSnapshot {
     return SupabaseSnapshot.getList(
       table: OrderDetail.tableName,
       fromJson: OrderDetail.fromJson,
+      selectString: "*, item(*)",
     );
   }
 
@@ -82,6 +83,7 @@ class OrderDetailSnapshot {
       table: OrderDetail.tableName,
       fromJson: OrderDetail.fromJson,
       getId: (p0) => p0.orderId,
+      selectString: "*, item(*)",
     );
   }
 

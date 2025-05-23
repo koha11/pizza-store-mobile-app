@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 
-import '../controllers/controller_ShoppingCart.dart';
-import '../helpers/other.helper.dart';
-import '../models/Item.model.dart';
+import '../../controllers/controller_ShoppingCart.dart';
+import '../../helpers/other.helper.dart';
+import '../../models/Item.model.dart';
 
 class PageItemDetail extends StatelessWidget {
   Item item;

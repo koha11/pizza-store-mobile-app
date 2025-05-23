@@ -24,7 +24,7 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
       0,
       (sum, item) => sum + (item.actualPrice * item.amount),
     );
-    int total = subTotal + widget.order.shippingFee;
+    int total = subTotal + (widget.order.shippingFee ?? 0);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chi tiết đơn hàng"),

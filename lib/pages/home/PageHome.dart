@@ -2,11 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
-import 'package:pizza_store_app/pages/PageItemDetail.dart';
+import 'package:pizza_store_app/pages/home/PageItemDetail.dart';
 
-import '../controllers/controller_home.dart';
-import '../controllers/controller_item_detail.dart';
-import '../models/Item.model.dart';
+import '../../controllers/controller_home.dart';
+import '../../controllers/controller_item_detail.dart';
+import '../../models/Item.model.dart';
 import 'PageItem.dart';
 
 class PageHome extends StatelessWidget {

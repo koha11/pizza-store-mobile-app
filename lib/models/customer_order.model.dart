@@ -1,45 +1,62 @@
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';
 import 'order_detail.model.dart';
 
 class CustomerOrder {
-  String orderId, customerId;
-  String? managerId, shipperId, note, shippingAddress;
+  String orderId;
+  AppUser customer;
+  AppUser? manager, shipper;
+  String? note = "", shippingAddress = "";
   OrderStatus status;
-  DateTime? orderTime;
-  DateTime? acceptTime, deliveryTime, finishTime;
-  bool paymentMethod;
-  int totalAmount = 0, shippingFee;
+  DateTime? orderTime, acceptTime, deliveryTime, finishTime;
+  bool? paymentMethod = false;
+  int? shippingFee, totalAmount = 0;
+  List<OrderDetail>? orderDetails = [];
 
   static const String tableName = "customer_order";
+  static const String selectAllStr =
+      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*))";
 
   CustomerOrder({
     required this.orderId,
-    required this.customerId,
-    required this.orderTime,
-    this.managerId,
-    this.shipperId,
-    this.note,
-    required this.shippingAddress,
+    required this.customer,
     required this.status,
-    required this.totalAmount,
+    this.orderTime,
+    this.manager,
+    this.shipper,
+    this.note,
+    this.shippingAddress,
+    this.totalAmount,
     this.acceptTime,
     this.deliveryTime,
     this.finishTime,
-    required this.paymentMethod,
-    required this.shippingFee,
+    this.paymentMethod,
+    this.shippingFee,
+    this.orderDetails,
   });
 
   factory CustomerOrder.fromJson(Map<String, dynamic> json) {
+    List<dynamic> orderDetailsJson = json["order_detail"] ?? [];
+
+    List<OrderDetail> orderDetails =
+        orderDetailsJson.isEmpty
+            ? []
+            : orderDetailsJson
+                .map((odJson) => OrderDetail.fromJson(odJson))
+                .toList();
+
     return CustomerOrder(
       orderId: json["order_id"],
-      customerId: json["customer_id"],
-      managerId: json["manager_id"],
-      shipperId: json["shipper_id"],
-      totalAmount: (json["total_amount"] as num).toInt() ?? 0,
+      customer: AppUser.fromJson(json["customer"]),
+      manager:
+          json["manager"] == null ? null : AppUser.fromJson(json["manager"]),
+      shipper:
+          json["shipper"] == null ? null : AppUser.fromJson(json["shipper"]),
+      totalAmount: (json["total_amount"] as num).toInt(),
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -60,15 +77,16 @@ class CustomerOrder {
       paymentMethod: json["payment_method"],
       shippingFee: (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
+      orderDetails: orderDetails,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       "order_id": orderId,
-      "customer_id": customerId,
-      "manager_id": managerId,
-      "shipper_id": shipperId,
+      "customer": customer.toJson(),
+      "manager": manager?.toJson(),
+      "shipper": shipper?.toJson(),
       "order_time": orderTime,
       "accept_time": acceptTime,
       "delivery_time": deliveryTime,
@@ -95,11 +113,17 @@ class CustomerOrderSnapshot {
     );
   }
 
-  static Future<List<CustomerOrder>> getOrders() async {
-    return SupabaseSnapshot.getList(
+  static Future<List<CustomerOrder>> getOrders({
+    Map<String, String>? equalObject,
+  }) async {
+    List<CustomerOrder> orders = await SupabaseSnapshot.getList<CustomerOrder>(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
+      equalObject: equalObject,
+      selectString: CustomerOrder.selectAllStr,
     );
+
+    return orders;
   }
 
   static Future<Map<String, CustomerOrder>> getMapOrders() {
@@ -107,6 +131,7 @@ class CustomerOrderSnapshot {
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       getId: (p0) => p0.orderId,
+      selectString: CustomerOrder.selectAllStr,
     );
   }
 
@@ -115,6 +140,7 @@ class CustomerOrderSnapshot {
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       equalObject: {"customer_id": customerId, "status": OrderStatus.cart.name},
+      selectString: CustomerOrder.selectAllStr,
     );
 
     return cart.isEmpty ? null : cart.first.orderId;
@@ -171,14 +197,14 @@ class CustomerOrderSnapshot {
     String orderId,
     OrderStatus status,
     int totalAmount,
-    int Shipfree,
+    int shippingFee,
   ) async {
     await supabase
         .from('customer_order')
         .update({
           'status': status,
           'total_amount': totalAmount,
-          'shipping_fee': Shipfree,
+          'shipping_fee': shippingFee,
         })
         .eq('order_id', orderId);
   }
