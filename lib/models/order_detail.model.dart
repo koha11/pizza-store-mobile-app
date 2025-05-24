@@ -33,19 +33,6 @@ class OrderDetail {
   //   );
   // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
-    // Item? itemParsed;
-    // try {
-    //   if (json["item"] != null && json["item"] is Map<String, dynamic>) {
-    //     final itemData = Map<String, dynamic>.from(json["item"]);
-    //     itemParsed = Item.fromJson(itemData);
-    //   } else {
-    //     itemParsed = null;
-    //   }
-    // } catch (e) {
-    //   print("Lỗi parse item: $e");
-    //   itemParsed = null;
-    // }
-
     return OrderDetail(
       orderId: json["order_id"],
       itemId: json["item_id"],

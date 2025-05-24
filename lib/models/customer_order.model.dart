@@ -185,29 +185,29 @@ class CustomerOrderSnapshot {
     return orderId;
   }
 
-  // cập nhật trạng thái
-  static Future<void> updateOrderStatus(String orderId, String status) async {
-    await supabase
-        .from('customer_order')
-        .update({'status': status})
-        .eq('order_id', orderId);
-  }
-
-  static Future<void> updateOrderStatusAndTotal(
-    String orderId,
-    OrderStatus status,
-    int totalAmount,
-    int shippingFee,
-  ) async {
-    await supabase
-        .from('customer_order')
-        .update({
-          'status': status,
-          'total_amount': totalAmount,
-          'shipping_fee': shippingFee,
-        })
-        .eq('order_id', orderId);
-  }
+  // // cập nhật trạng thái
+  // static Future<void> updateOrderStatus(String orderId, String status) async {
+  //   await supabase
+  //       .from('customer_order')
+  //       .update({'status': status})
+  //       .eq('order_id', orderId);
+  // }
+  //
+  // static Future<void> updateOrderStatusAndTotal(
+  //   String orderId,
+  //   OrderStatus status,
+  //   int totalAmount,
+  //   int shippingFee,
+  // ) async {
+  //   await supabase
+  //       .from('customer_order')
+  //       .update({
+  //         'status': status,
+  //         'total_amount': totalAmount,
+  //         'shipping_fee': shippingFee,
+  //       })
+  //       .eq('order_id', orderId);
+  // }
 
   // Lấy thông tin sản phẩm trong giỏ hàng
   static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
@@ -237,13 +237,16 @@ class CustomerOrderSnapshot {
     int amount,
   ) async {
     try {
-      await supabase.from('order_detail').insert({
-        'order_id': orderId,
-        'item_id': item.itemId,
-        'amount': amount,
-        'actual_price': item.price * amount,
-        'note': null,
-      });
+      await SupabaseSnapshot.insert(
+        table: OrderDetail.tableName,
+        insertObject: {
+          'order_id': orderId,
+          'item_id': item.itemId,
+          'amount': amount,
+          'actual_price': item.price * amount,
+          'note': null,
+        },
+      );
     } catch (e) {
       print('Lỗi thêm sản phẩm vào giỏ hàng: $e');
       rethrow;
