@@ -17,7 +17,7 @@ class HomePizzaStoreController extends GetxController {
   final List<Widget> _pages = [
     PageHome(),
     //./PagePendingOrder(),
-    PagePendingCart(),
+    PageHistoryOrderCart(),
     PageProfile(),
     PageItem(),
   ];

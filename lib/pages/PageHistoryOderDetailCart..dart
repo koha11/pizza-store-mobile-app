@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PagePendingDetailCart extends StatefulWidget {
   final List<OrderDetail> selectedItems;
@@ -204,11 +207,26 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    Get.snackbar(
-                      "Thành công",
-                      "Hủy đơn hàng!",
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
+                    try {
+                      await OrderDetailSnapshot.clearCart(
+                        orderId: widget.order.orderId,
+                      );
+                      // Cập nhật lại danh sách đơn hàng
+                      final controller = Get.find<HistoryCartController>();
+                      await controller.fetchPendingOrders();
+                      Get.back(); // Quay lại trang danh sách đơn hàng
+                      Get.snackbar(
+                        "Thành công",
+                        "Đã hủy đơn hàng!",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    } catch (e) {
+                      Get.snackbar(
+                        "Lỗi",
+                        "Không thể hủy đơn hàng: $e",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

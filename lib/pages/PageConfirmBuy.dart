@@ -243,7 +243,6 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       address: selectedAddressId!,
                       totalAmount: totalAmount,
                     );
-
                     Get.snackbar(
                       "Thành công",
                       "Đơn hàng đã được đặt!",
