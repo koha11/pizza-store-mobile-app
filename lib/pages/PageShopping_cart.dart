@@ -103,7 +103,9 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                 "Bạn có muốn xóa ${item.item?.itemName}?",
                               );
                               if (xacNhan == true) {
-                                await controller.removeFromCart(item.itemId);
+                                await controller.removeFromCart(
+                                  itemId: item.itemId,
+                                );
                                 showSnackBar(
                                   mycontext,
                                   message: "Đã xóa ${item.item?.itemName}",

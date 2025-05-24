@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
-import 'package:pizza_store_app/controllers/controller_pending_cart.dart';
+import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
@@ -10,8 +10,8 @@ import 'package:pizza_store_app/pages/PageHistoryOderDetailCart..dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class PagePendingCart extends StatelessWidget {
-  const PagePendingCart({super.key});
+class PageHistoryOrderCart extends StatelessWidget {
+  const PageHistoryOrderCart({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,8 @@ class PagePendingCart extends StatelessWidget {
     }
 
     return Scaffold(
-      body: GetBuilder<ShoppingCartPending>(
-        init: ShoppingCartPending(),
+      body: GetBuilder<HistoryCartController>(
+        init: HistoryCartController(),
         builder: (controller) {
           if (controller.isLoading) {
             return Center(child: CircularProgressIndicator());
@@ -51,12 +51,12 @@ class PagePendingCart extends StatelessWidget {
             itemCount: controller.pendingOrders.length,
             itemBuilder: (context, index) {
               final order = controller.pendingOrders[index];
-              final orderDetails =
-                  controller.orderDetailsMap[order.orderId] ?? [];
-              int total = orderDetails.fold(
+              final orderDetails = controller.orderDetailsMap[order.orderId] ?? [];
+              int subTotal = orderDetails.fold(
                 0,
                 (sum, item) => sum + (item.actualPrice * item.amount),
               );
+              int total = subTotal + (order.shippingFee ?? 0);
               return FutureBuilder<Map<String, OrderDetail>>(
                 future: CustomerOrderSnapshot.getCartItems(order.orderId),
                 builder: (context, snapshot) {
@@ -137,20 +137,66 @@ class PagePendingCart extends StatelessWidget {
 
                           SizedBox(height: 12),
 
-                          Text(
-                            "Tổng tiền: $total vnđ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.redAccent,
-                              fontSize: 14,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Tạm tính:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                "$subTotal vnđ",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "Phí ship: ${order.shippingFee} vnđ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
+                          SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Phí ship:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                "${order.shippingFee} vnđ",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Tổng cộng:",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                              Text(
+                                "$total vnđ",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ],
                           ),
 
                           SizedBox(height: 16),

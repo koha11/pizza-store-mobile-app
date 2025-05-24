@@ -1,3 +1,5 @@
+import 'package:pizza_store_app/models/customer_order.model.dart';
+
 import '../helpers/supabase.helper.dart';
 import 'Item.model.dart';
 
@@ -102,7 +104,7 @@ class OrderDetailSnapshot {
   }) async {
     await SupabaseSnapshot.delete(
       table: OrderDetail.tableName,
-      equalObject: {"order_id": orderId, "item_id": itemId},
+      equalObject: {'order_id': orderId, 'item_id': itemId},
     );
   }
 
@@ -123,31 +125,37 @@ class OrderDetailSnapshot {
     Item item,
     int amount,
   ) async {
-    // Lấy thông tin biến thể có sẵn cho sản phẩm
-    // final variants = await supabase
-    //     .from('item_variant')
-    //     .select('variant_id')
-    //     .eq('category_id', item..category.categoryId);
-
-    await supabase.from('order_detail').insert({
-      'order_id': orderId,
-      'item_id': item.itemId,
-      'amount': amount,
-      'actual_price': item.price,
-      'note': null,
-    });
+    try {
+      await SupabaseSnapshot.insert(
+        table: OrderDetail.tableName,
+        insertObject: {
+          'order_id': orderId,
+          'item_id': item.itemId,
+          'amount': amount,
+          'actual_price': item.price,
+          'note': null,
+        },
+      );
+    } catch (e) {
+      print('Lỗi thêm sản phẩm vào giỏ hàng: $e');
+      rethrow;
+    }
   }
 
-  static Future<void> removeItemFromCart(String orderId, String itemId) async {
-    await supabase
-        .from('order_detail')
-        .delete()
-        .eq('order_id', orderId)
-        .eq('item_id', itemId);
-  }
-
-  static Future<void> clearCart(String orderId) async {
-    await supabase.from('order_detail').delete().eq('order_id', orderId);
+  static Future<void> clearCart({required String orderId}) async {
+    try {
+      await SupabaseSnapshot.delete(
+        table: OrderDetail.tableName,
+        equalObject: {'order_id': orderId},
+      );
+      await SupabaseSnapshot.delete(
+        table: CustomerOrder.tableName,
+        equalObject: {'order_id': orderId},
+      );
+    } catch (e) {
+      print('Lỗi khi xóa đơn hàng: $e');
+      rethrow;
+    }
   }
 
   static Future<void> editOrderDetail({
