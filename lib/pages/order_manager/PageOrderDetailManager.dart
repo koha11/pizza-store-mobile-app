@@ -5,7 +5,7 @@ import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart
 import 'package:pizza_store_app/controllers/controller_shipper.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
-import 'package:pizza_store_app/pages/PageListShipper.dart';
+import 'package:pizza_store_app/pages/order_manager/PageListShipper.dart';
 
 class PageOrderDetailManager extends StatelessWidget {
   PageOrderDetailManager({super.key});
@@ -21,7 +21,7 @@ class PageOrderDetailManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<OrderDetailManagerController>(
       builder: (controller) {
-        final order = controller.orderDetailManager;
+        final order = controller.orderDetail;
 
         return Scaffold(
           backgroundColor: Colors.grey[100],
@@ -116,7 +116,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      "${order.paymentMethod ? "Ngân hàng" : "Thanh toán khi nhận hàng"}",
+                                      "${order.paymentMethod! ? "Ngân hàng" : "Thanh toán khi nhận hàng"}",
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -131,9 +131,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      OrderStatus.fromString(
-                                        order.status,
-                                      ).displayText,
+                                      order.status.displayText,
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -212,21 +210,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                    if (order.manager == null)
-                                      GestureDetector(
-                                        onTap: () async {
-                                          await controller.acceptOrder();
-                                        },
-                                        child: Text(
-                                          "Xác nhận đơn đặt hàng",
-                                          style: TextStyle(
-                                            color: Colors.blue,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ),
-
-                                    if (order.manager != null &&
+                                    if (order.manager == null &&
                                         order.shipper == null)
                                       GestureDetector(
                                         onTap: () async {
@@ -238,7 +222,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                               );
                                           if (selectedShipper != null) {
                                             await controller
-                                                .updateShipperToOrder(
+                                                .assignShipperToOrder(
                                                   shipperId:
                                                       selectedShipper.userId,
                                                 );
@@ -280,11 +264,11 @@ class PageOrderDetailManager extends StatelessWidget {
                                             runSpacing: 4,
                                             children: [
                                               Text(
-                                                "${order.customer.userName}",
+                                                "${order.customer!.userName}",
                                                 style: TextStyle(fontSize: 18),
                                               ),
                                               Text(
-                                                "(+84) ${order.customer.phoneNumber}",
+                                                "(+84) ${order.customer!.phoneNumber}",
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   color: Colors.grey[600],
@@ -294,7 +278,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            "${order.customer.email ?? ""}",
+                                            "${order.customer!.email ?? ""}",
                                             style: TextStyle(fontSize: 15),
                                           ),
                                           SizedBox(height: 4),
@@ -338,7 +322,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                 SizedBox(height: 10),
                                 Column(
                                   children:
-                                      order.orderItems.map((e) {
+                                      order.orderDetails!.map((e) {
                                         return Column(
                                           children: [
                                             SizedBox(height: 15),
@@ -474,7 +458,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     Text(
-                                      currencyFormat.format(order.totalPrice),
+                                      currencyFormat.format(order.total),
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -505,7 +489,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                     ),
                                     Text(
                                       currencyFormat.format(
-                                        order.totalPrice + order.shippingFee,
+                                        order.total! + order.shippingFee!,
                                       ),
                                       style: TextStyle(
                                         fontSize: 18,
