@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 
+import 'app_user.model.dart';
+import 'customer_order.model.dart';
+
 class CustomerOrderInfo {
   final String orderId;
   final String shippingAddress;
@@ -45,7 +48,7 @@ class CustomerOrderInfo {
     return {
       'order_id': orderId,
       'shipping_address': shippingAddress,
-      'status': status.name, // Lưu tên enum thay vì đối tượng
+      'status': status.name,
       'order_time': orderTime.toIso8601String(),
       'app_user': {
         'user_name': customerName,
@@ -59,3 +62,28 @@ class CustomerOrderInfo {
     };
   }
 }
+
+// class CustomerOrderInfo{
+//   CustomerOrder? customerOrder;
+//   AppUser? appUser;
+//
+//   CustomerOrderInfo({
+//     this.customerOrder,
+//     this.appUser,
+//   });
+//
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'customer_order': this.customerOrder?.toJson(),
+//       'app_user': this.appUser?.toJson(),
+//
+//     };
+//   }
+//
+//   factory CustomerOrderInfo.fromMap(Map<String, dynamic> map){
+//     return CustomerOrderInfo(
+//       customerOrder: CustomerOrder.fromJson(map['customer_order']) as CustomerOrder,
+//       appUser: AppUser.fromJson(map['app_user']) as AppUser,
+//     );
+//   }
+// }

@@ -1,6 +1,9 @@
 
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
+import 'package:pizza_store_app/models/customer_order_info.dart';
 
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';

@@ -209,72 +209,74 @@ class _PagePendingOrderState extends State<PagePendingOrder> {
   }
   //Thông tin Shipper
   Widget _buildShipperInfoSection(OrderController controller) {
-    return Center(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green[300]!, width: 1),
-              ),
-              child: Text(
-                "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green[800],
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green[300]!, width: 1),
+                ),
+                child: Text(
+                  "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800],
+                  ),
                 ),
               ),
             ),
-          ),
-          //Hình ảnh nhân viên
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 3 / 4,
-              child: Image.asset(
-                'asset/images/avt.jpg',
-                fit: BoxFit.cover,
+            //Hình ảnh nhân viên
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 3 / 4,
+                child: Image.asset(
+                  'asset/images/avt.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          //Thông tin nhân viên
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 3 / 4,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildShipperInfoRow(
-                    Icons.badge,
-                    controller.shipperId.value,
-                    Colors.blue,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildShipperInfoRow(
-                    Icons.person,
-                    controller.shipperName.value,
-                    Colors.blue,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildShipperInfoRow(
-                    Icons.phone,
-                    controller.shipperPhone.value,
-                    Colors.blue,
-                  ),
-                ],
+            //Thông tin nhân viên
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 3 / 4,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildShipperInfoRow(
+                      Icons.badge,
+                      controller.shipperId.value,
+                      Colors.blue,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildShipperInfoRow(
+                      Icons.person,
+                      controller.shipperName.value,
+                      Colors.blue,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildShipperInfoRow(
+                      Icons.phone,
+                      controller.shipperPhone.value,
+                      Colors.blue,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 15),
-        ],
+            const SizedBox(height: 15),
+          ],
+        ),
       ),
     );
   }

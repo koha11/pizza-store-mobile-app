@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/user_role.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../helpers/supabase.helper.dart' as SupabaseHelper; // Import with alias
 import '../admin_dialogs/admin_dialogs.dart'; // Ensure this path is correct
 import '../model/app_user.admin.model.dart';
 import '../user_admin/PageAddUser.dart';
@@ -213,16 +216,20 @@ class AddUserController {
   final userNameController = TextEditingController();
   final phoneNumberController = TextEditingController();
   String? selectedRoleId;
+  static String _tableName = 'role';
 
   Future<List<String>> fetchRoles() async {
-    try {
-      final res = await SupabaseHelper.supabase.from('role').select('role_id');
-      if (res == null) return [];
-      return (res as List).map((e) => e['role_id'] as String).toList();
-    } catch (e) {
-      print('Lỗi khi tải danh sách role: $e');
-      return [];
-    }
+    final roles = await SupabaseSnapshot.getList(table: _tableName, fromJson: Role.fromJson);
+  //   try {
+  //     final res = await SupabaseHelper.supabase.from('role').select('role_id');
+  //     if (res == null) return [];
+  //     return (res as List).map((e) => e['role_id'] as String).toList();
+  //   } catch (e) {
+  //     print('Lỗi khi tải danh sách role: $e');
+  //     return [];
+  //   }
+
+    return roles.map((e) => e.roleName,).toList();
   }
 
   Future<bool> addUser(BuildContext context) async {
@@ -290,16 +297,18 @@ class UserUpdateController {
 
   // Hàm lấy danh sách các role từ database
   Future<List<String>> fetchRoles() async {
-    try {
-      final res = await SupabaseHelper.supabase.from('role').select('role_id');
-      if (res == null) {
-        return [];
-      }
-      return (res as List).map((json) => json['role_id'] as String).toList();
-    } catch (e) {
-      debugPrint('Lỗi khi tải danh sách role: $e');
-      return [];
-    }
+    // try {
+    //   final res = await SupabaseHelper.supabase.from('role').select('role_id');
+    //   if (res == null) {
+    //     return [];
+    //   }
+    //   return (res as List).map((json) => json['role_id'] as String).toList();
+    // } catch (e) {
+    //   debugPrint('Lỗi khi tải danh sách role: $e');
+    //   return [];
+    // }
+
+    return [];
   }
 
   // Hàm kiểm tra dữ liệu đầu vào
