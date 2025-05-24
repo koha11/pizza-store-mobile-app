@@ -8,7 +8,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class HistoryCartController extends GetxController {
   List<CustomerOrder> pendingOrders =
       []; // list chứa các đối tượng CustomerOderId
-  Map<String, List<OrderDetail>> orderDetailsMap = {}; // orderid
   bool _isLoading = true;
 
   bool get isLoading => _isLoading;
@@ -24,6 +23,13 @@ class HistoryCartController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     fetchPendingOrders();
+  }
+
+  // Thêm phương thức reset
+  void reset() {
+    pendingOrders.clear();
+    _isLoading = true;
+    update();
   }
 
   Future<void> fetchPendingOrders() async {
