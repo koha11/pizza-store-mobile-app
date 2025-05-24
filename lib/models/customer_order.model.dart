@@ -8,7 +8,9 @@ import 'order_detail.model.dart';
 
 class CustomerOrder {
   String orderId;
-  AppUser customer;
+  String customerId;
+  String? managerId, shipperId;
+  AppUser? customer;
   AppUser? manager, shipper;
   String? note = "", shippingAddress = "";
   OrderStatus status;
@@ -16,6 +18,7 @@ class CustomerOrder {
   bool? paymentMethod = false;
   int? shippingFee, totalAmount = 0;
   List<OrderDetail>? orderDetails = [];
+  int? total;
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
@@ -29,6 +32,9 @@ class CustomerOrder {
     this.manager,
     this.shipper,
     this.note,
+    required this.customerId,
+    this.managerId,
+    this.shipperId,
     this.shippingAddress,
     this.totalAmount,
     this.acceptTime,
@@ -36,6 +42,7 @@ class CustomerOrder {
     this.finishTime,
     this.paymentMethod,
     this.shippingFee,
+    this.total,
     this.orderDetails,
   });
 
@@ -51,7 +58,11 @@ class CustomerOrder {
 
     return CustomerOrder(
       orderId: json["order_id"],
-      customer: AppUser.fromJson(json["customer"]),
+      customer:
+          json["customer"] == null ? null : AppUser.fromJson(json["customer"]),
+      customerId: json["customer_id"],
+      managerId: json["manager_id"],
+      shipperId: json["shipper_id"],
       manager:
           json["manager"] == null ? null : AppUser.fromJson(json["manager"]),
       shipper:
@@ -78,13 +89,17 @@ class CustomerOrder {
       shippingFee: (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
       orderDetails: orderDetails,
+      total: orderDetails.fold(
+        0,
+        (sum, item) => sum! + item.amount * item.actualPrice,
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       "order_id": orderId,
-      "customer": customer.toJson(),
+      "customer": customer?.toJson(),
       "manager": manager?.toJson(),
       "shipper": shipper?.toJson(),
       "order_time": orderTime,
@@ -110,6 +125,35 @@ class CustomerOrderSnapshot {
       table: CustomerOrder.tableName,
       ids: ["order_id"],
       fromJson: CustomerOrder.fromJson,
+    );
+  }
+
+  static Future<CustomerOrder?> getOrderDetail({
+    required String orderId,
+  }) async {
+    final res = await SupabaseSnapshot.getList(
+      table: CustomerOrder.tableName,
+      fromJson: CustomerOrder.fromJson,
+      selectString: CustomerOrder.selectAllStr,
+      equalObject: {"order_id": orderId},
+    );
+    return res.isNotEmpty ? res.first : null;
+  }
+
+  static Future<void> assignShipperToOrder({
+    required String orderId,
+    required String shipperId,
+    required String managerId,
+  }) async {
+    await SupabaseSnapshot.update(
+      table: CustomerOrder.tableName,
+      updateObject: {
+        "shipper_id": shipperId,
+        "accept_time": DateTime.now().toIso8601String(),
+        "manager_id": managerId,
+        "status": OrderStatus.confirmed.name,
+      },
+      equalObject: {"order_id": orderId},
     );
   }
 

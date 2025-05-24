@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
-import 'package:pizza_store_app/pages/PageOrderDetailManager.dart';
+import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 
 class PageOrdersList extends StatelessWidget {
   PageOrdersList({super.key});

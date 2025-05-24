@@ -6,7 +6,7 @@ import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:pizza_store_app/pages/home/PageItem.dart';
 import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
-import 'package:pizza_store_app/pages/PageProfile.dart';
+import 'package:pizza_store_app/pages/profile/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/category.model.dart';
