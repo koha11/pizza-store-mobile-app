@@ -10,7 +10,7 @@ import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 
 class ShoppingCartController extends GetxController {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  //final SupabaseClient _supabase = Supabase.instance.client;
   Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
   String? _cartId;
@@ -121,18 +121,24 @@ class ShoppingCartController extends GetxController {
 
   Future<void> _initializeCart() async {
     final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return; // Không đăng nhập thì không làm gì cả
+    if (userId == null) return;
     _customerId = userId;
 
+    // Tìm giỏ hàng đang cart của user
     _cartId = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
 
+    // Nếu không có giỏ hàng nào, tạo mới
     _cartId ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
-
     await _loadCartItems();
   }
 
   Future<void> _loadCartItems() async {
-    if (_cartId == null) return;
+    if (_cartId == null) {
+      _cartItems.clear();
+      _checkedItems.clear();
+      update();
+      return;
+    }
     _cartItems = await CustomerOrderSnapshot.getCartItems(_cartId!);
     _cartItems.forEach((key, _) {
       _checkedItems[key] = false;
@@ -143,14 +149,22 @@ class ShoppingCartController extends GetxController {
   Future<void> addToCart(Item item, int amount) async {
     try {
       if (_customerId == null) {
-        Get.snackbar(
-          'Thông báo',
-          'Bạn cần đăng nhập để sử dụng giỏ hàng',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
+        final userId = Supabase.instance.client.auth.currentUser?.id;
+        if (userId == null) {
+          Get.snackbar(
+            'Thông báo',
+            'Bạn cần đăng nhập để sử dụng giỏ hàng',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+        _customerId = userId;
+        await _initializeCart();
       }
-      _cartId ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
+      if (_cartId == null) {
+        await _initializeCart();
+      }
+
       if (_cartItems.containsKey(item.itemId)) {
         final newAmount = _cartItems[item.itemId]!.amount + amount;
         _cartItems[item.itemId]!.amount = newAmount;
@@ -314,9 +328,17 @@ class ShoppingCartController extends GetxController {
       );
     }
   }
+
+  void reset() {
+    _cartItems.clear();
+    _checkedItems.clear();
+    _cartId = null;
+    _customerId = null;
+    _loadCartItems();
+  }
 }
 
-class BindingsShoppingcart extends Bindings {
+class BindingsShoppingCart extends Bindings {
   @override
   void dependencies() {
     Get.put<ShoppingCartController>(ShoppingCartController());
