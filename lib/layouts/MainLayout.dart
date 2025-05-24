@@ -59,7 +59,7 @@ class MainLayout extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Get.to(PageShoppingCart(), binding: BindingsShoppingcart());
+                    Get.to(PageShoppingCart(), binding: BindingsShoppingCart());
                   },
                   icon: Icon(Icons.shopping_cart),
                 ),

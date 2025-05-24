@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_address.model.dart';
@@ -48,10 +50,19 @@ class UserController extends GetxController {
   Future<void> signOut() async {
     await supabase.auth.signOut();
     await SupabaseSnapshot.update(
-        table: AppUser.tableName,
-        updateObject: {"is_active": false},
-        equalObject: {"user_id": appUser!.userId}
+      table: AppUser.tableName,
+      updateObject: {"is_active": false},
+      equalObject: {"user_id": appUser!.userId},
     );
+
+    // Reset các controller
+    if (Get.isRegistered<HistoryCartController>()) {
+      Get.find<HistoryCartController>().reset();
+    }
+    if (Get.isRegistered<ShoppingCartController>()) {
+      Get.find<ShoppingCartController>().reset();
+    }
+
     appUser = null;
     update(["1"]);
   }
