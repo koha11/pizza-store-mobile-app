@@ -26,14 +26,7 @@ class Item {
       itemImage: json["item_image"],
       description: json["description"],
       price: json["price"],
-      category:
-          json["category"] != null
-              ? Category.fromJson(json["category"])
-              : Category(
-                categoryId: json["category_id"] ?? "",
-                categoryName: "",
-                categoryImage: "",
-              ),
+      category: Category.fromJson(json["category"]),
     );
   }
 

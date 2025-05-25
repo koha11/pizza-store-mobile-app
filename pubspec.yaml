@@ -50,6 +50,7 @@ dependencies:
   intl:
   provider:
   url_launcher:
+  fl_chart: ^1.0.0
 
 dev_dependencies:
   flutter_test:
