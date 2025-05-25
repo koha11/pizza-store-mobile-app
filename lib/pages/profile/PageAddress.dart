@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
-import 'package:pizza_store_app/pages/PageAddAddress.dart';
-import 'package:pizza_store_app/pages/PageEditAddress.dart';
+import 'package:pizza_store_app/pages/profile/PageAddAddress.dart';
+import 'package:pizza_store_app/pages/profile/PageEditAddress.dart';
 
-import '../controllers/controller_user.dart';
+import '../../controllers/controller_user.dart';
 
 class PageAddress extends StatelessWidget {
   PageAddress({super.key});

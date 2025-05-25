@@ -3,15 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
-import 'package:pizza_store_app/pages/PageAddress.dart';
-import 'package:pizza_store_app/pages/PageChangeEmail.dart';
-import 'package:pizza_store_app/pages/PageChangeInfo.dart';
-import 'package:pizza_store_app/pages/PageChangePassword.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
-import 'package:pizza_store_app/pages/PageOrderDetailManager.dart';
-import 'package:pizza_store_app/pages/PageOrdersList.dart';
+import 'package:pizza_store_app/pages/profile/PageAddress.dart';
+import 'package:pizza_store_app/pages/profile/PageChangeEmail.dart';
+import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';
+import 'package:pizza_store_app/pages/profile/PageChangePassword.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
+import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
+import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
 
 class PageProfile extends StatelessWidget {
   PageProfile({super.key});

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
-import 'package:pizza_store_app/pages/PageSearch.dart';
+import 'package:pizza_store_app/pages/home/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
 
 import '../controllers/controller_home.dart';
@@ -59,7 +59,7 @@ class MainLayout extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Get.to(PageShoppingCart(), binding: BindingsShoppingcart());
+                    Get.to(PageShoppingCart(), binding: BindingsShoppingCart());
                   },
                   icon: Icon(Icons.shopping_cart),
                 ),

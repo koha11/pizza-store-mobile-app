@@ -3,12 +3,12 @@ import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
-import 'package:pizza_store_app/pages/PageRegister.dart';
-import 'package:pizza_store_app/pages/PageVertifyEmail.dart';
+import 'package:pizza_store_app/pages/auth/PageRegister.dart';
+import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
-import '../layouts/MainLayout.dart';
+import '../../layouts/MainLayout.dart';
 
 class PageLogin extends StatelessWidget {
   PageLogin({super.key});

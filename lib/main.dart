@@ -7,10 +7,10 @@ import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
-import 'package:pizza_store_app/pages/PageChangeInfo.dart';
-import 'package:pizza_store_app/pages/PageItem.dart';
+import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';
+import 'package:pizza_store_app/pages/home/PageItem.dart';
 import 'package:pizza_store_app/pages/PageOrderDetails.dart';
-import 'package:pizza_store_app/pages/PageOrdersList.dart';
+import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;
 
@@ -53,7 +53,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: PageAdmin(),
+      home: MainLayout(),
+      // home: PageAdmin(),
       debugShowCheckedModeBanner: false,
     );
   }

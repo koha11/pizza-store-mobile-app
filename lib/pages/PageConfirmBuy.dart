@@ -26,6 +26,10 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
       0,
       (sum, item) => sum + (item.actualPrice * item.amount),
     );
+    int totalAmount = widget.selectedItems.fold(
+      0,
+      (sum, item) => sum + item.amount,
+    );
     int total = subTotal + shippingFee;
     return Scaffold(
       appBar: AppBar(
@@ -237,8 +241,8 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                     await ShoppingCartController.get().placeOrder(
                       shippingFee: shippingFee,
                       address: selectedAddressId!,
+                      totalAmount: totalAmount,
                     );
-
                     Get.snackbar(
                       "Thành công",
                       "Đơn hàng đã được đặt!",

@@ -1,5 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/category.model.dart';
@@ -84,23 +85,9 @@ String formatDateString({required DateTime datetime, bool onlyDate = true}) {
 }
 
 String formatMoney({required int money}) {
-  StringBuffer moneyStr = StringBuffer();
-  final moneyChars = Characters(money.toString());
+  final locale = "vi_VN";
+  final symbol = "₫";
+  final currencyFormat = NumberFormat.currency(locale: locale, symbol: symbol);
 
-  for (int i = 1; i <= moneyChars.length; i++) {
-    moneyStr.write(
-      "${moneyChars.elementAt(moneyChars.length - i)}${i % 3 == 0 && i != moneyChars.length ? "," : ""}",
-    );
-  }
-
-  final moneyStrChars = Characters(moneyStr.toString());
-  moneyStr.clear();
-
-  for (int i = moneyStrChars.length - 1; i >= 0; i--) {
-    moneyStr.write(moneyStrChars.elementAt(i));
-  }
-
-  moneyStr.write(" VNĐ");
-
-  return moneyStr.toString();
+  return currencyFormat.format(money);
 }

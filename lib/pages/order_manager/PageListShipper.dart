@@ -95,7 +95,7 @@ class PageListShipper extends StatelessWidget {
                                                           ],
                                                         ),
 
-                                                        Row(
+                                                        Column(
                                                           children: [
                                                             Text(
                                                               e.userName,

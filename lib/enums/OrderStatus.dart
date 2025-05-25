@@ -22,7 +22,7 @@ enum OrderStatus {
     if (status == "Tất cả") return null;
     try {
       final orderStatus = OrderStatus.values.firstWhere(
-        (e) => e.displayText == status,
+        (e) => e.name == status,
       );
       return orderStatus.name;
     } catch (e) {

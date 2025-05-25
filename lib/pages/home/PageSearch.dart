@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/pages/PageItemDetail.dart';
+import 'package:pizza_store_app/pages/home/PageItemDetail.dart';
 
-import '../controllers/controller_item_detail.dart';
-import '../controllers/controller_search.dart';
+import '../../controllers/controller_item_detail.dart';
+import '../../controllers/controller_search.dart';
 
 class PageSearch extends StatelessWidget {
   const PageSearch({super.key});

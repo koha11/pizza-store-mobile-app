@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/models/user_address.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../helpers/supabase.helper.dart';
@@ -8,6 +9,8 @@ import '../helpers/supabase.helper.dart';
 class AppUser {
   String userId, userName, phoneNumber, roleId;
   String? avatar, email;
+  bool isActive;
+  List<UserAddress>? addresses = [];
 
   static String tableName = "app_user";
 
@@ -16,11 +19,20 @@ class AppUser {
     required this.userName,
     required this.phoneNumber,
     required this.roleId,
+    required this.isActive,
     this.email,
     this.avatar,
+    this.addresses,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
+    List<dynamic> userAddressesJson = json["user_address"] ?? [];
+
+    List<UserAddress> userAddresses =
+        userAddressesJson
+            .map((address) => UserAddress.fromJson(address))
+            .toList();
+
     return AppUser(
       userId: json["user_id"],
       userName: json["user_name"],
@@ -28,6 +40,8 @@ class AppUser {
       roleId: json["role_id"],
       avatar: json["user_avatar"],
       email: json["user_email"],
+      isActive: json["is_active"],
+      addresses: userAddresses,
     );
   }
 
@@ -39,6 +53,7 @@ class AppUser {
       "role_id": roleId,
       "user_avatar": avatar,
       "user_email": email,
+      "is_active": isActive,
     };
   }
 }
@@ -55,6 +70,7 @@ class AppUserSnapshot {
       table: AppUser.tableName,
       fromJson: AppUser.fromJson,
       equalObject: equalObject,
+      selectString: "*, user_address (*)",
     );
   }
 
@@ -63,6 +79,7 @@ class AppUserSnapshot {
       table: AppUser.tableName,
       fromJson: AppUser.fromJson,
       getId: (p0) => p0.userId,
+      selectString: "*, user_address (*)",
     );
   }
 
