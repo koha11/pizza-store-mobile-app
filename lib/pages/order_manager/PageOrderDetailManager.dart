@@ -368,7 +368,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                                                   .ellipsis,
                                                         ),
                                                         Text(
-                                                          "Loại: ${e.item!.category.categoryName}",
+                                                          "Loại: ${e.item.category.categoryName}",
                                                           style: TextStyle(
                                                             fontSize: 15,
                                                           ),

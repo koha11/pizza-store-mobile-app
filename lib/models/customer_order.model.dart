@@ -1,4 +1,3 @@
-
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
@@ -23,7 +22,7 @@ class CustomerOrder {
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
-      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*))";
+      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)))";
 
   CustomerOrder({
     required this.orderId,
@@ -160,12 +159,16 @@ class CustomerOrderSnapshot {
 
   static Future<List<CustomerOrder>> getOrders({
     Map<String, String>? equalObject,
+    Map<String, String>? gtObject,
+    Map<String, String>? ltObject,
   }) async {
     List<CustomerOrder> orders = await SupabaseSnapshot.getList<CustomerOrder>(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       equalObject: equalObject,
       selectString: CustomerOrder.selectAllStr,
+      gtObject: gtObject,
+      ltObject: ltObject,
     );
 
     return orders;
