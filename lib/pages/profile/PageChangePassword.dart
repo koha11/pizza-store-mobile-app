@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 
 class PageChangePassword extends StatelessWidget {
   PageChangePassword({super.key});

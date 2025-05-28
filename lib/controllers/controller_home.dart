@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
-import 'package:pizza_store_app/pages/PageItem.dart';
+import 'package:pizza_store_app/pages/home/PageHome.dart';
+import 'package:pizza_store_app/pages/home/PageItem.dart';
 import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
 import 'package:pizza_store_app/pages/PagePendingOrder.dart';
-import 'package:pizza_store_app/pages/PageProfile.dart';
+import 'package:pizza_store_app/pages/profile/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/category.model.dart';
@@ -17,7 +17,7 @@ class HomePizzaStoreController extends GetxController {
   final List<Widget> _pages = [
     PageHome(),
     //./PagePendingOrder(),
-    PagePendingCart(),
+    PageHistoryOrderCart(),
     PageProfile(),
     PageItem(),
   ];

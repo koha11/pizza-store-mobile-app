@@ -1,3 +1,5 @@
+import 'package:pizza_store_app/models/customer_order.model.dart';
+
 import '../helpers/supabase.helper.dart';
 import 'Item.model.dart';
 
@@ -5,7 +7,7 @@ class OrderDetail {
   String orderId, itemId;
   int amount, actualPrice;
   String? note;
-  Item? item;
+  Item item;
 
   static String tableName = "order_detail";
 
@@ -15,7 +17,7 @@ class OrderDetail {
     required this.amount,
     this.note,
     required this.actualPrice,
-    this.item,
+    required this.item,
   });
 
   // factory OrderDetail.fromJson(Map<String, dynamic> json) {
@@ -31,26 +33,13 @@ class OrderDetail {
   //   );
   // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
-    Item? itemParsed;
-    try {
-      if (json["item"] != null && json["item"] is Map<String, dynamic>) {
-        final itemData = Map<String, dynamic>.from(json["item"]);
-        itemParsed = Item.fromJson(itemData);
-      } else {
-        itemParsed = null;
-      }
-    } catch (e) {
-      print("Lỗi parse item: $e");
-      itemParsed = null;
-    }
-
     return OrderDetail(
       orderId: json["order_id"],
       itemId: json["item_id"],
       amount: json["amount"],
       actualPrice: json["actual_price"],
       note: json["note"],
-      item: itemParsed,
+      item: Item.fromJson(json["item"]),
     );
   }
 
@@ -74,6 +63,7 @@ class OrderDetailSnapshot {
     return SupabaseSnapshot.getList(
       table: OrderDetail.tableName,
       fromJson: OrderDetail.fromJson,
+      selectString: "*, item(*)",
     );
   }
 
@@ -82,6 +72,7 @@ class OrderDetailSnapshot {
       table: OrderDetail.tableName,
       fromJson: OrderDetail.fromJson,
       getId: (p0) => p0.orderId,
+      selectString: "*, item(*)",
     );
   }
 
@@ -100,7 +91,7 @@ class OrderDetailSnapshot {
   }) async {
     await SupabaseSnapshot.delete(
       table: OrderDetail.tableName,
-      equalObject: {"order_id": orderId, "item_id": itemId},
+      equalObject: {'order_id': orderId, 'item_id': itemId},
     );
   }
 
@@ -121,31 +112,37 @@ class OrderDetailSnapshot {
     Item item,
     int amount,
   ) async {
-    // Lấy thông tin biến thể có sẵn cho sản phẩm
-    // final variants = await supabase
-    //     .from('item_variant')
-    //     .select('variant_id')
-    //     .eq('category_id', item..category.categoryId);
-
-    await supabase.from('order_detail').insert({
-      'order_id': orderId,
-      'item_id': item.itemId,
-      'amount': amount,
-      'actual_price': item.price,
-      'note': null,
-    });
+    try {
+      await SupabaseSnapshot.insert(
+        table: OrderDetail.tableName,
+        insertObject: {
+          'order_id': orderId,
+          'item_id': item.itemId,
+          'amount': amount,
+          'actual_price': item.price,
+          'note': null,
+        },
+      );
+    } catch (e) {
+      print('Lỗi thêm sản phẩm vào giỏ hàng: $e');
+      rethrow;
+    }
   }
 
-  static Future<void> removeItemFromCart(String orderId, String itemId) async {
-    await supabase
-        .from('order_detail')
-        .delete()
-        .eq('order_id', orderId)
-        .eq('item_id', itemId);
-  }
-
-  static Future<void> clearCart(String orderId) async {
-    await supabase.from('order_detail').delete().eq('order_id', orderId);
+  static Future<void> clearCart({required String orderId}) async {
+    try {
+      await SupabaseSnapshot.delete(
+        table: OrderDetail.tableName,
+        equalObject: {'order_id': orderId},
+      );
+      await SupabaseSnapshot.delete(
+        table: CustomerOrder.tableName,
+        equalObject: {'order_id': orderId},
+      );
+    } catch (e) {
+      print('Lỗi khi xóa đơn hàng: $e');
+      rethrow;
+    }
   }
 
   static Future<void> editOrderDetail({

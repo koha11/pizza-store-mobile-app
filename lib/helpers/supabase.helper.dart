@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,21 +30,49 @@ Future<AuthResponse> verify(String token, String email) async {
   );
 }
 
+// Future<String> uploadImage({
+//   required File image,
+//   required String bucket,
+//   required String path,
+// }) async {
+//   await supabase.storage
+//       .from(bucket)
+//       .upload(
+//         path,
+//         image,
+//         fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+//       );
+//
+//   final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
+//
+//   return publicUrl;
+// }
+
 Future<String> uploadImage({
-  required File image,
+  File? image,             // Cho mobile
+  Uint8List? bytes,        // Cho web
   required String bucket,
   required String path,
 }) async {
-  await supabase.storage
-      .from(bucket)
-      .upload(
-        path,
-        image,
-        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-      );
+  final storageRef = supabase.storage.from(bucket);
 
-  final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
+  if (kIsWeb) {
+    if (bytes == null) throw Exception('Dữ liệu ảnh không hợp lệ (web)');
+    await storageRef.uploadBinary(
+      path,
+      bytes,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+  } else {
+    if (image == null) throw Exception('File ảnh không hợp lệ (mobile)');
+    await storageRef.upload(
+      path,
+      image,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+  }
 
+  final String publicUrl = storageRef.getPublicUrl(path);
   return publicUrl;
 }
 
@@ -71,8 +101,6 @@ listenDataChange<T>(
   required int Function(T) getId,
   Function()? updateUI,
 }) async {
-  final supabase = Supabase.instance.client;
-
   supabase
       .channel(channel)
       .onPostgresChanges(
@@ -128,6 +156,12 @@ class SupabaseSnapshot {
       }
     }
 
+    if (gtObject != null) {
+      for (var entry in gtObject.entries) {
+        query = query.gt(entry.key, entry.value);
+      }
+    }
+
     var data = await query;
 
     return data.length;
@@ -140,6 +174,7 @@ class SupabaseSnapshot {
     Map<String, dynamic>? equalObject,
     Map<String, dynamic>? ltObject,
     Map<String, dynamic>? gtObject,
+    List<Map<String, dynamic>>? orObject,
   }) async {
     List<T> ts = [];
 
@@ -151,11 +186,53 @@ class SupabaseSnapshot {
       }
     }
 
+    if (ltObject != null) {
+      for (var entry in ltObject.entries) {
+        query = query.lt(entry.key, entry.value);
+      }
+    }
+
+    if (gtObject != null) {
+      for (var entry in gtObject.entries) {
+        query = query.gt(entry.key, entry.value);
+      }
+    }
+
+    if (orObject != null && orObject.isNotEmpty) {
+      final orString = orObject
+          .map((cond) => cond.entries
+          .map((e) => '${e.key}.eq.${e.value}')
+          .join(','))
+          .join(',');
+      query = query.or(orString);
+    }
+
     var data = await query;
 
     ts = data.map(fromJson).toList();
 
     return ts;
+  }
+
+  static Future<T?> getById<T>({
+    required String table,
+    required T Function(Map<String, dynamic> json) fromJson,
+    String selectString = "",
+    required String idKey,
+    required String idValue,
+  }) async {
+    var data =
+        await supabase
+            .from(table)
+            .select(selectString)
+            .eq(idKey, idValue)
+            .maybeSingle();
+
+    if (data == null) {
+      return null;
+    }
+
+    return fromJson(data);
   }
 
   static Future<Map<T1, T2>> getMapT<T1, T2>({
@@ -238,57 +315,25 @@ class SupabaseSnapshot {
     var stream = supabase.from(table).stream(primaryKey: ids);
     return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
   }
-}
 
-// dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
-class HelperCart {
-  static Future<String?> getPendingCustomerOrder(String customerId) async {
-    final response =
-    await supabase
-        .from('customer_order')
-        .select('order_id')
-        .eq('customer_id', customerId)
-        .eq('status', 'pending')
-        .maybeSingle();
-
-    return response?['order_id'] as String?;
-  }
-
-  // tính tiền
-  static Future<void> updateOrderTotal(String orderId, int total) async {
-    await supabase
-        .from('customer_order')
-        .update({'total_amount': total})
-        .eq('order_id', orderId);
-  }
-
-  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  static Future<void> updateCartItemAmount(String orderId,
-      String itemId,
-      int newAmount,) async {
+  static Future<List<T>> search<T>({
+    required String table,
+    required String columnName,
+    required String query,
+    required T Function(Map<String, dynamic> json) fromJson,
+    String selectString = '',
+  }) async {
     try {
-      await supabase
-          .from('order_detail')
-          .update({'amount': newAmount})
-          .eq('order_id', orderId)
-          .eq('item_id', itemId);
+      final List<Map<String, dynamic>> data = await supabase
+          .from(table)
+          .select(selectString)
+          .ilike(columnName, '%$query%');
+      return data.map((e) => fromJson(e)).toList();
+    } on PostgrestException catch (e) {
+      throw e.message;
     } catch (e) {
-      print('Lỗi cập nhật số lượng trong database: $e');
-      rethrow;
-    }
-  }
-
-  // Phương thức xóa sản phẩm khỏi giỏ hàng
-  static Future<void> removeCartItem(String orderId, String itemId) async {
-    try {
-      await supabase
-          .from('order_detail')
-          .delete()
-          .eq('order_id', orderId)
-          .eq('item_id', itemId);
-    } catch (e) {
-      print('Lỗi xóa sản phẩm khỏi giỏ hàng: $e');
-      rethrow;
+      throw 'Lỗi: $e';
     }
   }
 }
+

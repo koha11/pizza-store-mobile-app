@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/admin/admin_dialogs/admin_dialogs.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
-import 'package:pizza_store_app/pages/PageHome.dart';
-import 'package:pizza_store_app/pages/PageLogin.dart';
+import 'package:pizza_store_app/pages/home/PageHome.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
+
+import '../dialogs/dialog.dart';
 
 class PageShoppingCart extends StatefulWidget {
   const PageShoppingCart({super.key});
@@ -103,7 +104,9 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                 "Bạn có muốn xóa ${item.item?.itemName}?",
                               );
                               if (xacNhan == true) {
-                                await controller.removeFromCart(item.itemId);
+                                await controller.removeFromCart(
+                                  itemId: item.itemId,
+                                );
                                 showSnackBar(
                                   mycontext,
                                   message: "Đã xóa ${item.item?.itemName}",

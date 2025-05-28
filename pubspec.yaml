@@ -50,6 +50,11 @@ dependencies:
   intl:
   provider:
   url_launcher:
+  image_picker_web:
+  file_picker:
+  mime:
+  path_provider:
+  universal_html:
 
 dev_dependencies:
   flutter_test:

@@ -35,13 +35,13 @@ class _PageAdminState extends State<PageAdmin> {
                 ),),
               ),
               TextButton(
-                onPressed: () => _navigateToPage(const PageItemsAdmin()),
+                onPressed: () => _navigateToPage(PageItemsAdmin()),
                 child: const Text("Sản Phẩm",style: TextStyle(
                     fontWeight: FontWeight.bold
                 ),),
               ),
               TextButton(
-                onPressed: () => _navigateToPage(const PageAppUserAdmin()),
+                onPressed: () => _navigateToPage(PageAppUserAdmin()),
                 child: const Text("Khách hàng",style: TextStyle(
                     fontWeight: FontWeight.bold
                 ),),
