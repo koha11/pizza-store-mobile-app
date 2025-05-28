@@ -50,11 +50,15 @@ dependencies:
   intl:
   provider:
   url_launcher:
+<<<<<<< HEAD
   image_picker_web:
   file_picker:
   mime:
   path_provider:
   universal_html:
+=======
+  fl_chart: ^1.0.0
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 
 dev_dependencies:
   flutter_test:

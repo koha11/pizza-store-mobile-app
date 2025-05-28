@@ -4,7 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+<<<<<<< HEAD
 import 'package:path_provider/path_provider.dart';
+=======
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';

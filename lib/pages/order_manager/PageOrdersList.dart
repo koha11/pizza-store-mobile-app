@@ -4,7 +4,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
+<<<<<<< HEAD
 import 'package:pizza_store_app/enums/OrderStatus.dart';
+=======
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 
 class PageOrdersList extends StatelessWidget {
@@ -20,7 +23,6 @@ class PageOrdersList extends StatelessWidget {
       init: OrdersManagerController.get(),
       builder: (controller) {
         final selectStatus = controller.orderStatus;
-        print(selectStatus);
         final orders = controller.orders;
         final filterOrders =
             selectStatus == null
@@ -28,7 +30,6 @@ class PageOrdersList extends StatelessWidget {
                 : orders
                     .where((element) => element.status == selectStatus)
                     .toList();
-        print("${filterOrders.length}");
 
         return Scaffold(
           backgroundColor: Colors.grey[100],

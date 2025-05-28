@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import 'package:flutter/cupertino.dart';
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 import 'package:intl/intl.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
@@ -89,3 +93,18 @@ String formatMoney({required int money}) {
 
   return currencyFormat.format(money);
 }
+<<<<<<< HEAD
+=======
+
+String formatShortCurrency(int amount) {
+  if (amount >= 1000000) {
+    double millions = amount / 1000000;
+    return '${millions.toStringAsFixed(millions.truncateToDouble() == millions ? 0 : 1)}tr';
+  } else if (amount >= 1000) {
+    double thousands = amount / 1000;
+    return '${thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 1)}K';
+  } else {
+    return amount.toString();
+  }
+}
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
