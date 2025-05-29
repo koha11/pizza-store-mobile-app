@@ -1,30 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pizza_store_app/models/category.model.dart';
 
-import '../controllers/item_controller.dart';
+import '../../controllers/controller_item.dart';
+import '../../models/Item.model.dart';
 
 class PageAddItem extends StatefulWidget {
-  const PageAddItem({Key? key}) : super(key: key);
+  const PageAddItem({super.key});
 
   @override
   State<PageAddItem> createState() => _PageAddItemState();
 }
 
 class _PageAddItemState extends State<PageAddItem> {
-  late final AddItemController _controller;
-  Future<List<Category>>? _categoriesFuture;
+  final ItemController _controller = Get.find<ItemController>();
+
+  TextEditingController txtId = TextEditingController();
+  TextEditingController txtTen = TextEditingController();
+  TextEditingController txtGia = TextEditingController();
+  TextEditingController txtMota = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = AddItemController(context: context, setStateCallback: setState);
-    _categoriesFuture = _controller.fetchCategories();
+    _controller.loadCategories();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _pickImage() async {
+    await _controller.pickAndUploadImage();
+  }
+
+  Future<void> _addItem() async {
+    if (txtId.text.isEmpty || txtTen.text.isEmpty || txtGia.text.isEmpty) {
+      Get.snackbar('Lỗi', 'Vui lòng điền đầy đủ thông tin.');
+      return;
+    }
+    if (_controller.uploadedImageUrl == null || _controller.uploadedImageUrl!.isEmpty) {
+      Get.snackbar('Lỗi', 'Vui lòng tải lên một ảnh sản phẩm.');
+      return;
+    }
+    if (_controller.selectedCategory == null) {
+      Get.snackbar('Lỗi', 'Vui lòng chọn danh mục.');
+      return;
+    }
+
+    final newItem = Item(
+      itemId: txtId.text,
+      itemName: txtTen.text,
+      price: int.parse(txtGia.text),
+      description: txtMota.text,
+      itemImage: _controller.uploadedImageUrl!,
+      category: _controller.selectedCategory!,
+    );
+
+    await _controller.addItem(newItem);
   }
 
   @override
@@ -46,15 +75,15 @@ class _PageAddItemState extends State<PageAddItem> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                     child: Column(
                       children: [
-                        // Input Fields
                         TextFormField(
-                          controller: _controller.idController,
-                          keyboardType:
-                          const TextInputType.numberWithOptions(signed: false, decimal: false),
+                          controller: txtId,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              signed: false, decimal: false),
                           decoration: const InputDecoration(
                             labelText: "Id",
                             border: OutlineInputBorder(),
@@ -62,7 +91,7 @@ class _PageAddItemState extends State<PageAddItem> {
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
-                          controller: _controller.nameController,
+                          controller: txtTen,
                           decoration: const InputDecoration(
                             labelText: "Tên sản phẩm",
                             border: OutlineInputBorder(),
@@ -70,9 +99,9 @@ class _PageAddItemState extends State<PageAddItem> {
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
-                          controller: _controller.priceController,
-                          keyboardType:
-                          const TextInputType.numberWithOptions(signed: false, decimal: false),
+                          controller: txtGia,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              signed: false, decimal: false),
                           decoration: const InputDecoration(
                             labelText: "Giá",
                             border: OutlineInputBorder(),
@@ -80,7 +109,7 @@ class _PageAddItemState extends State<PageAddItem> {
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
-                          controller: _controller.descriptionController,
+                          controller: txtMota,
                           maxLines: 3,
                           decoration: const InputDecoration(
                             labelText: "Mô tả",
@@ -88,41 +117,30 @@ class _PageAddItemState extends State<PageAddItem> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        FutureBuilder<List<Category>>(
-                          future: _categoriesFuture,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Text('Lỗi tải danh mục: ${snapshot.error}');
-                            } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                              return const Text('Không có danh mục nào.');
-                            } else {
-                              return DropdownButtonFormField<Category>(
-                                decoration: const InputDecoration(
-                                  labelText: "Danh mục",
-                                  border: OutlineInputBorder(),
-                                ),
-                                value: _controller.selectedCategory,
-                                items: snapshot.data!.map((category) {
-                                  return DropdownMenuItem<Category>(
-                                    value: category,
-                                    child: Text(category.categoryName),
-                                  );
-                                }).toList(),
-                                onChanged: (Category? newValue) {
-                                  setState(() {
-                                    _controller.selectedCategory = newValue;
-                                  });
-                                },
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Vui lòng chọn danh mục';
-                                  }
-                                  return null;
-                                },
-                              );
-                            }
+                        GetBuilder<ItemController>(
+                          builder: (controller) {
+                            return DropdownButtonFormField<Category>(
+                              value: controller.selectedCategory,
+                              decoration: const InputDecoration(
+                                labelText: "Danh mục",
+                                border: OutlineInputBorder(),
+                              ),
+                              items: controller.category?.map((Category category) {
+                                return DropdownMenuItem<Category>(
+                                  value: category,
+                                  child: Text(category.categoryName),
+                                );
+                              }).toList(),
+                              onChanged: (Category? newValue) {
+                                controller.setSelectedCategory(newValue);
+                              },
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Vui lòng chọn danh mục';
+                                }
+                                return null;
+                              },
+                            );
                           },
                         ),
                         const SizedBox(height: 24),
@@ -131,75 +149,27 @@ class _PageAddItemState extends State<PageAddItem> {
                 const SizedBox(
                   width: 20,
                 ),
-
-                //Thêm hình ảnh tại đây
                 Expanded(
-                  child: Center(child: const Text("Thêm chức năng upload ảnh Web App")),
-                  // child: GestureDetector(
-                  //   onTap: () {
-                  //     showModalBottomSheet(
-                  //       context: context,
-                  //       builder: (BuildContext context) {
-                  //         return SafeArea(
-                  //           child: Column(
-                  //             mainAxisSize: MainAxisSize.min,
-                  //             children: <Widget>[
-                  //               ListTile(
-                  //                 leading: const Icon(Icons.photo_library),
-                  //                 title: const Text('Chọn từ thư viện'),
-                  //                 onTap: () {
-                  //                   _controller.pickImage(ImageSource.gallery);
-                  //                   Navigator.pop(context);
-                  //                 },
-                  //               ),
-                  //               ListTile(
-                  //                 leading: const Icon(Icons.camera_alt),
-                  //                 title: const Text('Chụp ảnh'),
-                  //                 onTap: () {
-                  //                   _controller.pickImage(ImageSource.camera);
-                  //                   Navigator.pop(context);
-                  //                 },
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  //   child: Container(
-                  //     height: 200,
-                  //     decoration: BoxDecoration(
-                  //       border: Border.all(color: Colors.grey),
-                  //       borderRadius: BorderRadius.circular(8.0),
-                  //     ),
-                  //     child: _controller.pickedImageFile == null
-                  //         ? const Center(
-                  //             child: Icon(
-                  //               Icons.image_outlined,
-                  //               size: 60,
-                  //               color: Colors.grey,
-                  //             ),
-                  //           )
-                  //         : ClipRRect(
-                  //             borderRadius: BorderRadius.circular(8.0),
-                  //             child: Image.file(
-                  //               File(_controller.pickedImageFile!.path),
-                  //               fit: BoxFit.cover,
-                  //               width: double.infinity,
-                  //               height: double.infinity,
-                  //             ),
-                  //           ),
-                  //   ),
-                  // ),
+                  child: Column(
+                    children: [
+                      GetBuilder<ItemController>(
+                        builder: (controller) {
+                          return _buildImagePreview(controller);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        child: const Text("Chọn ảnh"),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            // Image Section
             const SizedBox(height: 20),
-
-            // Add Button
             ElevatedButton(
-              onPressed: _controller.addItem,
+              onPressed: _addItem,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 textStyle: const TextStyle(fontSize: 18),
@@ -208,6 +178,34 @@ class _PageAddItemState extends State<PageAddItem> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildImagePreview(ItemController controller) {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[200],
+      ),
+      child: controller.isUploadingImage
+          ? const Center(child: CircularProgressIndicator())
+          : controller.uploadedImageUrl != null && controller.uploadedImageUrl!.isNotEmpty
+          ? Image.network(
+        controller.uploadedImageUrl!,
+        fit: BoxFit.contain,
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) =>
+        const Icon(Icons.error, color: Colors.red),
+      )
+          : const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image, size: 50, color: Colors.grey),
+          Text('Chưa có ảnh', style: TextStyle(color: Colors.grey)),
+        ],
       ),
     );
   }

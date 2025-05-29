@@ -22,7 +22,11 @@ class CustomerOrder {
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
+<<<<<<< HEAD
+      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*))";
+=======
       "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)))";
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 
   CustomerOrder({
     required this.orderId,
@@ -159,16 +163,27 @@ class CustomerOrderSnapshot {
 
   static Future<List<CustomerOrder>> getOrders({
     Map<String, String>? equalObject,
+<<<<<<< HEAD
+    List<Map<String, dynamic>>? orObject,
+    bool sortByPendingFirst = false,
+    bool sortByOrderTimeDesc = true,
+=======
     Map<String, String>? gtObject,
     Map<String, String>? ltObject,
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
   }) async {
     List<CustomerOrder> orders = await SupabaseSnapshot.getList<CustomerOrder>(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
       equalObject: equalObject,
+<<<<<<< HEAD
+      orObject: orObject,
+      selectString: CustomerOrder.selectAllStr,
+=======
       selectString: CustomerOrder.selectAllStr,
       gtObject: gtObject,
       ltObject: ltObject,
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
     );
 
     return orders;
@@ -329,4 +344,10 @@ class CustomerOrderSnapshot {
   //     rethrow;
   //   }
   // }
+<<<<<<< HEAD
+
+
 }
+=======
+}
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344

@@ -1,70 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/pages/PageDeliveryFailed.dart'; // Import các trang liên quan
-import 'package:pizza_store_app/pages/PageDeliverySuccessful.dart'; // Import các trang liên quan
-import '../controllers/controller_order_detail.dart'; // Đảm bảo đường dẫn đúng
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pizza_store_app/pages/PageDeliveryFailed.dart'; // Import các trang liên quan
-import 'package:pizza_store_app/pages/PageDeliverySuccessful.dart'; // Import các trang liên quan
-import '../controllers/controller_order_detail.dart'; // Đảm bảo đường dẫn đúng
+import '../controllers/controller_order_detail.dart';
 
 class PageOrderDetails extends StatelessWidget {
   final String orderId;
 
-  const PageOrderDetails({Key? key, required this.orderId}) : super(key: key);
+  PageOrderDetails({super.key, required this.orderId});
 
   @override
   Widget build(BuildContext context) {
-    final OrderDetailsController controller =
-    Get.put(OrderDetailsController(orderId)); // Khởi tạo controller
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Chi tiết đơn hàng",
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        // Sử dụng Obx để tự động cập nhật khi có thay đổi trong controller
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (controller.errorMessage.value.isNotEmpty) {
-          return Center(child: Text(controller.errorMessage.value));
-        }
-        if (controller.orderDetails.isEmpty) {
-          return const Center(child: Text("Không có chi tiết đơn hàng.")); //Xử lý edge case
+    return GetBuilder<OrderDetailsController>(
+      init: OrderDetailsController(orderId: orderId),
+      builder: (controller) {
+        if (controller.isLoadingCustomerOrder || controller.isLoadingUser) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Thông tin khách hàng
-              _buildCustomerInfoCard(controller),
-              const SizedBox(height: 24),
+        if (controller.customerOrder == null) {
+          return const Scaffold(
+            body: Center(child: Text("Không tìm thấy đơn hàng")),
+          );
+        }
 
-              // Chi tiết đơn hàng
-              _buildOrderDetailsCard(controller),
-              const SizedBox(height: 24),
-
-              // Thông tin giao hàng
-              _buildDeliveryInfoCard(controller),
-              const SizedBox(height: 24),
-
-              // Nút hành động
-              _buildActionButtons(controller),
-            ],
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Chi tiết đơn hàng",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            centerTitle: true,
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Thông tin khách hàng
+                _CustomerInfoCard(controller: controller),
+                const SizedBox(height: 24),
+                // Chi tiết đơn hàng
+                _OrderDetailsCard(controller: controller),
+                const SizedBox(height: 24),
+                // Thông tin giao hàng
+                _DeliveryInfoCard(controller: controller),
+                const SizedBox(height: 24),
+                // Nút hành động
+                _ActionButtons(controller: controller),
+              ],
+            ),
           ),
         );
-      }),
+      },
     );
   }
+}
 
-  Widget _buildCustomerInfoCard(OrderDetailsController controller) {
-    final firstItem = controller.orderDetails.first; // Truy cập phần tử đầu tiên
+class _CustomerInfoCard extends StatelessWidget {
+  final OrderDetailsController controller;
+
+  const _CustomerInfoCard({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    if (controller.isLoadingUser) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final user = controller.customer;
+    if (user == null) {
+      return const Center(child: Text("Không có thông tin khách hàng"));
+    }
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -77,7 +83,7 @@ class PageOrderDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  firstItem.customerName,
+                  user.userName,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -89,7 +95,7 @@ class PageOrderDetails extends StatelessWidget {
                     const Icon(Icons.phone, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      firstItem.phoneNumber,
+                      user.phoneNumber,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ],
@@ -98,7 +104,7 @@ class PageOrderDetails extends StatelessWidget {
             ),
             ElevatedButton.icon(
               onPressed: () {
-                controller.openPhoneDial(firstItem.phoneNumber);
+                controller.openPhoneDial(user.phoneNumber);
               },
               icon: const Icon(Icons.call, size: 20),
               label: const Text("Gọi ngay"),
@@ -108,8 +114,7 @@ class PageOrderDetails extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
           ],
@@ -117,8 +122,17 @@ class PageOrderDetails extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildOrderDetailsCard(OrderDetailsController controller) {
+class _OrderDetailsCard extends StatelessWidget {
+  final OrderDetailsController controller;
+  _OrderDetailsCard({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final order = controller.customerOrder!;
+    final orderDetails = order.orderDetails ?? [];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -171,48 +185,46 @@ class PageOrderDetails extends StatelessWidget {
                 ),
                 const Divider(thickness: 1, height: 24),
                 // Danh sách món
-                Obx(() =>
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.orderDetails.length,
-                      separatorBuilder: (context, index) =>
-                      const Divider(height: 16),
-                      itemBuilder: (context, index) {
-                        final item = controller.orderDetails[index];
-                        return Row(
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                item.itemName,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(item.amount.toString(),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 15)),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                  "${item.unitPrice.toStringAsFixed(0)}đ",
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(fontSize: 15)),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                  "${item.subTotal.toStringAsFixed(0)}đ",
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(fontSize: 15)),
-                            ),
-                          ],
-                        );
-                      },
-                    )),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: orderDetails.length,
+                  itemBuilder: (context, index) {
+                    final orderDetail = orderDetails[index];
+                    return Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                            orderDetail.item.itemName,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(orderDetail.amount.toString(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 15)),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                              "${orderDetail.item.price.toStringAsFixed(0)}đ",
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(fontSize: 15)),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                              "${(orderDetail.amount * orderDetail.item.price).toStringAsFixed(0)}đ",
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(fontSize: 15)),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
                 const Divider(thickness: 1, height: 24),
                 // Tổng cộng
                 Column(
@@ -223,7 +235,7 @@ class PageOrderDetails extends StatelessWidget {
                         const Text("Tạm tính:",
                             style: TextStyle(fontSize: 15)),
                         Text(
-                            "${controller.totalPrice.toStringAsFixed(0)}đ",
+                            "${controller.subTotal.toStringAsFixed(0)}đ",
                             style: const TextStyle(fontSize: 15)),
                       ],
                     ),
@@ -234,11 +246,7 @@ class PageOrderDetails extends StatelessWidget {
                         const Text("Phí vận chuyển:",
                             style: TextStyle(fontSize: 15)),
                         Text(
-                            "${controller.orderDetails.isNotEmpty ? controller
-                                .orderDetails
-                                .first
-                                .shippingFee
-                                .toStringAsFixed(0) : '0'}đ",
+                            "${order.shippingFee?.toStringAsFixed(0) ?? "0"}đ",
                             style: const TextStyle(fontSize: 15)),
                       ],
                     ),
@@ -264,9 +272,17 @@ class PageOrderDetails extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildDeliveryInfoCard(OrderDetailsController controller) {
-    final firstItem = controller.orderDetails.first; //chắc chắn có phần tử first
+class _DeliveryInfoCard extends StatelessWidget {
+  final OrderDetailsController controller;
+
+  const _DeliveryInfoCard({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final order = controller.customerOrder!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -289,9 +305,8 @@ class PageOrderDetails extends StatelessWidget {
               children: [
                 const Icon(Icons.location_on, color: Colors.red),
                 const SizedBox(width: 12),
-                Expanded( //Sử dụng Expanded để tránh tràn nếu địa chỉ quá dài.
-                  child: Text(
-                    firstItem.deliveryAddress,
+                Expanded(
+                  child: Text("${order.shippingAddress ?? "Không có địa chỉ "} ",
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -302,116 +317,117 @@ class PageOrderDetails extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildActionButtons(OrderDetailsController controller) {
+class _ActionButtons extends StatelessWidget {
+  final OrderDetailsController controller;
+
+  const _ActionButtons({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(() {
-      // Sử dụng Obx để theo dõi sự thay đổi của orderStatus
-      if (controller.orderStatus.value ==
-          'finished') { // Kiểm tra trạng thái đơn hàng
+      final order = controller.customerOrder!;
+      final status = controller.orderStatus.value;
+
+      if (status == 'finished') {
         return const Center(
           child: Text(
-            "Đơn hàng đã được giao", // Hiển thị thông báo
+            "Đơn hàng đã được giao",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         );
-      } else {
-        return Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Trong thực tế, bạn nên hiển thị một dialog xác nhận trước khi hủy
-                  Get.dialog(
-                    AlertDialog(
-                      title: const Text("Xác nhận hủy đơn hàng"),
-                      content: const Text(
-                          "Bạn có chắc chắn muốn hủy đơn hàng này?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Get.back(),
-                          child: const Text("Không"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            //Gọi hàm huỷ đơn hàng.
-                            //controller.cancelOrder();
-                            Get.back(); // Đóng dialog
-                          },
-                          child: const Text("Có"),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text("Hủy đơn hàng"),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child:
-              //Hiển thị button hoàn tất khi status là shipping.
-              controller.orderStatus.value == 'shipping'
-                  ? ElevatedButton(
-                onPressed: () {
-                  controller.markOrderAsFinished();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text("Hoàn tất đơn hàng"),
-              )
-                  : ElevatedButton(
-                //Nếu không phải shipping thì hiển thị button xác nhận đơn hàng
-                onPressed: () {
-                  Get.dialog(
-                    AlertDialog(
-                      title: const Text("Xác nhận đơn hàng"),
-                      content: const Text(
-                          "Bạn có chắc chắn muốn xác nhận đơn hàng này?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Get.back(),
-                          child: const Text("Không"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            controller.confirmOrder();
-                            Get.back();
-                          },
-                          child: const Text("Có"),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text("Xác nhận đơn hàng"),
-              ),
-            ),
-          ],
-        );
       }
+
+      return Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                Get.dialog(
+                  AlertDialog(
+                    title: const Text("Xác nhận hủy đơn hàng"),
+                    content: const Text(
+                        "Bạn có chắc chắn muốn hủy đơn hàng này?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text("Không"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text("Có"),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text("Hủy đơn hàng"),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: status == 'shipping'
+                ? ElevatedButton(
+              onPressed: () {
+                controller.markOrderAsFinished();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text("Hoàn tất đơn hàng"),
+            )
+                : ElevatedButton(
+              onPressed: () {
+                Get.dialog(
+                  AlertDialog(
+                    title: const Text("Xác nhận đơn hàng"),
+                    content: const Text(
+                        "Bạn có chắc chắn muốn xác nhận đơn hàng này?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text("Không"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          controller.confirmOrder();
+                          Get.back();
+                        },
+                        child: const Text("Có"),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text("Xác nhận đơn hàng"),
+            ),
+          ),
+        ],
+      );
     });
   }
 }
-

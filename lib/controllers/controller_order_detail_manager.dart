@@ -2,6 +2,10 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
+<<<<<<< HEAD
+import 'package:pizza_store_app/models/order_detail_manager.model.dart';
+=======
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 
 class OrderDetailManagerController extends GetxController {
   final String orderId;

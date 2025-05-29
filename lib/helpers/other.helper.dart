@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 import 'package:flutter/cupertino.dart';
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 import 'package:intl/intl.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
@@ -90,6 +93,8 @@ String formatMoney({required int money}) {
 
   return currencyFormat.format(money);
 }
+<<<<<<< HEAD
+=======
 
 String formatShortCurrency(int amount) {
   if (amount >= 1000000) {
@@ -102,3 +107,4 @@ String formatShortCurrency(int amount) {
     return amount.toString();
   }
 }
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344

@@ -173,4 +173,65 @@ class AppUserSnapshot {
       ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
     }
   }
+
+  //ADMIN ----------------
+
+  static Future<void> createUser({
+    required AppUser user,
+  }) async {
+    await SupabaseSnapshot.insert(
+      table: AppUser.tableName,
+      insertObject: {
+        "user_id": user.userId,
+        "user_name": user.userName,
+        "phone_number": user.phoneNumber,
+        "role_id": user.roleId,
+        "user_avatar": user.avatar,
+        "user_email": user.email,
+        "is_active": user.isActive,
+      },
+    );
+  }
+
+  static Future<void> deleteUser({
+    required AppUser user,
+  }) async {
+    await SupabaseSnapshot.delete(
+      table: AppUser.tableName,
+      equalObject: {'user_id': user.userId},
+    );
+  }
+
+  static Future<void> updateUser({
+    required AppUser user,
+  }) async {
+    await SupabaseSnapshot.update(
+      table: AppUser.tableName,
+      updateObject: {
+        "user_id": user.userId,
+        "user_name": user.userName,
+        "phone_number": user.phoneNumber,
+        "role_id": user.roleId,
+        "user_avatar": user.avatar,
+        "user_email": user.email,
+        "is_active": user.isActive,
+      },
+      equalObject: {"user_id": user.userId},
+    );
+  }
+
+  static Future<List<AppUser>> searchUsers(String query) async {
+    try {
+      final List<AppUser> users = await SupabaseSnapshot.search<AppUser>(
+        table: AppUser.tableName,
+        columnName: 'user_name',
+        query: query,
+        fromJson: AppUser.fromJson,
+        selectString: '*, role(*)',
+      );
+      return users;
+    } catch (e) {
+      throw 'Lỗi khi tìm kiếm User: $e';
+    }
+  }
 }

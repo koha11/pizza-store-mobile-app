@@ -73,4 +73,60 @@ class ItemSnapshot {
       selectString: "*, category(*)",
     );
   }
+
+  static Future<void> createItem({
+    required Item item,
+  }) async {
+    await SupabaseSnapshot.insert(
+      table: Item.tableName,
+      insertObject: {
+        "item_id": item.itemId,
+        "item_name": item.itemName,
+        "item_image": item.itemImage,
+        "description": item.description,
+        "price": item.price,
+        "category_id": item.category.categoryId,
+      },
+    );
+  }
+
+  static Future<void> deleteItem({
+    required Item item,
+  }) async {
+    await SupabaseSnapshot.delete(
+      table: Item.tableName,
+      equalObject: {'item_id': item.itemId},
+    );
+  }
+
+  static Future<void> updateItem({
+    required Item item,
+  }) async {
+    await SupabaseSnapshot.update(
+      table: Item.tableName,
+      updateObject: {
+        "item_name": item.itemName,
+        "item_image": item.itemImage,
+        "description": item.description,
+        "price": item.price,
+        "category_id": item.category.categoryId,
+      },
+      equalObject: {"item_id": item.itemId},
+    );
+  }
+
+  static Future<List<Item>> searchItems(String query) async {
+    try {
+      final List<Item> items = await SupabaseSnapshot.search<Item>(
+        table: Item.tableName,
+        columnName: 'item_name',
+        query: query,
+        fromJson: Item.fromJson,
+        selectString: '*, category(*)',
+      );
+      return items;
+    } catch (e) {
+      throw 'Lỗi khi tìm kiếm Item: $e';
+    }
+  }
 }

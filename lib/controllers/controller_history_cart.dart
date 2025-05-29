@@ -6,8 +6,12 @@ import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HistoryCartController extends GetxController {
+<<<<<<< HEAD
+  List<CustomerOrder> pendingOrders = []; // list chứa các đối tượng CustomerOderId
+=======
   List<CustomerOrder> pendingOrders =
       []; // list chứa các đối tượng CustomerOderId
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
   bool _isLoading = true;
 
   bool get isLoading => _isLoading;

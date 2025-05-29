@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,21 +30,49 @@ Future<AuthResponse> verify(String token, String email) async {
   );
 }
 
+// Future<String> uploadImage({
+//   required File image,
+//   required String bucket,
+//   required String path,
+// }) async {
+//   await supabase.storage
+//       .from(bucket)
+//       .upload(
+//         path,
+//         image,
+//         fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+//       );
+//
+//   final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
+//
+//   return publicUrl;
+// }
+
 Future<String> uploadImage({
-  required File image,
+  File? image,             // Cho mobile
+  Uint8List? bytes,        // Cho web
   required String bucket,
   required String path,
 }) async {
-  await supabase.storage
-      .from(bucket)
-      .upload(
-        path,
-        image,
-        fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-      );
+  final storageRef = supabase.storage.from(bucket);
 
-  final String publicUrl = supabase.storage.from(bucket).getPublicUrl(path);
+  if (kIsWeb) {
+    if (bytes == null) throw Exception('Dữ liệu ảnh không hợp lệ (web)');
+    await storageRef.uploadBinary(
+      path,
+      bytes,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+  } else {
+    if (image == null) throw Exception('File ảnh không hợp lệ (mobile)');
+    await storageRef.upload(
+      path,
+      image,
+      fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+    );
+  }
 
+  final String publicUrl = storageRef.getPublicUrl(path);
   return publicUrl;
 }
 
@@ -144,6 +174,7 @@ class SupabaseSnapshot {
     Map<String, dynamic>? equalObject,
     Map<String, dynamic>? ltObject,
     Map<String, dynamic>? gtObject,
+    List<Map<String, dynamic>>? orObject,
   }) async {
     List<T> ts = [];
 
@@ -167,6 +198,18 @@ class SupabaseSnapshot {
       }
     }
 
+<<<<<<< HEAD
+    if (orObject != null && orObject.isNotEmpty) {
+      final orString = orObject
+          .map((cond) => cond.entries
+          .map((e) => '${e.key}.eq.${e.value}')
+          .join(','))
+          .join(',');
+      query = query.or(orString);
+    }
+
+=======
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
     var data = await query;
 
     ts = data.map(fromJson).toList();
@@ -275,6 +318,29 @@ class SupabaseSnapshot {
     var stream = supabase.from(table).stream(primaryKey: ids);
     return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
   }
+
+<<<<<<< HEAD
+  static Future<List<T>> search<T>({
+    required String table,
+    required String columnName,
+    required String query,
+    required T Function(Map<String, dynamic> json) fromJson,
+    String selectString = '',
+  }) async {
+    try {
+      final List<Map<String, dynamic>> data = await supabase
+          .from(table)
+          .select(selectString)
+          .ilike(columnName, '%$query%');
+      return data.map((e) => fromJson(e)).toList();
+    } on PostgrestException catch (e) {
+      throw e.message;
+    } catch (e) {
+      throw 'Lỗi: $e';
+    }
+  }
 }
 
+=======
 // dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
+>>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
