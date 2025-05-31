@@ -1,22 +1,39 @@
+import 'package:pizza_store_app/models/Item_variant.model.dart';
+import 'package:pizza_store_app/models/variant.model.dart';
+
 import '../helpers/supabase.helper.dart';
 
 class Category {
   String categoryId, categoryName;
   String? categoryImage;
+  List<Variant>? variants;
 
   static const String tableName = "category";
+  static const String selectAllStr =
+      "*, item_variant(*, variant:variant_id(*, variant_type(*)))";
 
   Category({
     required this.categoryId,
     required this.categoryName,
     this.categoryImage,
+    this.variants,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
+    List<dynamic> itemVariantsJson = json["item_variant"] ?? [];
+
+    List<Variant> variants =
+        itemVariantsJson.isEmpty
+            ? []
+            : itemVariantsJson
+                .map((ivJson) => ItemVariant.fromJson(ivJson).variant)
+                .toList();
+
     return Category(
       categoryId: json["category_id"],
       categoryName: json["category_name"],
       categoryImage: json["category_image"],
+      variants: variants,
     );
   }
 
@@ -44,10 +61,12 @@ class CategorySnapshot {
 
   CategorySnapshot(this.category);
 
-  static Future<List<Category>> getCategories() async {
+  static Future<List<Category>> getCategories({equalObject}) async {
     return SupabaseSnapshot.getList(
       table: Category.tableName,
       fromJson: Category.fromJson,
+      equalObject: equalObject,
+      selectString: Category.selectAllStr,
     );
   }
 
@@ -56,6 +75,15 @@ class CategorySnapshot {
       table: Category.tableName,
       fromJson: Category.fromJson,
       getId: (p0) => p0.categoryId,
+    );
+  }
+
+  static Future<Category?> getCategoryById(String id) {
+    return SupabaseSnapshot.getById(
+      table: Category.tableName,
+      fromJson: Category.fromJson,
+      idKey: "category_id",
+      idValue: id,
     );
   }
 }
