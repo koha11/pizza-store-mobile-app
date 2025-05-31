@@ -5,9 +5,12 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
+import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:pizza_store_app/pages/profile/PageAddress.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeEmail.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';
@@ -177,63 +180,14 @@ class PageProfile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
-                    GestureDetector(
-                      onTap: () => Get.toNamed("/orders"),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.card_travel, size: 25),
-                              SizedBox(width: 15),
-                              Text(
-                                "Danh sách đơn",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios, size: 20),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    GestureDetector(
-                      onTap:
-                          () => Get.to(
-                            () => PageDashboard(),
-                            binding: BindingDashboardDashboardController(),
-                          ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.card_travel, size: 25),
-                              SizedBox(width: 15),
-                              Text(
-                                "Doanh thu",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios, size: 20),
-                        ],
-                      ),
-                    ),
+
                     SizedBox(height: 50),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
                           await controller.signOut();
-                          Get.off(PageLogin());
+                          Get.off(() => MainLayout());
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,

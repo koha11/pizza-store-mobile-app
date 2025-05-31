@@ -30,10 +30,6 @@ class PageOrdersList extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: Colors.grey[100],
-          appBar: AppBar(
-            title: Text("Danh sách các đơn hàng"),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
           body:
               controller.isLoading
                   ? Center(child: CircularProgressIndicator())
