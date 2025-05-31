@@ -13,10 +13,6 @@ class PageDashboard extends StatelessWidget {
       builder: (controller) {
         return Scaffold(
           backgroundColor: Colors.grey[100],
-          appBar: AppBar(
-            title: Text("Doanh thu"),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
           body:
               controller.isLoading
                   ? Center(child: CircularProgressIndicator())
@@ -60,7 +56,7 @@ class PageDashboard extends StatelessWidget {
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          "${controller.totalOrder}",
+                                          "${controller.summary["totalOrder"]}",
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500,
@@ -94,7 +90,7 @@ class PageDashboard extends StatelessWidget {
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          "${controller.totalProcessingOrder}",
+                                          "${controller.summary["totalProcessingOrder"]}",
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500,
@@ -128,7 +124,7 @@ class PageDashboard extends StatelessWidget {
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          "${formatShortCurrency(controller.totalRevenue)}",
+                                          "${formatShortCurrency(controller.summary["totalRevenue"] ?? 0)}",
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500,

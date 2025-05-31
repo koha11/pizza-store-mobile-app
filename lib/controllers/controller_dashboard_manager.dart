@@ -1,63 +1,60 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
+import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
+import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
+import 'package:pizza_store_app/pages/profile/PageProfile.dart';
 
 class DashboardManagerController extends GetxController {
   Map<int, int> dailyRevenue = {};
-  int totalOrder = 0;
-  int totalRevenue = 0;
-  int totalProcessingOrder = 0;
+  Map<String, int> summary = {
+    "totalOrder": 0,
+    "totalProcessingOrder": 0,
+    "totalRevenue": 0,
+  };
   bool isLoading = true;
+  int currentIndex = 0;
+  final List<Widget> _pages = [
+    PageDashboard(),
+    PageOrdersList(),
+    PageProfile(),
+  ];
+  static DashboardManagerController get() => Get.find();
 
+  Widget getPage(int index) => _pages[index];
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    getOrdersByCurrentMonthAndYear();
+    getMonthlyRevenueDashboardData();
   }
 
-  Future<void> getOrdersByCurrentMonthAndYear() async {
+  String getTitlePage() {
+    switch (currentIndex) {
+      case 0:
+        return "Doanh thu";
+      case 1:
+        return "Danh sách các đơn hàng";
+      case 2:
+        return "Hồ sơ cá nhân";
+      default:
+        return "";
+    }
+  }
+
+  void changePage(int index) {
+    currentIndex = index;
+    update(["1"]);
+  }
+
+  Future<void> getMonthlyRevenueDashboardData() async {
     isLoading = true;
     update();
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final firstDayOfNextMonth =
-        (now.month == 12)
-            ? DateTime(now.year + 1, 1, 1)
-            : DateTime(now.year, now.month + 1, 1);
-    List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
-      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
-      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
-    );
-    List<CustomerOrder> ordersToday =
-        orders.where((order) {
-          final orderTime = order.orderTime;
-          return orderTime != null &&
-              orderTime.year == now.year &&
-              orderTime.month == now.month &&
-              orderTime.day == now.day;
-        }).toList();
-
-    totalOrder =
-        ordersToday
-            .where((order) => order.status.name == OrderStatus.finished.name)
-            .length;
-    ;
-    totalProcessingOrder =
-        ordersToday
-            .where((order) => order.status.name != OrderStatus.finished.name)
-            .length;
-    totalRevenue = ordersToday
-        .where((order) => order.status.name == OrderStatus.finished.name)
-        .fold<int>(0, (sum, order) => sum + (order.totalAmount ?? 0));
-
-    for (var order in orders) {
-      final orderTime = order.orderTime;
-      if (orderTime == null || order.status.name != OrderStatus.finished.name)
-        continue;
-      final day = orderTime.day;
-      dailyRevenue[day] = (dailyRevenue[day] ?? 0) + (order.total ?? 0);
-    }
+    dailyRevenue = await CustomerOrderSnapshot.groupDataToStatisticChart();
+    summary = await CustomerOrderSnapshot.getOrderSummaryStatistic();
     isLoading = false;
     update();
   }
@@ -67,5 +64,7 @@ class BindingDashboardDashboardController extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => DashboardManagerController());
+    Get.lazyPut(() => OrdersManagerController());
+    Get.lazyPut(() => UserController());
   }
 }

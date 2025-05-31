@@ -67,7 +67,8 @@ class CustomerOrder {
           json["manager"] == null ? null : AppUser.fromJson(json["manager"]),
       shipper:
           json["shipper"] == null ? null : AppUser.fromJson(json["shipper"]),
-      totalAmount: (json["total_amount"] as num).toInt(),
+      totalAmount:
+          json["shipper"] == null ? 0 : (json["total_amount"] as num).toInt(),
       orderTime:
           json["order_time"] != null
               ? DateTime.parse(json["order_time"])
@@ -126,6 +127,71 @@ class CustomerOrderSnapshot {
       ids: ["order_id"],
       fromJson: CustomerOrder.fromJson,
     );
+  }
+
+  static Future<List<CustomerOrder>> getOrdersByCurrentMonthAndYear() async {
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final firstDayOfNextMonth =
+        (now.month == 12)
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
+    List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
+      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
+      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
+    );
+    return orders;
+  }
+
+  static Future<Map<int, int>> groupDataToStatisticChart() async {
+    Map<int, int> dailyRevenue = {};
+
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final firstDayOfNextMonth =
+        (now.month == 12)
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
+    List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
+      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
+      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
+    );
+    for (CustomerOrder order in orders) {
+      final orderTime = order.orderTime;
+      if (orderTime == null || order.status.name != OrderStatus.finished.name)
+        continue;
+      final day = orderTime.day;
+      dailyRevenue[day] = (dailyRevenue[day] ?? 0) + (order.total ?? 0);
+    }
+    return dailyRevenue;
+  }
+
+  static Future<Map<String, int>> getOrderSummaryStatistic() async {
+    Map<String, int> summary = {
+      "totalOrder": 0,
+      "totalProcessingOrder": 0,
+      "totalRevenue": 0,
+    };
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    final firstDayOfNextMonth =
+        (now.month == 12)
+            ? DateTime(now.year + 1, 1, 1)
+            : DateTime(now.year, now.month + 1, 1);
+    List<CustomerOrder> ordersToday = await CustomerOrderSnapshot.getOrders(
+      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
+      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
+    );
+    for (CustomerOrder order in ordersToday) {
+      summary["totalOrder"] = (summary["totalOrder"] ?? 0) + 1;
+      if (order.status.name == OrderStatus.pending.name) {
+        summary["totalProcessingOrder"] =
+            (summary["totalProcessingOrder"] ?? 0) + 1;
+      } else if (order.status.name == OrderStatus.finished.name) {
+        summary["totalRevenue"] = (summary["totalRevenue"] ?? 0) + order.total!;
+      }
+    }
+    return summary;
   }
 
   static Future<CustomerOrder?> getOrderDetail({
@@ -333,6 +399,4 @@ class CustomerOrderSnapshot {
   //     rethrow;
   //   }
   // }
-
 }
-
