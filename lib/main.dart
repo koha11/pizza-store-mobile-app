@@ -53,12 +53,9 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-<<<<<<< HEAD
-      home: PageAdmin(),
-=======
+      // home: PageAdmin(),
       home: MainLayout(),
       // home: PageAdmin(),
->>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
       debugShowCheckedModeBanner: false,
     );
   }

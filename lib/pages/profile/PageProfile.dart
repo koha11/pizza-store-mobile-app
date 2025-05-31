@@ -7,10 +7,7 @@ import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
-<<<<<<< HEAD
-=======
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
->>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
 import 'package:pizza_store_app/pages/profile/PageAddress.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeEmail.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';

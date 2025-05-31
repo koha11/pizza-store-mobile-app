@@ -198,7 +198,6 @@ class SupabaseSnapshot {
       }
     }
 
-<<<<<<< HEAD
     if (orObject != null && orObject.isNotEmpty) {
       final orString = orObject
           .map((cond) => cond.entries
@@ -208,8 +207,6 @@ class SupabaseSnapshot {
       query = query.or(orString);
     }
 
-=======
->>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
     var data = await query;
 
     ts = data.map(fromJson).toList();
@@ -319,7 +316,6 @@ class SupabaseSnapshot {
     return stream.map((mapList) => mapList.map((e) => fromJson(e)).toList());
   }
 
-<<<<<<< HEAD
   static Future<List<T>> search<T>({
     required String table,
     required String columnName,
@@ -340,7 +336,4 @@ class SupabaseSnapshot {
     }
   }
 }
-
-=======
 // dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách
->>>>>>> bdf80e6490ea89d8843106692d227d1b2c2ed344
