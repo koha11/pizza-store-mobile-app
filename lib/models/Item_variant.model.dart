@@ -4,15 +4,22 @@ import '../helpers/supabase.helper.dart';
 
 class ItemVariant {
   String categoryId, variantId;
+  Variant variant;
 
   static String tableName = "item_variant";
+  static const String selectAllStr = "*, variant(*, variant_type(*))";
 
-  ItemVariant({required this.variantId, required this.categoryId});
+  ItemVariant({
+    required this.variantId,
+    required this.categoryId,
+    required this.variant,
+  });
 
   factory ItemVariant.fromJson(Map<String, dynamic> json) {
     return ItemVariant(
       variantId: json["variant_id"],
       categoryId: json["category_id"],
+      variant: Variant.fromJson(json["variant"]),
     );
   }
 
@@ -33,6 +40,7 @@ class ItemVariantSnapshot {
       table: ItemVariant.tableName,
       fromJson: ItemVariant.fromJson,
       equalObject: equalObject,
+      selectString: ItemVariant.selectAllStr,
     );
   }
 
@@ -44,6 +52,7 @@ class ItemVariantSnapshot {
       fromJson: ItemVariant.fromJson,
       getId: (p0) => p0.variantId,
       equalObject: equalObject,
+      selectString: ItemVariant.selectAllStr,
     );
   }
 }

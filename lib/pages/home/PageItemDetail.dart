@@ -64,7 +64,7 @@ class PageItemDetail extends StatelessWidget {
                       ListView(
                         shrinkWrap: true,
                         children:
-                            controller.variants!.keys
+                            controller.variantsMap!.keys
                                 .map(
                                   (variantTypeName) => ListTile(
                                     contentPadding: EdgeInsets.zero,
@@ -77,7 +77,7 @@ class PageItemDetail extends StatelessWidget {
                                     ),
                                     subtitle: Column(
                                       children:
-                                          controller.variants![variantTypeName]!.map((
+                                          controller.variantsMap![variantTypeName]!.map((
                                             variant,
                                           ) {
                                             return RadioListTile(

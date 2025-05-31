@@ -8,6 +8,7 @@ class Variant {
   int priceChange;
 
   static const String tableName = "variant";
+  static const selectAllStr = "*, variant_type(*)";
 
   Variant({
     required this.variantId,
@@ -44,7 +45,7 @@ class VariantSnapshot {
     return SupabaseSnapshot.getList(
       table: Variant.tableName,
       fromJson: Variant.fromJson,
-      selectString: "*, variant_type(*)",
+      selectString: Variant.selectAllStr,
     );
   }
 
@@ -54,7 +55,7 @@ class VariantSnapshot {
           table: Variant.tableName,
           fromJson: Variant.fromJson,
           getId: (p0) => p0.variantId,
-          selectString: "*, variant_type(*)",
+          selectString: Variant.selectAllStr,
         );
 
     return variants;

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/models/Item_variant.model.dart';
+import 'package:pizza_store_app/models/category.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
 
 class ItemDetailController extends GetxController {
@@ -8,14 +9,14 @@ class ItemDetailController extends GetxController {
 
   ItemDetailController(this.categoryId, this.tag);
 
-  Map<String, Variant>? _variantMaps;
-  Iterable<ItemVariant>? _itemVariants;
-  Map<String, List<Variant>>? _myVariants;
+  List<Variant>? _variants;
+  Map<String, List<Variant>>? _variantsMap;
   Map<String, String> _variantCheckList = {};
 
   static ItemDetailController get(String id) => Get.find(tag: id);
-  // Iterable<Variant>? get variants => _variantMaps?.values;
-  Map<String, List<Variant>>? get variants => _myVariants;
+  List<Variant>? get variants => _variants;
+  Map<String, List<Variant>>? get variantsMap => _variantsMap;
+
   Map<String, String> get variantCheckList => _variantCheckList;
 
   // get cart
@@ -25,35 +26,25 @@ class ItemDetailController extends GetxController {
     // TODO: implement onInit
     super.onInit();
 
-    _itemVariants = await ItemVariantSnapshot.getItemVariants(
-      equalObject: {"category_id": categoryId},
-    );
+    final category = await CategorySnapshot.getCategoryById(categoryId);
 
-    List<String> variantIds =
-        _itemVariants == null
-            ? []
-            : _itemVariants!.map((e) => e.variantId).toList();
+    _variants = category!.variants;
+    _variantsMap = {};
 
-    _variantMaps = await VariantSnapshot.getMapVariants();
+    for (var variant in _variants!) {
+      if (_variantsMap!.containsKey(variant.variantType.variantTypeName)) {
+        _variantsMap!.update(variant.variantType.variantTypeName, (
+          variantList,
+        ) {
+          variantList.add(variant);
+          return variantList;
+        });
+      } else {
+        _variantsMap!.assign(variant.variantType.variantTypeName, [variant]);
 
-    _myVariants = {};
-
-    _variantMaps!.forEach((variantId, variant) {
-      if (variantIds.contains(variantId)) {
-        if (_myVariants!.containsKey(variant.variantType.variantTypeName)) {
-          _myVariants!.update(variant.variantType.variantTypeName, (
-            variantList,
-          ) {
-            variantList.add(variant);
-            return variantList;
-          });
-        } else {
-          _myVariants!.assign(variant.variantType.variantTypeName, [variant]);
-
-          _variantCheckList.assign(variant.variantType.variantTypeName, "");
-        }
+        _variantCheckList.assign(variant.variantType.variantTypeName, "");
       }
-    });
+    }
 
     update([tag]);
   }
