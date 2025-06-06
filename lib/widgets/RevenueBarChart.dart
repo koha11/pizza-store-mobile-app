@@ -62,7 +62,10 @@ class RevenueBarChart extends StatelessWidget {
               );
             }).toList(),
         gridData: FlGridData(show: false),
-        maxY: (revenueByDay.values.reduce((a, b) => a > b ? a : b)) + 50,
+        maxY:
+            revenueByDay.values.isNotEmpty
+                ? revenueByDay.values.reduce((a, b) => a > b ? a : b) + 50
+                : 100,
       ),
     );
   }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_shipper.dart';
+import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 
 class PageListShipper extends StatelessWidget {
   const PageListShipper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ShipperController>(
-      init: ShipperController.get(),
+    return GetBuilder<OrderDetailManagerController>(
       builder: (controller) {
         return Scaffold(
           backgroundColor: Colors.grey[100],

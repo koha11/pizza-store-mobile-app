@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class OrderDetailManagerController extends GetxController {
@@ -8,6 +9,7 @@ class OrderDetailManagerController extends GetxController {
   OrderDetailManagerController({required this.orderId});
 
   CustomerOrder? orderDetail;
+  List<AppUser> shipperList = [];
 
   bool isLoading = true;
 
@@ -16,12 +18,23 @@ class OrderDetailManagerController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     getOrderDetail();
+    fetchShippers();
   }
 
   Future<void> getOrderDetail() async {
     isLoading = true;
     update();
     orderDetail = await CustomerOrderSnapshot.getOrderDetail(orderId: orderId);
+    isLoading = false;
+    update();
+  }
+
+  Future<void> fetchShippers() async {
+    isLoading = true;
+    update();
+    shipperList = await AppUserSnapshot.getAppUsers(
+      equalObject: {"role_id": "SHIPPER"},
+    );
     isLoading = false;
     update();
   }
