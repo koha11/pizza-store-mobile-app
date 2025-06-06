@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
-import 'package:pizza_store_app/controllers/controller_shipper.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/order_manager/PageListShipper.dart';
@@ -217,8 +216,6 @@ class PageOrderDetailManager extends StatelessWidget {
                                           AppUser selectedShipper =
                                               await Get.to(
                                                 () => PageListShipper(),
-                                                binding:
-                                                    BindingShipperController(),
                                               );
                                           if (selectedShipper != null) {
                                             await controller
