@@ -15,9 +15,9 @@ class PageOrdersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<OrdersManagerController>(
       id: "orders",
-      init: OrdersManagerController.get(),
+      // init: OrdersManagerController.get(),
       builder: (controller) {
         final selectStatus = controller.orderStatus;
         final orders = controller.orders;
