@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
-import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HistoryCartController extends GetxController {
-  List<CustomerOrder> pendingOrders = []; // list chứa các đối tượng CustomerOderId
+  List<CustomerOrder> pendingOrders =
+      []; // list chứa các đối tượng CustomerOderId
 
   bool _isLoading = true;
 
@@ -40,13 +38,6 @@ class HistoryCartController extends GetxController {
 
     isLoading = false;
     update();
-  }
-
-  // lấy thông tin đơn hàng cự thể thông qua
-  Future<List<OrderDetail>> fetchOrderDetails(String orderId) async {
-    final map = await CustomerOrderSnapshot.getCartItems(orderId);
-    return map.values
-        .toList(); //Kết quả trả về là một Map<String, OrderDetail> với Key là itemIdHistoryCartController
   }
 }
 
