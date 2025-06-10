@@ -12,7 +12,6 @@ class OrdersManagerController extends GetxController {
     null,
     ...OrderStatus.values.where((element) => element != OrderStatus.cart),
   ];
-  StreamSubscription<List<CustomerOrder>>? orderSub;
   static OrdersManagerController get() => Get.find();
   @override
   void onInit() {

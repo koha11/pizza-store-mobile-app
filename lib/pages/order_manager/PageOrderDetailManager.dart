@@ -70,7 +70,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      "${order.orderId}",
+                                      order.orderId,
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -85,7 +85,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      "${formatDateTime(order.orderTime)}",
+                                      formatDateTime(order.orderTime),
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -100,7 +100,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      "${formatDateTime(order.acceptTime)}",
+                                      formatDateTime(order.acceptTime),
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -115,7 +115,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      "${order.paymentMethod! ? "Ngân hàng" : "Thanh toán khi nhận hàng"}",
+                                      "${order.paymentMethod ? "Ngân hàng" : "Thanh toán khi nhận hàng"}",
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -188,7 +188,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                             runSpacing: 4,
                                             children: [
                                               Text(
-                                                "${order.shipper!.userName}",
+                                                order.shipper!.userName,
                                                 style: TextStyle(fontSize: 17),
                                               ),
                                               Text(
@@ -261,7 +261,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                             runSpacing: 4,
                                             children: [
                                               Text(
-                                                "${order.customer!.userName}",
+                                                order.customer!.userName,
                                                 style: TextStyle(fontSize: 18),
                                               ),
                                               Text(
@@ -275,12 +275,12 @@ class PageOrderDetailManager extends StatelessWidget {
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            "${order.customer!.email ?? ""}",
+                                            "${order.customer!.email}",
                                             style: TextStyle(fontSize: 15),
                                           ),
                                           SizedBox(height: 4),
                                           Text(
-                                            "${order.shippingAddress ?? ""}",
+                                            "${order.shippingAddress}",
                                             style: TextStyle(
                                               fontSize: 17,
                                               color: Colors.grey[700],
@@ -337,7 +337,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                                     child: Container(
                                                       height: 85,
                                                       child: Image.network(
-                                                        e.item?.itemImage ??
+                                                        e.item.itemImage ??
                                                             "https://via.placeholder.com/80",
                                                         fit: BoxFit.contain,
                                                       ),
@@ -355,7 +355,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          e.item?.itemName ??
+                                                          e.item.itemName ??
                                                               "Tên món",
                                                           style: TextStyle(
                                                             fontSize: 18,
@@ -376,20 +376,20 @@ class PageOrderDetailManager extends StatelessWidget {
                                                                   .start,
                                                           children: [
                                                             Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
                                                               children: [
                                                                 Text(
-                                                                  "Số lượng",
+                                                                  "Số lượng:",
                                                                   style:
                                                                       TextStyle(
                                                                         fontSize:
                                                                             15,
                                                                       ),
                                                                 ),
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
                                                                 Text(
-                                                                  "x${e.amount}",
+                                                                  "${e.amount}",
                                                                   style:
                                                                       TextStyle(
                                                                         fontSize:
