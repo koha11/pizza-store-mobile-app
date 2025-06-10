@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
-import 'package:pizza_store_app/pages/PageOrderDetails.dart';
+import 'package:pizza_store_app/pages/shipper/PageOrderDetails.dart';
 
-import '../controllers/controller_pending_order.dart';
-import '../enums/OrderStatus.dart';
-import '../layouts/MainLayout.dart';
+import '../../controllers/controller_pending_order.dart';
+import '../../enums/OrderStatus.dart';
+import '../../layouts/MainLayout.dart';
 
 class PagePendingOrder extends StatelessWidget {
   PagePendingOrder({super.key});
-  final orderListController = Get.put(OrderListController());
+  // final orderListController = Get.put(OrderListController());
 
   @override
   Widget build(BuildContext context) {
     int index = 0;
+    Get.put(OrderListController());
     return GetBuilder<OrderListController>(
       init: OrderListController.get(),
       builder: (controller) {
@@ -223,15 +225,14 @@ class PagePendingOrder extends StatelessWidget {
     return GetBuilder<OrderListController>(
       init: OrderListController.get(),
       builder: (controller) {
-        if (controller.isLoadingShipper) {
+        final userController = UserController.get();
+        if (userController.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        final shipper =
-            controller.shipper.isNotEmpty ? controller.shipper.first : null;
-
-        if (shipper == null) {
-          return const Center(child: Text("Không có thông tin nhân viên"));
-        }
+        AppUser shipper = userController.appUser!;
+        // if (shipper == null) {
+        //   return const Center(child: Text("Không có thông tin nhân viên"));
+        // }
         return SingleChildScrollView(
           child: Center(
             child: Padding(
@@ -264,7 +265,7 @@ class PagePendingOrder extends StatelessWidget {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 2 / 3,
                     child:
-                        shipper.avatar != null && shipper.avatar!.isNotEmpty
+                        shipper.avatar != null
                             ? Image.network(shipper.avatar!, fit: BoxFit.cover)
                             : const Icon(Icons.person, size: 100),
                   ),
@@ -274,12 +275,6 @@ class PagePendingOrder extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        _buildShipperInfoRow(
-                          Icons.badge,
-                          shipper.userId,
-                          Colors.blue,
-                        ),
-                        const SizedBox(height: 12),
                         _buildShipperInfoRow(
                           Icons.person,
                           shipper.userName,
@@ -291,6 +286,7 @@ class PagePendingOrder extends StatelessWidget {
                           shipper.phoneNumber,
                           Colors.blue,
                         ),
+                        const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(

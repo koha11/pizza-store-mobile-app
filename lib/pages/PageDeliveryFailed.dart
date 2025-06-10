@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_store_app/pages/PagePendingOrder.dart';
+import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 
 class PageDeliveryFailed extends StatelessWidget {
   const PageDeliveryFailed({super.key});

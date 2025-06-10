@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 
 import '../../helpers/other.helper.dart';
 import '../../layouts/MainLayout.dart';
-import '../PagePendingOrder.dart';
+import '../shipper/PagePendingOrder.dart';
 
 class PageLogin extends StatelessWidget {
   PageLogin({super.key});
@@ -107,7 +107,7 @@ class PageLogin extends StatelessWidget {
                           equalObject: {"user_id": user.id},
                         );
 
-                        Get.to(checkRole(myUser!.roleId));
+                        Get.off(checkRole(myUser!.roleId));
                       } on AuthException catch (e) {
                         if (e.message == "Email not confirmed") {
                           final supabase = Supabase.instance.client;

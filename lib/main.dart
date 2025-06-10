@@ -11,9 +11,9 @@ import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/layouts/ManagerLayout.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/home/PageItem.dart';
-import 'package:pizza_store_app/pages/PageOrderDetails.dart';
+import 'package:pizza_store_app/pages/shipper/PageOrderDetails.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
-import 'package:pizza_store_app/pages/PagePendingOrder.dart';
+import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;
 
 import 'package:supabase_flutter/supabase_flutter.dart';

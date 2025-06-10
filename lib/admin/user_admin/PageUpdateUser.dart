@@ -1,8 +1,10 @@
 // admin/user_admin/PageUpdateUser.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_admin_user.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_role.model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../controllers/controller_user.dart';
 
@@ -16,7 +18,7 @@ class PageUpdateUser extends StatefulWidget {
 }
 
 class _PageUpdateUserState extends State<PageUpdateUser> {
-  final UserController _controller = Get.find<UserController>();
+  final AdminUserController _controller = Get.find<AdminUserController>();
 
   // Khai báo TextEditingController
   late TextEditingController txtId;
@@ -170,7 +172,7 @@ class _PageUpdateUserState extends State<PageUpdateUser> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      GetBuilder<UserController>(
+                      GetBuilder<AdminUserController>(
                         builder: (controller) {
                           return DropdownButtonFormField<Role>(
                             value: controller.selectedRole,
@@ -204,7 +206,7 @@ class _PageUpdateUserState extends State<PageUpdateUser> {
                 Expanded(
                   child: Column(
                     children: [
-                      GetBuilder<UserController>(
+                      GetBuilder<AdminUserController>(
                         builder: (controller) => _buildImagePreview(controller),
                       ),
                       const SizedBox(height: 10),
@@ -232,7 +234,7 @@ class _PageUpdateUserState extends State<PageUpdateUser> {
     );
   }
 
-  Widget _buildImagePreview(UserController controller) {
+  Widget _buildImagePreview(AdminUserController controller) {
     return Container(
       height: 300,
       decoration: BoxDecoration(

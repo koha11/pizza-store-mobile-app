@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/dialogs/dialog.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import '../../controllers/controller_item.dart';
 
 class PageItemsAdmin extends StatefulWidget {
@@ -167,7 +168,7 @@ class _PageItemsAdminState extends State<PageItemsAdmin> {
                                         flex: 2, child: Text(item.category.categoryName)),
                                     Expanded(
                                         flex: 2,
-                                        child: Text('${item.price.toStringAsFixed(0)} đ')),
+                                        child: Text('${formatMoney(money: item.price)}')),
                                     Expanded(
                                       flex: 2,
                                       child: Row(
