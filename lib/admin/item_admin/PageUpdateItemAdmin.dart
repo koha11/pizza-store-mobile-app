@@ -41,7 +41,7 @@ class _PageUpdateItemAdminState extends State<PageUpdateItemAdmin> {
     txtTen.dispose();
     txtGia.dispose();
     txtMota.dispose();
-    _controller.resetEditingState();
+    // _controller.resetEditingState();
     super.dispose();
   }
 
