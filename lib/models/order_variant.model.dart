@@ -50,4 +50,15 @@ class OrderVariantSnapshot {
       selectString: "*,variant(*)",
     );
   }
+
+  static Future<void> insertOrderVariant(OrderVariant orderVariant) async {
+    await SupabaseSnapshot.insert(
+      table: OrderVariant.tableName,
+      insertObject: orderVariant.toJson(),
+    );
+  }
+
+  static Future<void> deleteOrderVariant(OrderVariant orderVariant) async {
+    await SupabaseSnapshot.delete(table: OrderVariant.tableName);
+  }
 }
