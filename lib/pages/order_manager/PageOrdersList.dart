@@ -7,11 +7,10 @@ import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 
+import '../../helpers/other.helper.dart';
+
 class PageOrdersList extends StatelessWidget {
   PageOrdersList({super.key});
-
-  final currencyFormat = NumberFormat.currency(locale: "vi_VN", symbol: "₫");
-  final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +19,18 @@ class PageOrdersList extends StatelessWidget {
       builder: (controller) {
         final selectStatus = controller.orderStatus;
         final orders = controller.orders;
-        final filterOrders =
+        var filterOrders =
             selectStatus == null
                 ? orders
                 : orders
                     .where((element) => element.status == selectStatus)
                     .toList();
+
+        filterOrders.sort(
+          (a, b) => (b.orderTime ?? DateTime(0)).compareTo(
+            a.orderTime ?? DateTime(0),
+          ),
+        );
 
         return Scaffold(
           backgroundColor: Colors.grey[100],
@@ -147,7 +152,7 @@ class PageOrdersList extends StatelessWidget {
                                           ),
                                           Text(
                                             order.orderTime != null
-                                                ? dateFormat.format(
+                                                ? formatDateTime(
                                                   order.orderTime!,
                                                 )
                                                 : "Null",

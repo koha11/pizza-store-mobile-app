@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pizza_store_app/enums/OrderStatus.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -49,8 +50,8 @@ Future<AuthResponse> verify(String token, String email) async {
 // }
 
 Future<String> uploadImage({
-  File? image,             // Cho mobile
-  Uint8List? bytes,        // Cho web
+  File? image, // Cho mobile
+  Uint8List? bytes, // Cho web
   required String bucket,
   required String path,
 }) async {
@@ -174,6 +175,7 @@ class SupabaseSnapshot {
     Map<String, dynamic>? equalObject,
     Map<String, dynamic>? ltObject,
     Map<String, dynamic>? gtObject,
+    Map<String, bool>? sortObject,
     List<Map<String, dynamic>>? orObject,
   }) async {
     List<T> ts = [];
@@ -200,11 +202,18 @@ class SupabaseSnapshot {
 
     if (orObject != null && orObject.isNotEmpty) {
       final orString = orObject
-          .map((cond) => cond.entries
-          .map((e) => '${e.key}.eq.${e.value}')
-          .join(','))
+          .map(
+            (cond) =>
+                cond.entries.map((e) => '${e.key}.eq.${e.value}').join(','),
+          )
           .join(',');
       query = query.or(orString);
+    }
+
+    if (sortObject != null) {
+      for (var entry in sortObject.entries) {
+        query.order(entry.key, ascending: entry.value);
+      }
     }
 
     var data = await query;
@@ -336,4 +345,5 @@ class SupabaseSnapshot {
     }
   }
 }
+
 // dùng ktra đơn hàng đang xử lý tránh có nhiều đơn hàng xử lý cho cùng 1 khách

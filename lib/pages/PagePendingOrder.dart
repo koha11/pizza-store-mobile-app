@@ -165,7 +165,7 @@ class PagePendingOrder extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
                         Center(
-                          child: ElevatedButton(
+                            child: ElevatedButton(
                             onPressed: () {
                               Get.to(
                                 () => PageOrderDetails(orderId: order.orderId),

@@ -28,7 +28,15 @@ class OrdersManagerController extends GetxController {
   Future<void> getOrders() async {
     isLoading = true;
     update(["orders"]);
-    orders = await CustomerOrderSnapshot.getOrders(sortByOrderTimeDesc: true);
+    orders = await CustomerOrderSnapshot.getOrders(
+      sortObject: {"order_time": false},
+      orObject: [
+        {"status": OrderStatus.pending.name},
+        {"status": OrderStatus.finished.name},
+        {"status": OrderStatus.confirmed.name},
+        {"status": OrderStatus.shipping.name},
+      ],
+    );
     isLoading = false;
     update(["orders"]);
   }

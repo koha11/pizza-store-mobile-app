@@ -12,7 +12,6 @@ import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
 import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:pizza_store_app/pages/profile/PageAddress.dart';
-import 'package:pizza_store_app/pages/profile/PageChangeEmail.dart';
 import 'package:pizza_store_app/pages/profile/PageChangeInfo.dart';
 import 'package:pizza_store_app/pages/profile/PageChangePassword.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
@@ -111,29 +110,7 @@ class PageProfile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
-                    GestureDetector(
-                      onTap: () => Get.to(() => PageChangeEmail()),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.email, size: 25),
-                              SizedBox(width: 15),
-                              Text(
-                                "Email",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios, size: 20),
-                        ],
-                      ),
-                    ),
+
                     SizedBox(height: 30),
                     GestureDetector(
                       onTap: () => Get.to(() => PageChangePassword()),
