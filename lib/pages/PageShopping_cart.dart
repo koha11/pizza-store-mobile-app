@@ -160,14 +160,14 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                               IconButton(
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
-                                  controller.decrementAmount(item.itemId);
+                                  controller.updateAmount(item.itemId, true);
                                 },
                               ),
                               Text("${item.amount}"),
                               IconButton(
                                 icon: const Icon(Icons.add),
                                 onPressed: () {
-                                  controller.incrementAmount(item.itemId);
+                                  controller.updateAmount(item.itemId, false);
                                 },
                               ),
                             ],
