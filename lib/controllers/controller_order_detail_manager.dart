@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
@@ -48,9 +49,12 @@ class OrderDetailManagerController extends GetxController {
       managerId: supabase.auth.currentUser!.id,
     );
 
+    await getOrderDetail();
+
+    OrdersManagerController ordersController = OrdersManagerController.get();
+    await ordersController.getOrders();
     isLoading = false;
     update();
-    await getOrderDetail();
   }
 }
 

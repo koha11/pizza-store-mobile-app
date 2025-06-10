@@ -54,9 +54,9 @@ enum OrderStatus {
       case OrderStatus.cart:
         return Colors.grey;
       case OrderStatus.confirmed:
-        return Colors.redAccent;
+        return Colors.orange;
       case OrderStatus.pending:
-        return Colors.red;
+        return Colors.purple;
       case OrderStatus.shipping:
         return Colors.blue;
       case OrderStatus.finished:

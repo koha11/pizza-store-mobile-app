@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
-import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/order_manager/PageListShipper.dart';
 
+import '../../helpers/other.helper.dart';
+
 class PageOrderDetailManager extends StatelessWidget {
-  PageOrderDetailManager({super.key});
-
-  final currencyFormat = NumberFormat.currency(locale: "vi_VN", symbol: "₫");
-
-  String formatDateTime(DateTime? dt) {
-    if (dt == null) return "—";
-    return DateFormat('dd/MM/yyyy HH:mm').format(dt);
-  }
+  const PageOrderDetailManager({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -407,7 +400,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                                                       .end,
                                                               children: [
                                                                 Text(
-                                                                  "${currencyFormat.format(e.actualPrice)}",
+                                                                  "${formatMoney(money: e.actualPrice)}",
                                                                   style: TextStyle(
                                                                     fontSize:
                                                                         16,
@@ -455,7 +448,7 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     Text(
-                                      currencyFormat.format(order.total),
+                                      formatMoney(money: order.total ?? 0),
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -470,7 +463,9 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     Text(
-                                      currencyFormat.format(order.shippingFee),
+                                      formatMoney(
+                                        money: order.shippingFee ?? 0,
+                                      ),
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -485,8 +480,9 @@ class PageOrderDetailManager extends StatelessWidget {
                                       style: TextStyle(fontSize: 18),
                                     ),
                                     Text(
-                                      currencyFormat.format(
-                                        order.total! + order.shippingFee!,
+                                      formatMoney(
+                                        money:
+                                            order.total! + order.shippingFee!,
                                       ),
                                       style: TextStyle(
                                         fontSize: 18,
