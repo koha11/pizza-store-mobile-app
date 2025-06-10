@@ -21,7 +21,7 @@ class OrderVariant {
       variantId: json["variant_id"],
       itemId: json["item_id"],
       orderId: json["order_id"],
-      variant: Variant.fromJson(json["variant_id"]),
+      variant: Variant.fromJson(json["variant"]),
     );
   }
 

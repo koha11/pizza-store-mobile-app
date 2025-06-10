@@ -3,7 +3,7 @@ import 'package:pizza_store_app/models/variant_type.model.dart';
 import '../helpers/supabase.helper.dart';
 
 class Variant {
-  String variantId, variantName;
+  String variantId, variantName, variantTypeId;
   VariantType variantType;
   int priceChange;
 
@@ -13,6 +13,7 @@ class Variant {
   Variant({
     required this.variantId,
     required this.variantName,
+    required this.variantTypeId,
     required this.variantType,
     required this.priceChange,
   });
@@ -21,6 +22,7 @@ class Variant {
     return Variant(
       variantId: json["variant_id"],
       variantName: json["variant_name"],
+      variantTypeId: json["variant_type_id"],
       variantType: VariantType.fromJson(json['variant_type']),
       priceChange: json["price_change"],
     );
