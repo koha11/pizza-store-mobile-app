@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         BindingsHomePizzaStore().dependencies();
         LocationBinding().dependencies();
         BindingsUserController().dependencies();
-        BindingDashboardDashboardController().dependencies();
+        BindingDashboardController().dependencies();
       }),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

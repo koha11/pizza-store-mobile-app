@@ -90,6 +90,11 @@ String formatDateString({required DateTime datetime, bool onlyDate = true}) {
   return dateString.toString();
 }
 
+String formatDateTime(DateTime? dt) {
+  if (dt == null) return "—";
+  return DateFormat('dd/MM/yyyy HH:mm').format(dt);
+}
+
 String formatMoney({required int money}) {
   final locale = "vi_VN";
   final symbol = "₫";

@@ -226,8 +226,7 @@ class CustomerOrderSnapshot {
   static Future<List<CustomerOrder>> getOrders({
     Map<String, String>? equalObject,
     List<Map<String, dynamic>>? orObject,
-    bool sortByPendingFirst = false,
-    bool sortByOrderTimeDesc = true,
+    Map<String, bool>? sortObject,
     Map<String, String>? gtObject,
     Map<String, String>? ltObject,
   }) async {
@@ -239,6 +238,7 @@ class CustomerOrderSnapshot {
       selectString: CustomerOrder.selectAllStr,
       gtObject: gtObject,
       ltObject: ltObject,
+      sortObject: sortObject,
     );
 
     return orders;

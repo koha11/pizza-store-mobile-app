@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 
@@ -47,96 +48,147 @@ class PageListShipper extends StatelessWidget {
                                   Column(
                                     children:
                                         controller.shipperList.map((e) {
-                                          return Column(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Get.back(result: e);
-                                                },
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      child: Image.network(
-                                                        e.avatar ?? "",
-                                                      ),
-                                                      color: Colors.white,
-                                                      height: 90,
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "Mã nhân viên",
-                                                              style: TextStyle(
-                                                                fontSize: 17,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
+                                          return Slidable(
+                                            key: ValueKey(e.userId),
+                                            endActionPane: ActionPane(
+                                              extentRatio: 0.3,
+                                              motion: ScrollMotion(),
+                                              children: [
+                                                SlidableAction(
+                                                  onPressed: (context) {
+                                                    Get.back(result: e);
+                                                  },
+                                                  backgroundColor: Colors.blue,
+                                                  foregroundColor: Colors.white,
+                                                  icon: Icons.edit,
+                                                  label: 'Chọn',
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                SizedBox(height: 20),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Get.back(result: e);
+                                                  },
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      e.avatar != null
+                                                          ? Container(
+                                                            width: 90,
+                                                            height: 90,
+                                                            color: Colors.white,
+                                                            child:
+                                                                Image.network(
+                                                                  e.avatar!,
+                                                                ),
+                                                          )
+                                                          : Container(
+                                                            width: 90,
+                                                            height: 90,
+                                                            color: Colors.white,
+                                                            child: Image.network(
+                                                              "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
                                                             ),
-                                                            SizedBox(width: 10),
-                                                            Text(
-                                                              e.userId,
-                                                              style: TextStyle(
-                                                                fontSize: 17,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
+                                                          ),
 
-                                                        Column(
+                                                      SizedBox(width: 10),
+
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
                                                           children: [
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Mã nhân viên:",
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        17,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    e.userId,
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          17,
+                                                                    ),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+
+                                                            SizedBox(height: 4),
+
                                                             Text(
                                                               e.userName,
                                                               style: TextStyle(
                                                                 fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
                                                               ),
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
                                                             ),
-                                                            SizedBox(width: 10),
+
+                                                            SizedBox(height: 4),
+
                                                             Text(
                                                               "(+84) ${e.phoneNumber}",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
                                                               style: TextStyle(
                                                                 fontSize: 15,
                                                                 color:
                                                                     Colors
                                                                         .grey[600],
                                                               ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
-                                                          ],
-                                                        ),
 
-                                                        Row(
-                                                          children: [
+                                                            SizedBox(height: 4),
+
                                                             Text(
                                                               e.email ?? "",
                                                               style: TextStyle(
                                                                 fontSize: 16,
+                                                                color:
+                                                                    Colors
+                                                                        .blueAccent,
                                                               ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                  ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           );
                                         }).toList(),
                                   ),
