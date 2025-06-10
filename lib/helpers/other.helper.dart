@@ -111,6 +111,8 @@ String formatShortCurrency(int amount) {
 }
 
 Widget checkRole(String role) {
+  final myRole = role;
+  print(myRole);
   switch (role) {
     case "ADMIN":
       return PageAdmin();
