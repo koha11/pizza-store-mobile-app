@@ -49,9 +49,11 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
           ),
         ],
       ),
-      body: GetBuilder<ShoppingCartController>(
+      body: GetBuilder(
+        init: ShoppingCartController.get(),
         builder: (controller) {
           if (controller.cart == null) {
+            controller.initializeCart();
             return Center(child: CircularProgressIndicator());
           }
 

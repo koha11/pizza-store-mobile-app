@@ -28,6 +28,13 @@ class UserController extends GetxController {
     super.onInit();
   }
 
+  @override
+  void onReady() async {
+    // TODO: implement onReady
+    super.onReady();
+    await fetchUser();
+  }
+
   Future<void> fetchUser() async {
     isLoading = true;
     update(["user"]);

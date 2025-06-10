@@ -23,11 +23,20 @@ class ShoppingCartController extends GetxController {
   Map<String, bool> get checkedItems => _checkedItems;
   static ShoppingCartController get() => Get.find();
   Future<void> loadCart() async => await _loadCart();
+  Future<void> initializeCart() async => await _initializeCart();
 
   @override
-  void onInit() {
+  void onInit() async {
+    // TODO: implement onInit
     super.onInit();
-    _initializeCart();
+    await _initializeCart();
+  }
+
+  @override
+  void onReady() async {
+    // TODO: implement onReady
+    super.onReady();
+    await _initializeCart();
   }
 
   // Thêm getter để lấy tổng số lượng sản phẩm
@@ -139,9 +148,12 @@ class ShoppingCartController extends GetxController {
   Future<void> _loadCart() async {
     _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
 
-    for (var od in _cart!.orderDetails!) {
-      _checkedItems[od.itemId] = false;
+    if (_cart != null) {
+      for (var od in _cart!.orderDetails!) {
+        _checkedItems[od.itemId] = false;
+      }
     }
+
     update();
   }
 
@@ -200,13 +212,15 @@ class ShoppingCartController extends GetxController {
       } else {
         await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
         myVariantMap.forEach((key, value) async {
-          await OrderVariantSnapshot.insertOrderVariant(
-            OrderVariant(
-              variantId: value,
-              itemId: item.itemId,
-              orderId: _cart!.orderId,
-            ),
-          );
+          if (value.isNotEmpty) {
+            await OrderVariantSnapshot.insertOrderVariant(
+              OrderVariant(
+                variantId: value,
+                itemId: item.itemId,
+                orderId: _cart!.orderId,
+              ),
+            );
+          }
         });
 
         // await _loadCartItems();
