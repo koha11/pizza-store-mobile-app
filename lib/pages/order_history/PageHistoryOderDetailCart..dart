@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
-import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PagePendingDetailCart extends StatefulWidget {
   final List<OrderDetail> selectedItems;
@@ -106,7 +102,7 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
                                   child: Text(
-                                    item.item?.itemName ?? "Không rõ tên",
+                                    item.item.itemName ?? "Không rõ tên",
                                   ),
                                 ),
                                 Padding(
@@ -178,29 +174,26 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              GetBuilder<UserController>(
-                id: "address",
-                builder: (userController) {
-                  final addresses = userController.userAddress?.first.address;
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text("Địa chỉ: ${widget.order.shippingAddress}"),
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.location_on, color: Colors.red),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text("Địa chỉ: ${addresses}")),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -229,7 +222,7 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
@@ -237,7 +230,11 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                   ),
                   child: const Text(
                     "Hủy đơn hàng",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),

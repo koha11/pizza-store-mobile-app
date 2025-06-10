@@ -116,11 +116,12 @@ class PageItemDetail extends StatelessWidget {
                                                   ),
                                                   groupValue:
                                                       controller
-                                                          .variantCheckList[variantTypeName],
+                                                          .variantCheckList[variant
+                                                          .variantTypeId],
                                                   onChanged: (value) {
                                                     controller.checkVariant(
-                                                      variantTypeName:
-                                                          variantTypeName,
+                                                      variantTypeId:
+                                                          variant.variantTypeId,
                                                       variantId: value!,
                                                     );
                                                   },

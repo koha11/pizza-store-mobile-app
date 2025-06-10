@@ -5,7 +5,7 @@ import 'variant.model.dart';
 
 class OrderVariant {
   String variantId, itemId, orderId;
-  Variant variant;
+  Variant? variant;
   static String tableName = "order_variant";
   static const String selectAllStr =
       "*, variant:variant_id (*),order_detail(*, item:item_id (*, category:category_id (*)))";
@@ -13,7 +13,7 @@ class OrderVariant {
     required this.variantId,
     required this.itemId,
     required this.orderId,
-    required this.variant,
+    this.variant,
   });
 
   factory OrderVariant.fromJson(Map<String, dynamic> json) {
@@ -21,7 +21,8 @@ class OrderVariant {
       variantId: json["variant_id"],
       itemId: json["item_id"],
       orderId: json["order_id"],
-      variant: Variant.fromJson(json["variant"]),
+      variant:
+          json["variant"] != null ? Variant.fromJson(json["variant"]) : null,
     );
   }
 

@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_item_detail.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/models/order_variant.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
@@ -19,6 +22,7 @@ class ShoppingCartController extends GetxController {
 
   Map<String, bool> get checkedItems => _checkedItems;
   static ShoppingCartController get() => Get.find();
+  Future<void> loadCart() async => await _loadCart();
 
   @override
   void onInit() {
@@ -115,45 +119,48 @@ class ShoppingCartController extends GetxController {
       update();
     } catch (e) {
       print('Lỗi xóa item đã chọn: $e');
-      await _loadCartItems();
+      // await _loadCartItems();
     }
   }
 
   Future<void> _initializeCart() async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
+    final userId = UserController.get().appUser?.userId;
     if (userId == null) return;
     _customerId = userId;
 
     // Tìm giỏ hàng đang cart của user
-    _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
-    // Nếu không có giỏ hàng nào, tạo mới
+    await _loadCart(); // Nếu không có giỏ hàng nào, tạo mới
+
     _cart ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
+
+    update();
   }
 
   Future<void> _loadCart() async {
     _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
+
     for (var od in _cart!.orderDetails!) {
       _checkedItems[od.itemId] = false;
     }
     update();
   }
 
-  Future<void> _loadCartItems() async {
-    if (_cart == null) {
-      // _cartItems.clear();
-      _checkedItems.clear();
-      update();
-      return;
-    }
-    // _cartItems = _cart!.orderId as Map<String, OrderDetail>;
-    for (var od in _cart!.orderDetails!) {
-      _checkedItems[od.itemId] = false;
-    }
-
-    _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
-
-    update();
-  }
+  // Future<void> _loadCartItems() async {
+  //   if (_cart == null) {
+  //     // _cartItems.clear();
+  //     _checkedItems.clear();
+  //     update();
+  //     return;
+  //   }
+  //   // _cartItems = _cart!.orderId as Map<String, OrderDetail>;
+  //   for (var od in _cart!.orderDetails!) {
+  //     _checkedItems[od.itemId] = false;
+  //   }
+  //
+  //   _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
+  //
+  //   update();
+  // }
 
   Future<void> addToCart(Item item, int amount) async {
     try {
@@ -170,12 +177,12 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
-
       if (_cart == null) {
         await _initializeCart();
       }
-
       OrderDetail? myOD;
+      Map<String, String> myVariantMap =
+          ItemDetailController.get(item.itemId).variantCheckList;
 
       try {
         myOD = _cart!.orderDetails?.firstWhere(
@@ -184,7 +191,6 @@ class ShoppingCartController extends GetxController {
       } catch (e) {
         myOD = null;
       }
-
       if (myOD != null) {
         OrderDetailSnapshot.updateItemAmount(
           _cart!.orderId,
@@ -193,26 +199,19 @@ class ShoppingCartController extends GetxController {
         );
       } else {
         await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
-        await _loadCartItems();
+        myVariantMap.forEach((key, value) async {
+          await OrderVariantSnapshot.insertOrderVariant(
+            OrderVariant(
+              variantId: value,
+              itemId: item.itemId,
+              orderId: _cart!.orderId,
+            ),
+          );
+        });
+
+        // await _loadCartItems();
+        await _loadCart();
       }
-
-      // if(_cart?.orderDetails?.any((od) => od.itemId == item.itemId,) != null) {
-      //   _cart.
-      // }
-
-      // if (_cartItems.containsKey(item.itemId)) {
-      //   final newAmount = _cartItems[item.itemId]!.amount + amount;
-      //   _cartItems[item.itemId]!.amount = newAmount;
-      //   await OrderDetailSnapshot.updateItemAmount(
-      //     _cart!.orderId,
-      //     item.itemId,
-      //     newAmount,
-      //   );
-      // } else {
-      //   await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
-      //   await _loadCartItems();
-      // }
-      update();
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
@@ -220,7 +219,7 @@ class ShoppingCartController extends GetxController {
       );
     } catch (e) {
       print('Error adding to cart: $e');
-      await _loadCartItems();
+      // await _loadCartItems();
       Get.snackbar(
         'Lỗi',
         'Không thể thêm sản phẩm vào giỏ hàng',
@@ -236,7 +235,6 @@ class ShoppingCartController extends GetxController {
         orderId: _cart!.orderId,
         itemId: itemId,
       );
-
       await _loadCart();
     } catch (e) {
       print('Error removing from cart: $e');
@@ -321,10 +319,17 @@ class ShoppingCartController extends GetxController {
 
       // Chuyen nhung order detail dang co trang thai checked -> order moi
       for (var item in _checkedItems.entries) {
-        if (item.value && _cartItems.containsKey(item.key)) {
+        if (item.value) {
+          OrderDetail? newOrderDetail;
+          try {
+            newOrderDetail = _cart!.orderDetails?.firstWhere(
+              (od) => od.itemId == item.key,
+            );
+          } catch (e) {}
+
           // tao order detail moi
-          var newOrderDetail = _cartItems[item.key]!;
-          newOrderDetail.orderId = newOrderId;
+          // var newOrderDetail = _cart!.orderDetails[item.key]!;
+          newOrderDetail!.orderId = newOrderId;
           await OrderDetailSnapshot.createOrderDetail(
             orderDetail: newOrderDetail,
           );
@@ -337,7 +342,7 @@ class ShoppingCartController extends GetxController {
         }
       }
 
-      await _loadCartItems();
+      // await _loadCartItems();
       _checkedItems.clear();
       update();
 
@@ -361,13 +366,14 @@ class ShoppingCartController extends GetxController {
     _checkedItems.clear();
     _cart!.orderId;
     _customerId = null;
-    _loadCartItems();
+    // _loadCartItems();
   }
 }
 
 class BindingsShoppingCart extends Bindings {
   @override
   void dependencies() {
-    Get.put<ShoppingCartController>(ShoppingCartController());
+    // Get.put<ShoppingCartController>(ShoppingCartController());
+    Get.lazyPut(() => ShoppingCartController());
   }
 }
