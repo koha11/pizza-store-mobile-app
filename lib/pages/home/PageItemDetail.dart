@@ -29,35 +29,35 @@ class PageItemDetail extends StatelessWidget {
               children: [
                 Image.network(item.itemImage ?? ""),
                 Padding(
-                  padding: const EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "${item.itemName}",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${item.itemName}",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "${formatMoney(money: item.price)}",
+                            style: TextStyle(
+                              fontSize: 24,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        "${formatMoney(money: item.price)}",
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                        ),
-                      ),
-                      SizedBox(height: 20),
                       Divider(height: 2, thickness: 2),
                       SizedBox(height: 10),
-                      Text(
-                        "Description",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
                       Text("${item.description ?? ""}"),
                       SizedBox(height: 10),
 
@@ -68,12 +68,24 @@ class PageItemDetail extends StatelessWidget {
                                 .map(
                                   (variantTypeName) => ListTile(
                                     contentPadding: EdgeInsets.zero,
-                                    title: Text(
-                                      variantTypeName,
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    title: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          variantTypeName,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Bat buoc, chon 1",
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ],
                                     ),
                                     subtitle: Column(
                                       children:
@@ -83,16 +95,20 @@ class PageItemDetail extends StatelessWidget {
                                                 return RadioListTile(
                                                   value: variant.variantId,
                                                   title: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text(variant.variantName),
                                                       SizedBox(width: 10),
                                                       variant.priceChange != 0
                                                           ? Text(
-                                                            "+ ${variant.priceChange}",
+                                                            "+ ${formatMoney(money: variant.priceChange)}",
                                                             style: TextStyle(
-                                                              backgroundColor:
-                                                                  Colors.grey,
-                                                              fontSize: 20,
+                                                              fontSize: 14,
                                                             ),
                                                           )
                                                           : Text(""),

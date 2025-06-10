@@ -13,14 +13,18 @@ class PageSearch extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: MySearchingBar()),
       body: GetBuilder(
-        id: "1",
         init: SearchItemController.get(),
         builder: (controller) {
           final items = controller.items.toList();
 
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                top: 24.0,
+                bottom: 24.0,
+              ),
               child: ListView.separated(
                 shrinkWrap: true,
                 itemBuilder: (context, index) {

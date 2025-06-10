@@ -8,7 +8,9 @@ class SearchItemController extends GetxController {
 
   static SearchItemController get() => Get.find();
   Iterable<Item> get items => _itemMaps.values.where(
-    (item) => item.itemName.toLowerCase().contains(searchString.toLowerCase()),
+    (item) =>
+        item.itemName.toLowerCase().contains(searchString.toLowerCase()) &&
+        searchString.isNotEmpty,
   );
 
   @override
@@ -18,12 +20,12 @@ class SearchItemController extends GetxController {
 
     _itemMaps = await ItemSnapshot.getMapItems();
 
-    update(["1"]);
+    update();
   }
 
   void searchItem(String query) {
     searchString = query;
-    update(["1"]);
+    update();
   }
 }
 
