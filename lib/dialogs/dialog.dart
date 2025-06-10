@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/admin/user_admin/PageUpdateUser.dart';
-import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/admin/user_admin/PageUpdateUserAdmin.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 
-import '../admin/item_admin/PageAddItem.dart';
-import '../admin/item_admin/PageUpdateItem.dart';
-import '../admin/user_admin/PageAddUser.dart';
-import '../controllers/controller_admin_user.dart';
-import '../controllers/controller_item.dart';
+import '../admin/item_admin/PageAddItemAdmin.dart';
+import '../admin/item_admin/PageUpdateItemAdmin.dart';
+import '../admin/user_admin/PageAddUserAdmin.dart';
+import '../controllers/controller_item_admin.dart';
+import '../controllers/controller_user_admin.dart';
 
-final ItemController _itemController = Get.find<ItemController>();
-final AdminUserController _adminUserController = Get.find<AdminUserController>();
+final ItemAdminController _itemController = Get.find<ItemAdminController>();
+final UserAdminController _adminUserController =
+    Get.find<UserAdminController>();
 
 Future<bool?> showConfirmDialog(BuildContext context, String message) async {
   return showDialog<bool>(
@@ -37,13 +37,13 @@ Future<bool?> showConfirmDialog(BuildContext context, String message) async {
   );
 }
 
-void showSnackBar(BuildContext context,
-    {required String message, Color? backgroundColor}) {
+void showSnackBar(
+  BuildContext context, {
+  required String message,
+  Color? backgroundColor,
+}) {
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: backgroundColor,
-    ),
+    SnackBar(content: Text(message), backgroundColor: backgroundColor),
   );
 }
 
@@ -54,7 +54,7 @@ Future<void> showAddItemDialog(BuildContext context) async {
       return Dialog(
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: const PageAddItem(),
+          child: const PageAddItemAdmin(),
         ),
       );
     },
@@ -68,21 +68,22 @@ Future<bool?> showDeleteItemDialog(BuildContext context, String itemName) {
   return showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (context) => AlertDialog(
-      title: const Text('Xác nhận xóa'),
-      content: Text('Bạn có chắc muốn xóa món "$itemName"?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Hủy'),
+    builder:
+        (context) => AlertDialog(
+          title: const Text('Xác nhận xóa'),
+          content: Text('Bạn có chắc muốn xóa món "$itemName"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Xóa'),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, true),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          child: const Text('Xóa'),
-        ),
-      ],
-    ),
   );
 }
 
@@ -93,7 +94,7 @@ Future<void> showUpdateItemDialog(BuildContext context, Item item) async {
       return Dialog(
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: PageUpdateItem(item: item),
+          child: PageUpdateItemAdmin(item: item),
         ),
       );
     },
@@ -110,7 +111,7 @@ Future<void> showAddUserDialog(BuildContext context) async {
       return Dialog(
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: const PageAddUser(),
+          child: const PageAddUserAdmin(),
         ),
       );
     },
@@ -124,21 +125,22 @@ Future<bool?> showDeleteUserDialog(BuildContext context, String userName) {
   return showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (context) => AlertDialog(
-      title: const Text('Xác nhận xóa'),
-      content: Text('Bạn có chắc muốn xóa khách hàng "$userName"?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Hủy'),
+    builder:
+        (context) => AlertDialog(
+          title: const Text('Xác nhận xóa'),
+          content: Text('Bạn có chắc muốn xóa khách hàng "$userName"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Xóa'),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, true),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          child: const Text('Xóa'),
-        ),
-      ],
-    ),
   );
 }
 
@@ -149,7 +151,7 @@ Future<void> showUpdateUserDialog(BuildContext context, AppUser user) async {
       return Dialog(
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.6,
-          child: PageUpdateUser(user: user),
+          child: PageUpdateUserAdmin(user: user),
         ),
       );
     },

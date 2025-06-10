@@ -1,57 +1,63 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pizza_store_app/models/Item.model.dart';
+import 'package:pizza_store_app/models/category.model.dart';
 
 import '../dialogs/dialog.dart';
 import '../helpers/supabase.helper.dart' as SupabaseHelper;
-import '../models/app_user.model.dart';
-import '../models/user_role.model.dart';
 
-class AdminUserController extends GetxController{
-  List<AppUser> user = [];
-  List<Role>? role = [];
-  Role? selectedRole;
-  AppUser? currentEditingUser;
+class ItemAdminController extends GetxController {
+  List<Item> items = [];
+  List<Category>? category = [];
+  Category? selectedCategory;
+  Item? currentEditingItem;
 
-  bool isLoadingUser = true;
-  bool isLoadingRole = true;
+  bool isLoadingItem = true;
+  bool isLoadingCategory = true;
   bool isEditingMode = true;
   bool isUploadingImage = true;
 
   int currentPage = 1;
-  final int usersPerPage = 5;
+  final int itemsPerPage = 5;
   int totalPages = 0;
   String? searchQuery;
   String? uploadedImageUrl;
   PlatformFile? selectedImageFile;
 
-  static AdminUserController get() => Get.find();
+  static ItemAdminController get() => Get.find();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initData();
+  }
 
   Future<void> refreshData() async {
-    await getUsers();
-    await loadRoles();
+    await getItems();
+    await loadCategories();
     calculateTotalPages();
   }
 
   Future<void> _initData() async {
-    await getUsers();
-    await loadRoles();
+    await getItems();
+    await loadCategories();
     calculateTotalPages();
   }
 
-  Future<void> getUsers() async {
-    user = await AppUserSnapshot.getAppUsers();
+  Future<void> getItems() async {
+    items = await ItemSnapshot.getItems();
     calculateTotalPages();
-    isLoadingUser = false;
+    isLoadingItem = false;
     update();
   }
 
   void calculateTotalPages() {
-    totalPages = (user.length / usersPerPage).ceil();
+    totalPages = (items.length / itemsPerPage).ceil();
     update();
   }
 
@@ -59,7 +65,7 @@ class AdminUserController extends GetxController{
     if (currentPage > 1) {
       currentPage--;
       update();
-      fetchUsersAdmin(searchQuery: searchQuery);
+      fetchItems(searchQuery: searchQuery);
     }
   }
 
@@ -67,7 +73,7 @@ class AdminUserController extends GetxController{
     if (currentPage < totalPages) {
       currentPage++;
       update();
-      fetchUsersAdmin(searchQuery: searchQuery);
+      fetchItems(searchQuery: searchQuery);
     }
   }
 
@@ -75,80 +81,86 @@ class AdminUserController extends GetxController{
     searchQuery = value;
     currentPage = 1;
     update();
-    fetchUsersAdmin(searchQuery: searchQuery);
+    fetchItems(searchQuery: searchQuery);
   }
 
-  List<AppUser> get paginatedUser {
-    final startIndex = (currentPage - 1) * usersPerPage;
-    final endIndex = startIndex + usersPerPage;
-    return user.sublist(
+  List<Item> get paginatedItems {
+    final startIndex = (currentPage - 1) * itemsPerPage;
+    final endIndex = startIndex + itemsPerPage;
+    return items.sublist(
       startIndex,
-      endIndex > user.length ? user.length : endIndex,
+      endIndex > items.length ? items.length : endIndex,
     );
   }
 
-  Future<void> fetchUsersAdmin({String? searchQuery}) async {
-
+  Future<void> fetchItems({String? searchQuery}) async {
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      user = await AppUserSnapshot.searchUsers(searchQuery);
+      items = await ItemSnapshot.searchItems(searchQuery);
     } else {
-      user = await AppUserSnapshot.getAppUsers();
+      items = await ItemSnapshot.getItems();
     }
 
     calculateTotalPages();
-    isLoadingUser = false;
+    isLoadingItem = false;
     update();
   }
 
-  Future<void> loadRoles() async {
-    role = await RoleSnapshot.getRoles();
-    isLoadingRole = false;
+  Future<void> loadCategories() async {
+    isLoadingCategory = true;
+    category = await CategorySnapshot.getCategories();
+    isLoadingCategory = false;
     update();
   }
 
-  void setSelectedRole(Role? role) {
-    selectedRole = role;
+  void setSelectedCategory(Category? category) {
+    selectedCategory = category;
     update();
   }
 
-  Future<void> addUser(AppUser user) async {
+  Future<void> addItem(Item item) async {
     try {
-      await AppUserSnapshot.createUser(user: user);
+      isLoadingItem = true;
+      update();
+      await ItemSnapshot.createItem(item: item);
       await refreshData();
       Get.back();
-      Get.snackbar('Thành công', 'Đã thêm khách hàng mới');
+      Get.snackbar('Thành công', 'Đã thêm món mới');
     } catch (e) {
-      Get.snackbar('Lỗi', 'Thêm khách hàng thất bại: ${e.toString()}');
+      Get.snackbar('Lỗi', 'Thêm món thất bại: ${e.toString()}');
     } finally {
-      isLoadingUser = false;
+      isLoadingItem = false;
       update();
       resetImageState();
     }
   }
 
-  Future<void> removeUser(AppUser userId) async {
+  Future<void> removeItem(Item itemId) async {
     try {
-      await AppUserSnapshot.deleteUser(user: userId);
+      isLoadingItem = true;
+      update();
+      await ItemSnapshot.deleteItem(item: itemId);
       await refreshData();
-      Get.snackbar('Thành công', 'Đã xóa khách hàng');
+      Get.snackbar('Thành công', 'Đã xóa món');
     } catch (e) {
-      Get.snackbar('Lỗi', 'Xóa khách hàng thất bại: ${e.toString()}');
+      Get.snackbar('Lỗi', 'Xóa món thất bại: ${e.toString()}');
     } finally {
-      isLoadingUser = false;
+      isLoadingItem = false;
       update();
     }
   }
 
-  Future<void> updateUser(AppUser user) async {
+  Future<void> updateItem(Item item) async {
     try {
-      await AppUserSnapshot.updateUser(user: user);
+      isLoadingItem = true;
+      update();
+      await ItemSnapshot.updateItem(item: item);
       await refreshData();
       Get.back();
-      Get.snackbar('Thành công', 'Đã cập nhật khách hàng');
+      Get.snackbar('Thành công', 'Đã cập nhật món');
     } catch (e) {
-      Get.snackbar('Lỗi', 'Cập nhật khách hàng thất bại: ${e.toString()}');
+      Get.snackbar('Lỗi', 'Cập nhật món thất bại: ${e.toString()}');
     } finally {
-      isLoadingUser = false;
+      isLoadingItem = false;
       update();
       resetImageState();
     }
@@ -176,20 +188,19 @@ class AdminUserController extends GetxController{
       return;
     }
 
-    isUploadingImage = true;
     uploadedImageUrl = null;
     update();
 
     try {
       final String path =
-          'profile/${DateTime.now().millisecondsSinceEpoch}-${file.name}';
+          'item/${DateTime.now().millisecondsSinceEpoch}-${file.name}';
 
       String publicUrl;
 
       if (kIsWeb) {
         publicUrl = await SupabaseHelper.uploadImage(
           bytes: file.bytes!,
-          bucket: 'profile',
+          bucket: 'item',
           path: path,
         );
       } else {
@@ -199,7 +210,7 @@ class AdminUserController extends GetxController{
 
         publicUrl = await SupabaseHelper.uploadImage(
           image: tempFile,
-          bucket: 'profile',
+          bucket: 'item',
           path: path,
         );
 
@@ -217,40 +228,22 @@ class AdminUserController extends GetxController{
     }
   }
 
-  // Future<bool> checkEmailExists(String email) async {
-  //   try {
-  //     final List<AppUser> existingUsers = await AppUserSnapshot.getAppUsers(
-  //       equalObject: {"email": email},
-  //     );
-  //     return existingUsers.isNotEmpty;
-  //   } catch (e) {
-  //     print("Lỗi khi kiểm tra email: $e");
-  //     Get.snackbar('Lỗi', 'Không thể kiểm tra email: ${e.toString()}');
-  //     return true;
-  //   }
-  // }
-
-  Future<void> confirmAndRemoveUser(BuildContext context, AppUser user) async {
-    final confirm = await showDeleteUserDialog(context, user.userName);
+  Future<void> confirmAndRemoveItem(BuildContext context, Item item) async {
+    final confirm = await showDeleteItemDialog(context, item.itemName);
     if (confirm != true) return;
 
     try {
-      isLoadingUser = true;
-      update();
       // Xóa ảnh (nếu có)
-      if (user.avatar != null && user.avatar!.isNotEmpty) {
+      if (item.itemImage != null && item.itemImage!.isNotEmpty) {
         try {
-          String imagePath = user.avatar!;
+          String imagePath = item.itemImage!;
           if (imagePath.startsWith('http')) {
             final uri = Uri.parse(imagePath);
             final segments = uri.pathSegments;
-            final index = segments.indexOf('profile');
+            final index = segments.indexOf('item');
             if (index != -1) {
               imagePath = segments.sublist(index).join('/');
-              await SupabaseHelper.removeImage(
-                bucket: 'profile',
-                path: imagePath,
-              );
+              await SupabaseHelper.removeImage(bucket: 'item', path: imagePath);
             }
           }
         } catch (e) {
@@ -258,15 +251,15 @@ class AdminUserController extends GetxController{
         }
       }
       // Xóa sản phẩm
-      await AppUserSnapshot.deleteUser(user: user);
+      await ItemSnapshot.deleteItem(item: item);
       await refreshData();
 
-      Get.snackbar('Thành công', 'Đã xóa khách hàng');
+      Get.snackbar('Thành công', 'Đã xóa món');
     } catch (e) {
-      Get.snackbar('Lỗi', 'Xóa khách hàng thất bại: ${e.toString()}');
+      Get.snackbar('Lỗi', 'Xóa món thất bại: ${e.toString()}');
       rethrow;
     } finally {
-      isLoadingUser = false;
+      isLoadingItem = false;
       update();
     }
   }
@@ -278,18 +271,18 @@ class AdminUserController extends GetxController{
     update();
   }
 
-  void setupForEditing(AppUser user) {
+  void setupForEditing(Item item) {
     isEditingMode = true;
-    currentEditingUser = user;
-    selectedRole = user.roleId as Role?;
-    uploadedImageUrl = user.avatar;
+    currentEditingItem = item;
+    selectedCategory = item.category;
+    uploadedImageUrl = item.itemImage;
     update();
   }
 
   void resetEditingState() {
     isEditingMode = false;
-    currentEditingUser = null;
-    selectedRole = null;
+    currentEditingItem = null;
+    selectedCategory = null;
     resetImageState();
     update();
   }
@@ -297,7 +290,14 @@ class AdminUserController extends GetxController{
   void resetSearchState() {
     searchQuery = null;
     currentPage = 1;
-    fetchUsersAdmin();
+    fetchItems();
     update();
+  }
+}
+
+class BindingItems extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<ItemAdminController>(() => ItemAdminController());
   }
 }

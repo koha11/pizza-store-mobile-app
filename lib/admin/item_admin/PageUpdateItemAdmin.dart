@@ -2,21 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/models/category.model.dart';
 
-import '../../controllers/controller_item.dart';
+import '../../controllers/controller_item_admin.dart';
 import '../../models/Item.model.dart';
 
-class PageUpdateItem extends StatefulWidget {
-
+class PageUpdateItemAdmin extends StatefulWidget {
   final Item item;
 
-  const PageUpdateItem({super.key, required this.item});
+  const PageUpdateItemAdmin({super.key, required this.item});
 
   @override
-  State<PageUpdateItem> createState() => _PageUpdateItemState();
+  State<PageUpdateItemAdmin> createState() => _PageUpdateItemAdminState();
 }
 
-class _PageUpdateItemState extends State<PageUpdateItem> {
-  final ItemController _controller = Get.find<ItemController>();
+class _PageUpdateItemAdminState extends State<PageUpdateItemAdmin> {
+  final ItemAdminController _controller = Get.find<ItemAdminController>();
   late TextEditingController txtId;
   late TextEditingController txtTen;
   late TextEditingController txtGia;
@@ -77,12 +76,11 @@ class _PageUpdateItemState extends State<PageUpdateItem> {
     return Scaffold(
       appBar: AppBar(
         title: const Center(
-            child: Text(
-              "Cập nhật sản phẩm",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            )),
+          child: Text(
+            "Cập nhật sản phẩm",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -94,82 +92,86 @@ class _PageUpdateItemState extends State<PageUpdateItem> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: txtId,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              signed: false, decimal: false),
-                          decoration: const InputDecoration(
-                            labelText: "Id",
-                            border: OutlineInputBorder(),
-                          ),
-                          readOnly: true,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: txtId,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          signed: false,
+                          decimal: false,
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: txtTen,
-                          decoration: const InputDecoration(
-                            labelText: "Tên sản phẩm",
-                            border: OutlineInputBorder(),
-                          ),
+                        decoration: const InputDecoration(
+                          labelText: "Id",
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: txtGia,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              signed: false, decimal: false),
-                          decoration: const InputDecoration(
-                            labelText: "Giá",
-                            border: OutlineInputBorder(),
-                          ),
+                        readOnly: true,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: txtTen,
+                        decoration: const InputDecoration(
+                          labelText: "Tên sản phẩm",
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: txtMota,
-                          maxLines: 3,
-                          decoration: const InputDecoration(
-                            labelText: "Mô tả",
-                            border: OutlineInputBorder(),
-                          ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: txtGia,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          signed: false,
+                          decimal: false,
                         ),
-                        const SizedBox(height: 12),
-                        GetBuilder<ItemController>(
-                          builder: (controller) {
-                            return DropdownButtonFormField<Category>(
-                              value: controller.selectedCategory,
-                              decoration: const InputDecoration(
-                                labelText: "Danh mục",
-                                border: OutlineInputBorder(),
-                              ),
-                              items: controller.category?.map((Category category) {
-                                return DropdownMenuItem<Category>(
-                                  value: category,
-                                  child: Text(category.categoryName),
-                                );
-                              }).toList(),
-                              onChanged: (Category? newValue) {
-                                controller.setSelectedCategory(newValue);
-                              },
-                              validator: (value) {
-                                if (value == null) {
-                                  return 'Vui lòng chọn danh mục';
-                                }
-                                return null;
-                              },
-                            );
-                          },
+                        decoration: const InputDecoration(
+                          labelText: "Giá",
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 24),
-                      ],
-                    )),
-                const SizedBox(
-                  width: 20,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: txtMota,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: "Mô tả",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      GetBuilder<ItemAdminController>(
+                        builder: (controller) {
+                          return DropdownButtonFormField<Category>(
+                            value: controller.selectedCategory,
+                            decoration: const InputDecoration(
+                              labelText: "Danh mục",
+                              border: OutlineInputBorder(),
+                            ),
+                            items:
+                                controller.category?.map((Category category) {
+                                  return DropdownMenuItem<Category>(
+                                    value: category,
+                                    child: Text(category.categoryName),
+                                  );
+                                }).toList(),
+                            onChanged: (Category? newValue) {
+                              controller.setSelectedCategory(newValue);
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Vui lòng chọn danh mục';
+                              }
+                              return null;
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     children: [
-                      GetBuilder<ItemController>(
+                      GetBuilder<ItemAdminController>(
                         builder: (controller) {
                           return _buildImagePreview(controller);
                         },
@@ -199,7 +201,7 @@ class _PageUpdateItemState extends State<PageUpdateItem> {
     );
   }
 
-  Widget _buildImagePreview(ItemController controller) {
+  Widget _buildImagePreview(ItemAdminController controller) {
     return Container(
       height: 300,
       decoration: BoxDecoration(
@@ -207,27 +209,29 @@ class _PageUpdateItemState extends State<PageUpdateItem> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      child: controller.isUploadingImage
-          ? const Center(child: CircularProgressIndicator())
-          : controller.uploadedImageUrl != null && controller.uploadedImageUrl!.isNotEmpty
-          ? Image.network(
-        controller.uploadedImageUrl!,
-        fit: BoxFit.contain,
-        width: double.infinity,
-        errorBuilder: (context, error, stackTrace) =>
-        const Icon(Icons.error, color: Colors.red),
-      )
-          : const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.image, size: 50, color: Colors.grey),
-          Text('Chưa có ảnh', style: TextStyle(color: Colors.grey)),
-        ],
-      ),
+      child:
+          controller.isUploadingImage
+              ? const Center(child: CircularProgressIndicator())
+              : controller.uploadedImageUrl != null &&
+                  controller.uploadedImageUrl!.isNotEmpty
+              ? Image.network(
+                controller.uploadedImageUrl!,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                errorBuilder:
+                    (context, error, stackTrace) =>
+                        const Icon(Icons.error, color: Colors.red),
+              )
+              : const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image, size: 50, color: Colors.grey),
+                  Text('Chưa có ảnh', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
     );
   }
 }
-
 
 // import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';

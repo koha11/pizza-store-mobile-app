@@ -1,37 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_user_admin.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_role.model.dart';
 
-import '../../controllers/controller_admin_user.dart';
-import '../../controllers/controller_user.dart';
+class PageUpdateUserAdmin extends StatefulWidget {
+  final AppUser user;
 
-class PageAddUser extends StatefulWidget {
-  const PageAddUser({super.key});
+  const PageUpdateUserAdmin({super.key, required this.user});
 
   @override
-  State<PageAddUser> createState() => _PageAddUserState();
+  State<PageUpdateUserAdmin> createState() => _PageUpdateUserAdminState();
 }
 
-class _PageAddUserState extends State<PageAddUser> {
-  final AdminUserController _controller = Get.find<AdminUserController>();
+class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
+  final UserAdminController _controller = Get.find<UserAdminController>();
 
-  final TextEditingController txtId = TextEditingController();
-  final TextEditingController txtUserName = TextEditingController();
-  final TextEditingController txtEmail = TextEditingController();
-  final TextEditingController txtPhone = TextEditingController();
+  // Khai báo TextEditingController
+  late TextEditingController txtId;
+  late TextEditingController txtUserName;
+  late TextEditingController txtEmail;
+  late TextEditingController txtPhone;
+
+  String? initialImageUrl;
 
   @override
   void initState() {
     super.initState();
-    _controller.loadRoles();
+    txtId = TextEditingController(text: widget.user.userId);
+    txtUserName = TextEditingController(text: widget.user.userName);
+    txtEmail = TextEditingController(text: widget.user.email);
+    txtPhone = TextEditingController(text: widget.user.phoneNumber);
+
+    initialImageUrl = widget.user.avatar;
+
+    _controller.loadRoles().then((_) {
+      final initialRole = _controller.role?.firstWhereOrNull(
+        (role) => role.roleId == widget.user.roleId,
+      );
+      _controller.setSelectedRole(initialRole);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.uploadedImageUrl = initialImageUrl;
+      _controller.isUploadingImage = false;
+      _controller.selectedImageFile = null;
+      _controller.update();
+    });
   }
 
   Future<void> _pickImage() async {
     await _controller.pickAndUploadImage();
   }
 
-  Future<void> _addUser() async {
+  Future<void> _updateUser() async {
     if (txtId.text.isEmpty ||
         txtUserName.text.isEmpty ||
         txtEmail.text.isEmpty ||
@@ -40,15 +62,20 @@ class _PageAddUserState extends State<PageAddUser> {
       return;
     }
 
+    // Kiểm tra định dạng email cơ bản
     if (!GetUtils.isEmail(txtEmail.text)) {
       Get.snackbar('Lỗi', 'Email không hợp lệ.');
       return;
     }
 
-    // final bool emailExists = await _controller.checkEmailExists(txtEmail.text);
-    // if (emailExists) {
-    //   Get.snackbar('Lỗi', 'Email này đã được sử dụng. Vui lòng chọn email khác.');
-    //   return;
+    // // Kiểm tra email đã tồn tại hay chưa, bỏ qua email của người dùng hiện tại
+    // if (txtEmail.text != widget.userToUpdate.email) { // Chỉ kiểm tra nếu email đã thay đổi
+    //   final bool emailExists = await _controller.checkEmailExistsForUpdate(
+    //       txtEmail.text, widget.userToUpdate.userId);
+    //   if (emailExists) {
+    //     Get.snackbar('Lỗi', 'Email này đã được sử dụng bởi người dùng khác. Vui lòng chọn email khác.');
+    //     return;
+    //   }
     // }
 
     if (_controller.selectedRole == null) {
@@ -56,33 +83,28 @@ class _PageAddUserState extends State<PageAddUser> {
       return;
     }
 
-    if (_controller.uploadedImageUrl == null || _controller.uploadedImageUrl!.isEmpty) {
+    // Đảm bảo có ảnh đại diện (sử dụng ảnh cũ nếu không có ảnh mới)
+    final String finalAvatarUrl =
+        _controller.uploadedImageUrl ?? initialImageUrl ?? '';
+    if (finalAvatarUrl.isEmpty) {
       Get.snackbar('Lỗi', 'Vui lòng tải lên ảnh đại diện.');
       return;
     }
 
-    final newUser = AppUser(
+    final updatedUser = AppUser(
       userId: txtId.text,
       userName: txtUserName.text,
       email: txtEmail.text,
       phoneNumber: txtPhone.text,
       roleId: _controller.selectedRole!.roleId,
-      avatar: _controller.uploadedImageUrl!,
-      isActive: true,
+      avatar: finalAvatarUrl,
+      isActive: widget.user.isActive, // Giữ nguyên trạng thái active
     );
 
-    await _controller.addUser(newUser);
+    await _controller.updateUser(updatedUser);
 
-    _resetForm();
-  }
-
-  void _resetForm() {
-    txtId.clear();
-    txtUserName.clear();
-    txtEmail.clear();
-    txtPhone.clear();
-    _controller.resetImageState();
-    _controller.setSelectedRole(null);
+    // Không cần reset form vì thường sẽ quay lại trang danh sách sau khi cập nhật
+    // Get.back() đã được gọi trong controller.updateUser
   }
 
   @override
@@ -91,10 +113,8 @@ class _PageAddUserState extends State<PageAddUser> {
       appBar: AppBar(
         title: const Center(
           child: Text(
-            "Thêm người dùng mới",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+            "Cập nhật người dùng",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         backgroundColor: Colors.white,
@@ -115,7 +135,8 @@ class _PageAddUserState extends State<PageAddUser> {
                         decoration: const InputDecoration(
                           labelText: "ID người dùng",
                           border: OutlineInputBorder(),
-                          hintText: "Nhập ID duy nhất",
+                          hintText: "ID duy nhất",
+                          enabled: false, // ID thường không được phép sửa
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -145,7 +166,7 @@ class _PageAddUserState extends State<PageAddUser> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      GetBuilder<AdminUserController>(
+                      GetBuilder<UserAdminController>(
                         builder: (controller) {
                           return DropdownButtonFormField<Role>(
                             value: controller.selectedRole,
@@ -153,12 +174,13 @@ class _PageAddUserState extends State<PageAddUser> {
                               labelText: "Vai trò",
                               border: OutlineInputBorder(),
                             ),
-                            items: controller.role?.map((Role role) {
-                              return DropdownMenuItem<Role>(
-                                value: role,
-                                child: Text(role.roleId),
-                              );
-                            }).toList(),
+                            items:
+                                controller.role?.map((Role role) {
+                                  return DropdownMenuItem<Role>(
+                                    value: role,
+                                    child: Text(role.roleId),
+                                  );
+                                }).toList(),
                             onChanged: (Role? newValue) {
                               controller.setSelectedRole(newValue);
                             },
@@ -179,7 +201,7 @@ class _PageAddUserState extends State<PageAddUser> {
                 Expanded(
                   child: Column(
                     children: [
-                      GetBuilder<AdminUserController>(
+                      GetBuilder<UserAdminController>(
                         builder: (controller) => _buildImagePreview(controller),
                       ),
                       const SizedBox(height: 10),
@@ -194,12 +216,12 @@ class _PageAddUserState extends State<PageAddUser> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _addUser,
+              onPressed: _updateUser,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 textStyle: const TextStyle(fontSize: 18),
               ),
-              child: const Text("Thêm người dùng"),
+              child: const Text("Cập nhật người dùng"),
             ),
           ],
         ),
@@ -207,7 +229,7 @@ class _PageAddUserState extends State<PageAddUser> {
     );
   }
 
-  Widget _buildImagePreview(AdminUserController controller) {
+  Widget _buildImagePreview(UserAdminController controller) {
     return Container(
       height: 300,
       decoration: BoxDecoration(
@@ -215,23 +237,26 @@ class _PageAddUserState extends State<PageAddUser> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      child: controller.isUploadingImage
-          ? const Center(child: CircularProgressIndicator())
-          : controller.uploadedImageUrl != null && controller.uploadedImageUrl!.isNotEmpty
-          ? Image.network(
-        controller.uploadedImageUrl!,
-        fit: BoxFit.contain,
-        width: double.infinity,
-        errorBuilder: (context, error, stackTrace) =>
-        const Icon(Icons.error, color: Colors.red),
-      )
-          : const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.person, size: 50, color: Colors.grey),
-          Text('Chưa có ảnh', style: TextStyle(color: Colors.grey)),
-        ],
-      ),
+      child:
+          controller.isUploadingImage
+              ? const Center(child: CircularProgressIndicator())
+              : controller.uploadedImageUrl != null &&
+                  controller.uploadedImageUrl!.isNotEmpty
+              ? Image.network(
+                controller.uploadedImageUrl!,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                errorBuilder:
+                    (context, error, stackTrace) =>
+                        const Icon(Icons.error, color: Colors.red),
+              )
+              : const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.person, size: 50, color: Colors.grey),
+                  Text('Chưa có ảnh', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
     );
   }
 
@@ -241,6 +266,7 @@ class _PageAddUserState extends State<PageAddUser> {
     txtUserName.dispose();
     txtEmail.dispose();
     txtPhone.dispose();
+    _controller.resetImageState();
     super.dispose();
   }
 }
