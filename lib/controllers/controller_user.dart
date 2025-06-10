@@ -28,6 +28,13 @@ class UserController extends GetxController {
     super.onInit();
   }
 
+  @override
+  void onReady() async {
+    // TODO: implement onReady
+    super.onReady();
+    await fetchUser();
+  }
+
   Future<void> fetchUser() async {
     isLoading = true;
     update(["user"]);
@@ -140,13 +147,12 @@ class UserController extends GetxController {
   }
 
   // Viết phần User Admin
-
-
 }
 
 class BindingsUserController extends Bindings {
   @override
   void dependencies() {
-    Get.put<UserController>(UserController());
+    // Get.put<UserController>(UserController());
+    Get.lazyPut(() => UserController());
   }
 }

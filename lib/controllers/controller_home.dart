@@ -37,7 +37,7 @@ class HomePizzaStoreController extends GetxController {
     _itemMaps = await ItemSnapshot.getMapItems();
     _categoryMaps = await CategorySnapshot.getMapCategories();
 
-    update(["1"]);
+    update();
   }
 
   Widget getPage(int index) => _pages[index];

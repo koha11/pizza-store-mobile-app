@@ -287,7 +287,7 @@ class CustomerOrderSnapshot {
       fromJson: CustomerOrder.fromJson,
       idKey: "order_id",
       idValue: orderId,
-      selectString: CustomerOrder.selectAllStr
+      selectString: CustomerOrder.selectAllStr,
     );
   }
 
@@ -359,7 +359,7 @@ class CustomerOrderSnapshot {
       );
     } catch (e) {
       print('Lỗi thêm sản phẩm vào giỏ hàng: $e');
-      rethrow;
+      throw e;
     }
   }
 
