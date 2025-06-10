@@ -281,6 +281,16 @@ class CustomerOrderSnapshot {
     );
   }
 
+  static Future<CustomerOrder?> getOrderById(String orderId) {
+    return SupabaseSnapshot.getById(
+      table: CustomerOrder.tableName,
+      fromJson: CustomerOrder.fromJson,
+      idKey: "order_id",
+      idValue: orderId,
+      selectString: CustomerOrder.selectAllStr
+    );
+  }
+
   static Future<CustomerOrder?> getCustomerCart(String customerId) async {
     final cart = await SupabaseSnapshot.getList(
       table: CustomerOrder.tableName,

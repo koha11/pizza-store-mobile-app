@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/pages/shipper/PageOrderDetails.dart';
 
-import '../../controllers/controller_pending_order.dart';
+import '../../controllers/controller_pending_order_shipper.dart';
 import '../../enums/OrderStatus.dart';
 import '../../layouts/MainLayout.dart';
 
 class PagePendingOrder extends StatelessWidget {
   PagePendingOrder({super.key});
+
   // final orderListController = Get.put(OrderListController());
 
   @override
   Widget build(BuildContext context) {
     int index = 0;
-    Get.put(OrderListController());
-    return GetBuilder<OrderListController>(
-      init: OrderListController.get(),
+    Get.put(OrderListShipperController());
+    return GetBuilder<OrderListShipperController>(
+      init: OrderListShipperController.get(),
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
@@ -63,8 +65,8 @@ class PagePendingOrder extends StatelessWidget {
 
   //Danh sách đơn hàng
   Widget _buildHome() {
-    return GetBuilder<OrderListController>(
-      init: OrderListController.get(),
+    return GetBuilder<OrderListShipperController>(
+      init: OrderListShipperController.get(),
       builder: (controller) {
         if (controller.isLoadingPending) {
           return const Center(child: CircularProgressIndicator());
@@ -94,7 +96,8 @@ class PagePendingOrder extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    "DANH SÁCH ĐƠN HÀNG (${orders.length})", // Update count based on the passed list
+                    "DANH SÁCH ĐƠN HÀNG (${orders.length})",
+                    // Update count based on the passed list
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -150,7 +153,7 @@ class PagePendingOrder extends StatelessWidget {
                                   ),
                                   _buildInfoRow(
                                     Icons.calendar_today,
-                                    "${order.orderTime?.day}/${order.orderTime?.month}/${order.orderTime?.year}",
+                                    formatDateTime(order.acceptTime),
                                     iconColor: Colors.orange,
                                   ),
                                 ],
@@ -167,7 +170,7 @@ class PagePendingOrder extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
                         Center(
-                            child: ElevatedButton(
+                          child: ElevatedButton(
                             onPressed: () {
                               Get.to(
                                 () => PageOrderDetails(orderId: order.orderId),
@@ -201,6 +204,7 @@ class PagePendingOrder extends StatelessWidget {
                 );
               },
             ),
+            Text("Không có đơn hàng nào."),
           ],
         ),
       ),
@@ -222,8 +226,8 @@ class PagePendingOrder extends StatelessWidget {
 
   //Thông tin Shipper
   Widget _buildShipperInfoSection(BuildContext context) {
-    return GetBuilder<OrderListController>(
-      init: OrderListController.get(),
+    return GetBuilder<OrderListShipperController>(
+      init: OrderListShipperController.get(),
       builder: (controller) {
         final userController = UserController.get();
         if (userController.isLoading) {
@@ -355,8 +359,8 @@ class PagePendingOrder extends StatelessWidget {
 
   //Lịch sử đơn hàng
   Widget _buildHistory() {
-    return GetBuilder<OrderListController>(
-      init: OrderListController.get(),
+    return GetBuilder<OrderListShipperController>(
+      init: OrderListShipperController.get(),
       builder: (controller) {
         if (controller.isLoadingHistory) {
           return const Center(child: CircularProgressIndicator());
@@ -384,15 +388,25 @@ class PagePendingOrder extends StatelessWidget {
   }
 
   Widget _buildBody(int index, BuildContext context) {
+    final controller = OrderListShipperController.get();
     switch (index) {
       case 0:
-        return _buildHome();
+        return RefreshIndicator(
+          onRefresh: () => controller.listenToGetPendingOrders(),
+          child: _buildHome(),
+        );
       case 1:
-        return _buildHistory();
+        return RefreshIndicator(
+          onRefresh: () => controller.listenToGetPendingOrders(),
+          child: _buildHistory(),
+        );
       case 2:
         return _buildShipperInfoSection(context);
       default:
-        return _buildHome();
+        return RefreshIndicator(
+          onRefresh: () => controller.listenToGetPendingOrders(),
+          child: _buildHome(),
+        );
     }
   }
 }
