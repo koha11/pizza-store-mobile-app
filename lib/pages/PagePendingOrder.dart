@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/pages/PageOrderDetails.dart';
 
 import '../controllers/controller_pending_order.dart';
 import '../enums/OrderStatus.dart';
+import '../layouts/MainLayout.dart';
 
 class PagePendingOrder extends StatelessWidget {
   PagePendingOrder({super.key});
@@ -15,48 +17,48 @@ class PagePendingOrder extends StatelessWidget {
     int index = 0;
     return GetBuilder<OrderListController>(
       init: OrderListController.get(),
-        builder: (controller) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Center(child:
-              Text("IL MIO",
+      builder: (controller) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Center(
+              child: Text(
+                "IL MIO",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                   color: Colors.white70,
                 ),
-              )
               ),
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             ),
-            body: _buildBody(index, context),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: index,
-              items: [
-                BottomNavigationBarItem(
-                  label: "Đơn hàng",
-                  icon: Icon(Icons.home, color: Colors.blue,),
-                ),
-                BottomNavigationBarItem(
-                  label: "Lịch sử",
-                  icon: Icon(Icons.access_time, color: Colors.red,),
-                ),
-                BottomNavigationBarItem(
-                  label: "Thông tin",
-                  icon: Icon(Icons.person, color: Colors.green,),
-                ),
-              ],
-              onTap: (value){
-                index = value;
-                controller.update();
-              },
-            ),
-          );
-
-        },
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          ),
+          body: _buildBody(index, context),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: index,
+            items: [
+              BottomNavigationBarItem(
+                label: "Đơn hàng",
+                icon: Icon(Icons.home, color: Colors.blue),
+              ),
+              BottomNavigationBarItem(
+                label: "Lịch sử",
+                icon: Icon(Icons.access_time, color: Colors.red),
+              ),
+              BottomNavigationBarItem(
+                label: "Thông tin",
+                icon: Icon(Icons.person, color: Colors.green),
+              ),
+            ],
+            onTap: (value) {
+              index = value;
+              controller.update();
+            },
+          ),
+        );
+      },
     );
-
   }
+
   //Danh sách đơn hàng
   Widget _buildHome() {
     return GetBuilder<OrderListController>(
@@ -69,6 +71,7 @@ class PagePendingOrder extends StatelessWidget {
       },
     );
   }
+
   Widget _buildOrderList(List<CustomerOrder> orders) {
     return SingleChildScrollView(
       child: Padding(
@@ -78,7 +81,10 @@ class PagePendingOrder extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.green[50],
                   borderRadius: BorderRadius.circular(8),
@@ -125,12 +131,21 @@ class PagePendingOrder extends StatelessWidget {
                                       fontSize: 18,
                                     ),
                                   ),
-                                  _buildInfoRow(Icons.person, order.customer?.userName ?? "",
-                                      iconColor: Colors.blue),
-                                  _buildInfoRow(Icons.location_on, order.shippingAddress ?? "",
-                                      iconColor: Colors.red),
-                                  _buildInfoRow(Icons.phone, order.customer?.phoneNumber ?? "",
-                                      iconColor: Colors.green),
+                                  _buildInfoRow(
+                                    Icons.person,
+                                    order.customer?.userName ?? "",
+                                    iconColor: Colors.blue,
+                                  ),
+                                  _buildInfoRow(
+                                    Icons.location_on,
+                                    order.shippingAddress ?? "",
+                                    iconColor: Colors.red,
+                                  ),
+                                  _buildInfoRow(
+                                    Icons.phone,
+                                    order.customer?.phoneNumber ?? "",
+                                    iconColor: Colors.green,
+                                  ),
                                   _buildInfoRow(
                                     Icons.calendar_today,
                                     "${order.orderTime?.day}/${order.orderTime?.month}/${order.orderTime?.year}",
@@ -152,14 +167,18 @@ class PagePendingOrder extends StatelessWidget {
                         Center(
                           child: ElevatedButton(
                             onPressed: () {
-                              Get.to(() => PageOrderDetails(orderId: order.orderId));
+                              Get.to(
+                                () => PageOrderDetails(orderId: order.orderId),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green[500],
                               foregroundColor: Colors.white,
                               elevation: 5,
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 8),
+                                horizontal: 20,
+                                vertical: 8,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -185,6 +204,7 @@ class PagePendingOrder extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildInfoRow(IconData icon, String text, {Color? iconColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -192,97 +212,134 @@ class PagePendingOrder extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: iconColor ?? Colors.grey[700]),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 18),
-          ),
+          Text(text, style: const TextStyle(fontSize: 18)),
         ],
       ),
     );
   }
+
   //Thông tin Shipper
   Widget _buildShipperInfoSection(BuildContext context) {
     return GetBuilder<OrderListController>(
       init: OrderListController.get(),
-        builder: (controller) {
-          if (controller.isLoadingShipper) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final shipper = controller.shipper.isNotEmpty ? controller.shipper.first : null;
+      builder: (controller) {
+        if (controller.isLoadingShipper) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final shipper =
+            controller.shipper.isNotEmpty ? controller.shipper.first : null;
 
-          if (shipper == null) {
-            return const Center(child: Text("Không có thông tin nhân viên"));
-          }
-          return SingleChildScrollView(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green[300]!, width: 1),
+        if (shipper == null) {
+          return const Center(child: Text("Không có thông tin nhân viên"));
+        }
+        return SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green[300]!, width: 1),
+                    ),
+                    child: Text(
+                      "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
                       ),
-                      child: Text(
-                        "THÔNG TIN NHÂN VIÊN GIAO HÀNG",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[800],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  //Hình ảnh nhân viên
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 2 / 3,
+                    child:
+                        shipper.avatar != null && shipper.avatar!.isNotEmpty
+                            ? Image.network(shipper.avatar!, fit: BoxFit.cover)
+                            : const Icon(Icons.person, size: 100),
+                  ),
+                  //Thông tin nhân viên
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        _buildShipperInfoRow(
+                          Icons.badge,
+                          shipper.userId,
+                          Colors.blue,
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    //Hình ảnh nhân viên
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 2 / 3,
-                      child: shipper.avatar != null && shipper.avatar!.isNotEmpty
-                          ? Image.network(
-                        shipper.avatar!,
-                        fit: BoxFit.cover,
-                      )
-                          : const Icon(Icons.person, size: 100),
-                    ),
-                    //Thông tin nhân viên
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          _buildShipperInfoRow(
-                            Icons.badge,
-                            shipper.userId ,
-                            Colors.blue,
+                        const SizedBox(height: 12),
+                        _buildShipperInfoRow(
+                          Icons.person,
+                          shipper.userName,
+                          Colors.blue,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildShipperInfoRow(
+                          Icons.phone,
+                          shipper.phoneNumber,
+                          Colors.blue,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await UserController.get().signOut();
+                              Get.off(() => MainLayout());
+                            },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                side: BorderSide(
+                                  color: Colors.grey,
+                                  width: 1.5,
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.logout_outlined, size: 20),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Đăng xuất",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 12),
-                          _buildShipperInfoRow(
-                            Icons.person,
-                            shipper.userName,
-                            Colors.blue,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildShipperInfoRow(
-                            Icons.phone,
-                            shipper.phoneNumber,
-                            Colors.blue,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 15),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 15),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        );
+      },
     );
   }
+
   Widget _buildShipperInfoRow(IconData icon, String text, Color iconColor) {
     return SingleChildScrollView(
       child: Row(
@@ -293,15 +350,13 @@ class PagePendingOrder extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             text,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
+
   //Lịch sử đơn hàng
   Widget _buildHistory() {
     return GetBuilder<OrderListController>(
@@ -332,12 +387,16 @@ class PagePendingOrder extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(int index, BuildContext context){
-    switch(index) {
-      case 0: return _buildHome();
-      case 1: return _buildHistory();
-      case 2: return _buildShipperInfoSection(context);
-      default: return _buildHome();
+  Widget _buildBody(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        return _buildHome();
+      case 1:
+        return _buildHistory();
+      case 2:
+        return _buildShipperInfoSection(context);
+      default:
+        return _buildHome();
     }
   }
 }
