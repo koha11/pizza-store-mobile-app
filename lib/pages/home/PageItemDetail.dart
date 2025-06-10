@@ -77,39 +77,40 @@ class PageItemDetail extends StatelessWidget {
                                     ),
                                     subtitle: Column(
                                       children:
-                                          controller.variantsMap![variantTypeName]!.map((
-                                            variant,
-                                          ) {
-                                            return RadioListTile(
-                                              value: variant.variantId,
-                                              title: Row(
-                                                children: [
-                                                  Text(variant.variantName),
-                                                  SizedBox(width: 10),
-                                                  variant.priceChange != 0
-                                                      ? Text(
-                                                        "+ ${variant.priceChange}",
-                                                        style: TextStyle(
-                                                          backgroundColor:
-                                                              Colors.grey,
-                                                          fontSize: 20,
-                                                        ),
-                                                      )
-                                                      : Text(""),
-                                                ],
-                                              ),
-                                              groupValue:
-                                                  controller
-                                                      .variantCheckList[variantTypeName],
-                                              onChanged: (value) {
-                                                controller.checkVariant(
-                                                  variantTypeName:
-                                                      variantTypeName,
-                                                  variantId: value!,
+                                          controller
+                                              .variantsMap![variantTypeName]!
+                                              .map((variant) {
+                                                return RadioListTile(
+                                                  value: variant.variantId,
+                                                  title: Row(
+                                                    children: [
+                                                      Text(variant.variantName),
+                                                      SizedBox(width: 10),
+                                                      variant.priceChange != 0
+                                                          ? Text(
+                                                            "+ ${variant.priceChange}",
+                                                            style: TextStyle(
+                                                              backgroundColor:
+                                                                  Colors.grey,
+                                                              fontSize: 20,
+                                                            ),
+                                                          )
+                                                          : Text(""),
+                                                    ],
+                                                  ),
+                                                  groupValue:
+                                                      controller
+                                                          .variantCheckList[variantTypeName],
+                                                  onChanged: (value) {
+                                                    controller.checkVariant(
+                                                      variantTypeName:
+                                                          variantTypeName,
+                                                      variantId: value!,
+                                                    );
+                                                  },
                                                 );
-                                              },
-                                            );
-                                          }).toList(),
+                                              })
+                                              .toList(),
                                     ),
                                   ),
                                 )
@@ -199,6 +200,8 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
+                final myVariantItem =
+                    ItemDetailController.get(item.itemId).variantCheckList;
                 final cartController = ShoppingCartController.get();
                 cartController.addToCart(item, amount);
                 // Get.back();

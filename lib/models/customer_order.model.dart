@@ -253,7 +253,7 @@ class CustomerOrderSnapshot {
     );
   }
 
-  static Future<String?> getCustomerCart(String customerId) async {
+  static Future<CustomerOrder?> getCustomerCart(String customerId) async {
     final cart = await SupabaseSnapshot.getList(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
@@ -261,12 +261,12 @@ class CustomerOrderSnapshot {
       selectString: CustomerOrder.selectAllStr,
     );
 
-    return cart.isEmpty ? null : cart.first.orderId;
+    return cart.isEmpty ? null : cart.first;
   }
 
-  static Future<String> createNewOrder(String customerId) async {
-    final orderId = "OI${customerId}";
-    await supabase.from('customer_order').insert({
+  static Future<CustomerOrder> createNewOrder(String customerId) async {
+    final orderId = "OI-$customerId";
+    final order = await supabase.from('customer_order').insert({
       'order_id': orderId,
       'customer_id': customerId,
       'manager_id': null,
@@ -279,7 +279,7 @@ class CustomerOrderSnapshot {
       'note': null,
       'shipping_address': null,
     });
-    return orderId;
+    return order;
   }
 
   static Future<String> placeOrder({
@@ -301,52 +301,6 @@ class CustomerOrderSnapshot {
       'total_amount': totalAmount,
     });
     return orderId;
-  }
-
-  // // cập nhật trạng thái
-  // static Future<void> updateOrderStatus(String orderId, String status) async {
-  //   await supabase
-  //       .from('customer_order')
-  //       .update({'status': status})
-  //       .eq('order_id', orderId);
-  // }
-  //
-  // static Future<void> updateOrderStatusAndTotal(
-  //   String orderId,
-  //   OrderStatus status,
-  //   int totalAmount,
-  //   int shippingFee,
-  // ) async {
-  //   await supabase
-  //       .from('customer_order')
-  //       .update({
-  //         'status': status,
-  //         'total_amount': totalAmount,
-  //         'shipping_fee': shippingFee,
-  //       })
-  //       .eq('order_id', orderId);
-  // }
-
-  // Lấy thông tin sản phẩm trong giỏ hàng
-  static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
-    final items = await SupabaseSnapshot.getMapT<String, OrderDetail>(
-      table: OrderDetail.tableName,
-      fromJson: OrderDetail.fromJson,
-      selectString: "*, item(*)",
-      equalObject: {"order_id": orderId},
-      getId: (p0) => p0.itemId,
-    );
-
-    // final Map<String, OrderDetail> items = {};
-    // for (var item in response) {
-    //   try {
-    //     final orderDetail = OrderDetail.fromJson(item);
-    //     items[orderDetail.itemId] = orderDetail;
-    //   } catch (e) {
-    //     print('Lỗi chuyển item: $e');
-    //   }
-    // }
-    return items;
   }
 
   static Future<void> addItemToCart(

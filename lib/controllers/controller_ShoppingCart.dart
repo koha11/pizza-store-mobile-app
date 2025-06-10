@@ -1,8 +1,4 @@
-import 'dart:math';
-
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,21 +9,28 @@ class ShoppingCartController extends GetxController {
   //final SupabaseClient _supabase = Supabase.instance.client;
   Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
-  String? _cartId;
+
   String? _customerId;
+  CustomerOrder? _cart;
 
   Map<String, OrderDetail> get cartItems => _cartItems;
 
-  String? get cartId => _cartId;
+  CustomerOrder? get cart => _cart;
 
   Map<String, bool> get checkedItems => _checkedItems;
   static ShoppingCartController get() => Get.find();
 
+  @override
+  void onInit() {
+    super.onInit();
+    _initializeCart();
+  }
+
   // Thêm getter để lấy tổng số lượng sản phẩm
   int get totalItems {
     int total = 0;
-    _cartItems.forEach((key, item) {
-      total += item.amount;
+    _cart!.orderDetails?.forEach((od) {
+      total += od.amount;
     });
     return total;
   }
@@ -93,7 +96,7 @@ class ShoppingCartController extends GetxController {
 
   // Phương thức xóa các items đã được check
   Future<void> removeSelectedItems() async {
-    if (_cartId == null) return;
+    if (_cart == null) return;
 
     try {
       final itemsToRemove =
@@ -113,36 +116,39 @@ class ShoppingCartController extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    _initializeCart();
-  }
-
   Future<void> _initializeCart() async {
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null) return;
     _customerId = userId;
 
     // Tìm giỏ hàng đang cart của user
-    _cartId = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
-
+    _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
     // Nếu không có giỏ hàng nào, tạo mới
-    _cartId ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
-    await _loadCartItems();
+    _cart ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
+  }
+
+  Future<void> _loadCart() async {
+    _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
+    for (var od in _cart!.orderDetails!) {
+      _checkedItems[od.itemId] = false;
+    }
+    update();
   }
 
   Future<void> _loadCartItems() async {
-    if (_cartId == null) {
-      _cartItems.clear();
+    if (_cart == null) {
+      // _cartItems.clear();
       _checkedItems.clear();
       update();
       return;
     }
-    _cartItems = await CustomerOrderSnapshot.getCartItems(_cartId!);
-    _cartItems.forEach((key, _) {
-      _checkedItems[key] = false;
-    });
+    // _cartItems = _cart!.orderId as Map<String, OrderDetail>;
+    for (var od in _cart!.orderDetails!) {
+      _checkedItems[od.itemId] = false;
+    }
+
+    _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
+
     update();
   }
 
@@ -161,22 +167,48 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
-      if (_cartId == null) {
+
+      if (_cart == null) {
         await _initializeCart();
       }
 
-      if (_cartItems.containsKey(item.itemId)) {
-        final newAmount = _cartItems[item.itemId]!.amount + amount;
-        _cartItems[item.itemId]!.amount = newAmount;
-        await OrderDetailSnapshot.updateItemAmount(
-          _cartId!,
+      OrderDetail? myOD;
+
+      try {
+        myOD = _cart!.orderDetails?.firstWhere(
+          (od) => od.itemId == item.itemId,
+        );
+      } catch (e) {
+        myOD = null;
+      }
+
+      if (myOD != null) {
+        OrderDetailSnapshot.updateItemAmount(
+          _cart!.orderId,
           item.itemId,
-          newAmount,
+          ++myOD.amount,
         );
       } else {
-        await CustomerOrderSnapshot.addItemToCart(_cartId!, item, amount);
+        await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
         await _loadCartItems();
       }
+
+      // if(_cart?.orderDetails?.any((od) => od.itemId == item.itemId,) != null) {
+      //   _cart.
+      // }
+
+      // if (_cartItems.containsKey(item.itemId)) {
+      //   final newAmount = _cartItems[item.itemId]!.amount + amount;
+      //   _cartItems[item.itemId]!.amount = newAmount;
+      //   await OrderDetailSnapshot.updateItemAmount(
+      //     _cart!.orderId,
+      //     item.itemId,
+      //     newAmount,
+      //   );
+      // } else {
+      //   await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
+      //   await _loadCartItems();
+      // }
       update();
       Get.snackbar(
         'Thành công',
@@ -195,23 +227,21 @@ class ShoppingCartController extends GetxController {
   }
 
   Future<void> removeFromCart({required String itemId}) async {
-    if (_cartId == null) return;
-
+    if (_cart == null) return;
     try {
       await OrderDetailSnapshot.deleteOrderDetail(
-        orderId: _cartId!,
+        orderId: _cart!.orderId,
         itemId: itemId,
       );
 
-      await _loadCartItems();
-      update();
+      await _loadCart();
     } catch (e) {
       print('Error removing from cart: $e');
     }
   }
 
   Future<void> updateItemAmount(String itemId, int newAmount) async {
-    if (_cartId == null) return;
+    if (_cart?.orderId == null) return;
 
     try {
       if (newAmount <= 0) {
@@ -250,13 +280,13 @@ class ShoppingCartController extends GetxController {
   }
 
   Future<void> _updateAmountInDatabase(String itemId, int newAmount) async {
-    if (_cartId == null) return;
+    if (_cart == null) return;
 
     try {
       await SupabaseSnapshot.update(
         table: 'order_detail',
         updateObject: {'amount': newAmount},
-        equalObject: {'order_id': _cartId!, 'item_id': itemId},
+        equalObject: {'order_id': _cart?.orderId, 'item_id': itemId},
       );
     } catch (e) {
       print('Lỗi cập nhật số lượng trong database: $e');
@@ -305,7 +335,7 @@ class ShoppingCartController extends GetxController {
           // xoa order detail
           await OrderDetailSnapshot.deleteOrderDetail(
             itemId: item.key,
-            orderId: _cartId!,
+            orderId: _cart!.orderId,
           );
         }
       }
@@ -332,7 +362,7 @@ class ShoppingCartController extends GetxController {
   void reset() {
     _cartItems.clear();
     _checkedItems.clear();
-    _cartId = null;
+    _cart!.orderId;
     _customerId = null;
     _loadCartItems();
   }
