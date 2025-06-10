@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_order_detail_manager.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
-import 'package:pizza_store_app/pages/order_manager/PageListShipper.dart';
+import 'package:pizza_store_app/pages/order_manager/PageShippersList.dart';
 
 import '../../helpers/other.helper.dart';
 
