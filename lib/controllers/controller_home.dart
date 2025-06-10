@@ -53,7 +53,7 @@ class HomePizzaStoreController extends GetxController {
 
   void changePage(int index) {
     currentIndex = index;
-    update(["1"]);
+    update();
   }
 
   void setCurrUser(User user) {
@@ -62,14 +62,14 @@ class HomePizzaStoreController extends GetxController {
 
   void setCurrCategoryId(String categoryId) {
     _currentCategoryId = categoryId;
-    update(["1"]);
+    update();
   }
 
   Future<void> signOut() async {
     final supabase = Supabase.instance.client;
     await supabase.auth.signOut();
     _currUser = null;
-    update(["1"]);
+    update();
   }
 }
 

@@ -18,7 +18,6 @@ class PageHome extends StatelessWidget {
 
     return GetBuilder(
       init: HomePizzaStoreController.get(),
-      id: "1",
       builder:
           (controller) => SingleChildScrollView(
             child: Column(
@@ -60,12 +59,23 @@ class PageHome extends StatelessWidget {
                         items:
                             controller.categories
                                 .map(
-                                  (category) => ElevatedButton(
+                                  (category) => OutlinedButton(
                                     onPressed: () {
                                       controller.setCurrCategoryId(
                                         category.categoryId,
                                       );
                                     },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          controller.getCurrCategoryId() ==
+                                                  category.categoryId
+                                              ? WidgetStatePropertyAll<Color>(
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.inversePrimary,
+                                              )
+                                              : null,
+                                    ),
                                     child: Text(category.categoryName),
                                   ),
                                 )
@@ -76,6 +86,7 @@ class PageHome extends StatelessWidget {
                           enlargeCenterPage: false,
                           initialPage: 0,
                           viewportFraction: 0.4,
+                          enableInfiniteScroll: true,
                         ),
                       ),
                       SizedBox(height: 30),
