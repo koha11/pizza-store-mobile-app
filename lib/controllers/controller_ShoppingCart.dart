@@ -29,7 +29,7 @@ class ShoppingCartController extends GetxController {
   // Thêm getter để lấy tổng số lượng sản phẩm
   int get totalItems {
     int total = 0;
-    _cart!.orderDetails?.forEach((od) {
+    _cart?.orderDetails?.forEach((od) {
       total += od.amount;
     });
     return total;

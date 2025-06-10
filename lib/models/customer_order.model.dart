@@ -1,6 +1,8 @@
+import 'package:get/get.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
+import 'package:pizza_store_app/models/order_variant.model.dart';
 
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';
@@ -22,7 +24,12 @@ class CustomerOrder {
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
-      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)), order_variant(*, variant:variant_id (*, variant_type:variant_type_id (*))))";
+      "*, "
+      "customer:customer_id (*), "
+      "manager:manager_id (*), "
+      "shipper:shipper_id (*), "
+      "order_detail(*, item:item_id (*, category:category_id (*))), "
+      "order_variant(*, variant:variant_id(*, variant_type:variant_type_id(*)))";
 
   CustomerOrder({
     required this.orderId,
@@ -48,6 +55,8 @@ class CustomerOrder {
 
   factory CustomerOrder.fromJson(Map<String, dynamic> json) {
     List<dynamic> orderDetailsJson = json["order_detail"] ?? [];
+    List<dynamic> orderVariantsJson =
+        json["order_variant"] ?? []; // list cac order_variant
 
     List<OrderDetail> orderDetails =
         orderDetailsJson.isEmpty
@@ -55,6 +64,26 @@ class CustomerOrder {
             : orderDetailsJson
                 .map((odJson) => OrderDetail.fromJson(odJson))
                 .toList();
+
+    List<OrderVariant> orderVariants =
+        orderVariantsJson.isEmpty
+            ? []
+            : orderVariantsJson.map((ov) => OrderVariant.fromJson(ov)).toList();
+
+    if (orderDetails.isNotEmpty && orderVariants.isNotEmpty) {
+      for (var ov in orderVariants) {
+        OrderDetail od = orderDetails.firstWhere(
+          (od) => od.itemId == ov.itemId,
+        );
+        final key = ov.variant.variantTypeId;
+        if (od.variantMaps.containsKey(key)) {
+          od.variantMaps[key]!.add(ov.variant);
+        } else {
+          od.variantMaps.assign(key, [ov.variant]);
+        }
+      }
+      print(orderDetails);
+    }
 
     return CustomerOrder(
       orderId: json["order_id"],

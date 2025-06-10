@@ -6,8 +6,7 @@ import 'Item.model.dart';
 
 class OrderDetail {
   String orderId, itemId;
-  String? variantId;
-  Map<String, Variant>? variantMaps;
+  Map<String, List<Variant>> variantMaps = {};
   int amount, actualPrice;
   String? note;
   Item item;
