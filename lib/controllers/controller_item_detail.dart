@@ -42,7 +42,7 @@ class ItemDetailController extends GetxController {
       } else {
         _variantsMap!.assign(variant.variantType.variantTypeName, [variant]);
 
-        _variantCheckList.assign(variant.variantType.variantTypeName, "");
+        _variantCheckList.assign(variant.variantTypeId, "");
       }
     }
 
@@ -50,10 +50,10 @@ class ItemDetailController extends GetxController {
   }
 
   void checkVariant({
-    required String variantTypeName,
+    required String variantTypeId,
     required String variantId,
   }) {
-    variantCheckList[variantTypeName] = variantId;
+    variantCheckList[variantTypeId] = variantId;
     update([tag]);
   }
 }

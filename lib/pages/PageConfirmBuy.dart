@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetailCart..dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrderCart.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
@@ -109,7 +110,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
                                   child: Text(
-                                    item.item?.itemName ?? "Không rõ tên",
+                                    item.item.itemName ?? "Không rõ tên",
                                   ),
                                 ),
                                 Padding(
@@ -181,9 +182,8 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
               ),
               const SizedBox(height: 12),
               GetBuilder<UserController>(
-                id: "address",
                 builder: (userController) {
-                  final addresses = userController.userAddress ?? [];
+                  final addresses = userController.appUser!.addresses ?? [];
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -243,12 +243,12 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       address: selectedAddressId!,
                       totalAmount: totalAmount,
                     );
+                    Get.to(PageHistoryOrderCart());
                     Get.snackbar(
                       "Thành công",
                       "Đơn hàng đã được đặt!",
                       snackPosition: SnackPosition.BOTTOM,
                     );
-                    //Get.to(PagePendingCart());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

@@ -75,11 +75,11 @@ class CustomerOrder {
         OrderDetail od = orderDetails.firstWhere(
           (od) => od.itemId == ov.itemId,
         );
-        final key = ov.variant.variantTypeId;
+        final key = ov.variant!.variantTypeId;
         if (od.variantMaps.containsKey(key)) {
-          od.variantMaps[key]!.add(ov.variant);
+          od.variantMaps[key]!.add(ov.variant!);
         } else {
-          od.variantMaps.assign(key, [ov.variant]);
+          od.variantMaps.assign(key, [ov.variant!]);
         }
       }
     }

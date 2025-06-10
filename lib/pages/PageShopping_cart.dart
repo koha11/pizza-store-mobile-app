@@ -51,7 +51,11 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
       ),
       body: GetBuilder<ShoppingCartController>(
         builder: (controller) {
-          if (controller.cart!.orderDetails == null) {
+          if (controller.cart == null) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (controller.cart!.orderDetails!.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
