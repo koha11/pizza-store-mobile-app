@@ -64,7 +64,7 @@ class BindingDashboardDashboardController extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => DashboardManagerController());
-    Get.lazyPut(() => OrdersManagerController());
+    Get.lazyPut(() => OrdersManagerController(), fenix: true);
     Get.lazyPut(() => UserController());
   }
 }

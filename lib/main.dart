@@ -40,13 +40,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
-      getPages: [
-        GetPage(
-          name: "/orders",
-          binding: BindingsOrderManagerController(),
-          page: () => PageOrdersList(),
-        ),
-      ],
       initialBinding: BindingsBuilder(() {
         BindingsHomePizzaStore().dependencies();
         LocationBinding().dependencies();

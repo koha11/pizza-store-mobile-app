@@ -15,7 +15,7 @@ class CustomerOrder {
   String? note = "", shippingAddress = "";
   OrderStatus status;
   DateTime? orderTime, acceptTime, deliveryTime, finishTime;
-  bool? paymentMethod = false;
+  bool paymentMethod = false;
   int? shippingFee, totalAmount = 0;
   List<OrderDetail>? orderDetails = [];
   int? total;
@@ -40,7 +40,7 @@ class CustomerOrder {
     this.acceptTime,
     this.deliveryTime,
     this.finishTime,
-    this.paymentMethod,
+    required this.paymentMethod,
     this.shippingFee,
     this.total,
     this.orderDetails,

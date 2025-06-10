@@ -17,7 +17,6 @@ class PageOrdersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<OrdersManagerController>(
       id: "orders",
-      // init: OrdersManagerController.get(),
       builder: (controller) {
         final selectStatus = controller.orderStatus;
         final orders = controller.orders;
@@ -169,7 +168,7 @@ class PageOrdersList extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           Text(
-                                            order.paymentMethod!
+                                            order.paymentMethod
                                                 ? 'Đã thanh toán'
                                                 : 'Chưa thanh toán',
                                             style: TextStyle(fontSize: 16),
