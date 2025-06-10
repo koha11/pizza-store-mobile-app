@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
@@ -6,7 +8,12 @@ import 'package:pizza_store_app/models/category.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/variant_type.model.dart';
 
+import '../admin/PageAdmin.dart';
+import '../controllers/controller_home.dart';
+import '../layouts/MainLayout.dart';
+import '../layouts/ManagerLayout.dart';
 import '../models/variant.model.dart';
+import '../pages/PagePendingOrder.dart';
 
 Future<String> generateId({required String tableName}) async {
   StringBuffer id = StringBuffer();
@@ -100,5 +107,18 @@ String formatShortCurrency(int amount) {
     return '${thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 1)}K';
   } else {
     return amount.toString();
+  }
+}
+
+Widget checkRole(String role) {
+  switch (role) {
+    case "ADMIN":
+      return PageAdmin();
+    case "MANAGER":
+      return ManagerLayout();
+    case "SHIPPER":
+      return PagePendingOrder();
+    default:
+      return MainLayout();
   }
 }

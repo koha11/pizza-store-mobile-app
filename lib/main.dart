@@ -18,6 +18,8 @@ import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'helpers/other.helper.dart';
+
 void main() async {
   await dotenv.load();
 
@@ -26,13 +28,14 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_KEY']!,
   );
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
-  // This widget is the root of your application.
+  final userController = Get.put(UserController());
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -57,7 +60,17 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: PageAdmin(),
-      home: MainLayout(),
+      home: GetBuilder(
+        id: "user",
+        init: UserController(),
+        builder: (controller) {
+          if (controller.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          return checkRole(controller.appUser?.roleId ?? "");
+        },
+      ),
       // home: ManagerLayout(),
       debugShowCheckedModeBanner: false,
     );

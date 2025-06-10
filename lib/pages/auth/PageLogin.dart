@@ -10,6 +10,7 @@ import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../helpers/other.helper.dart';
 import '../../layouts/MainLayout.dart';
 import '../PagePendingOrder.dart';
 
@@ -106,7 +107,7 @@ class PageLogin extends StatelessWidget {
                           equalObject: {"user_id": user.id},
                         );
 
-                        checkRole(myUser!.roleId);
+                        Get.to(checkRole(myUser!.roleId));
                       } on AuthException catch (e) {
                         if (e.message == "Email not confirmed") {
                           final supabase = Supabase.instance.client;
@@ -154,21 +155,5 @@ class PageLogin extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-void checkRole(String role) {
-  switch (role) {
-    case "ADMIN":
-      Get.off(PageAdmin());
-      break;
-    case "MANAGER":
-      Get.off(ManagerLayout());
-      break;
-    case "SHIPPER":
-      Get.off(PagePendingOrder());
-      break;
-    default:
-      Get.off(MainLayout(), binding: BindingsHomePizzaStore());
   }
 }
