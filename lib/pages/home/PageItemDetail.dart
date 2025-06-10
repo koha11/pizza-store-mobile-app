@@ -5,6 +5,7 @@ import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import '../../helpers/other.helper.dart';
 import '../../models/Item.model.dart';
+import '../../models/variant.model.dart';
 
 class PageItemDetail extends StatelessWidget {
   Item item;
@@ -64,74 +65,103 @@ class PageItemDetail extends StatelessWidget {
                       ListView(
                         shrinkWrap: true,
                         children:
-                            controller.variantsMap!.keys
-                                .map(
-                                  (variantTypeName) => ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    title: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          variantTypeName,
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          "Bat buoc, chon 1",
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ],
+                            controller.variantsMap!.keys.map((variantTypeName) {
+                              final List<Variant>? variants =
+                                  controller.variantsMap![variantTypeName];
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      variantTypeName,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                    subtitle: Column(
-                                      children:
-                                          controller
-                                              .variantsMap![variantTypeName]!
-                                              .map((variant) {
-                                                return RadioListTile(
-                                                  value: variant.variantId,
-                                                  title: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(variant.variantName),
-                                                      SizedBox(width: 10),
-                                                      variant.priceChange != 0
-                                                          ? Text(
-                                                            "+ ${formatMoney(money: variant.priceChange)}",
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          )
-                                                          : Text(""),
-                                                    ],
-                                                  ),
-                                                  groupValue:
-                                                      controller
-                                                          .variantCheckList[variant
-                                                          .variantTypeId],
-                                                  onChanged: (value) {
-                                                    controller.checkVariant(
-                                                      variantTypeId:
-                                                          variant.variantTypeId,
-                                                      variantId: value!,
-                                                    );
-                                                  },
-                                                );
-                                              })
-                                              .toList(),
+                                    Text(
+                                      variants!.first.variantType.isRequired
+                                          ? "Bắt buộc chọn 1"
+                                          : "Không bắt buộc",
+                                      style: TextStyle(fontSize: 16),
                                     ),
-                                  ),
-                                )
-                                .toList(),
+                                  ],
+                                ),
+                                subtitle: Column(
+                                  children:
+                                      variants.map((variant) {
+                                        if (variant.variantType.isRequired) {
+                                          return RadioListTile(
+                                            value: variant.variantId,
+                                            title: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text(variant.variantName),
+                                                SizedBox(width: 10),
+                                                variant.priceChange != 0
+                                                    ? Text(
+                                                      "+ ${formatMoney(money: variant.priceChange)}",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    )
+                                                    : Text(""),
+                                              ],
+                                            ),
+                                            groupValue:
+                                                controller
+                                                    .variantCheckList[variant
+                                                    .variantTypeId],
+                                            onChanged: (value) {
+                                              controller.checkVariant(
+                                                variantTypeId:
+                                                    variant.variantTypeId,
+                                                variantId: value!,
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          return CheckboxListTile(
+                                            value: true,
+                                            title: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text(variant.variantName),
+                                                SizedBox(width: 10),
+                                                variant.priceChange != 0
+                                                    ? Text(
+                                                      "+ ${formatMoney(money: variant.priceChange)}",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    )
+                                                    : Text(""),
+                                              ],
+                                            ),
+                                            onChanged: (value) {
+                                              // controller.checkVariant(
+                                              //   variantTypeId:
+                                              //       variant.variantTypeId,
+                                              //   variantId: value!,
+                                              // );
+                                            },
+                                          );
+                                        }
+                                      }).toList(),
+                                ),
+                              );
+                            }).toList(),
                       ),
 
                       Container(height: 300),
