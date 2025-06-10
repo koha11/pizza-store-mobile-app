@@ -19,12 +19,18 @@ class PageOrdersList extends StatelessWidget {
       builder: (controller) {
         final selectStatus = controller.orderStatus;
         final orders = controller.orders;
-        final filterOrders =
+        var filterOrders =
             selectStatus == null
                 ? orders
                 : orders
                     .where((element) => element.status == selectStatus)
                     .toList();
+
+        filterOrders.sort(
+          (a, b) => (b.orderTime ?? DateTime(0)).compareTo(
+            a.orderTime ?? DateTime(0),
+          ),
+        );
 
         return Scaffold(
           backgroundColor: Colors.grey[100],

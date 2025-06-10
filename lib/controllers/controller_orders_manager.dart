@@ -30,6 +30,12 @@ class OrdersManagerController extends GetxController {
     update(["orders"]);
     orders = await CustomerOrderSnapshot.getOrders(
       sortObject: {"order_time": false},
+      orObject: [
+        {"status": OrderStatus.pending.name},
+        {"status": OrderStatus.finished.name},
+        {"status": OrderStatus.confirmed.name},
+        {"status": OrderStatus.shipping.name},
+      ],
     );
     isLoading = false;
     update(["orders"]);
