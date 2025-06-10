@@ -12,9 +12,10 @@ import 'PageItem.dart';
 
 class PageHome extends StatelessWidget {
   PageHome({super.key});
-
   @override
   Widget build(BuildContext context) {
+    Get.put(HomePizzaStoreController());
+
     return GetBuilder(
       init: HomePizzaStoreController.get(),
       id: "1",

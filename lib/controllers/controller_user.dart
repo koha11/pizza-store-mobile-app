@@ -169,7 +169,7 @@ class UserController extends GetxController {
     await getUsers();
     await loadRoles();
     calculateTotalPages();
-    fetchUser();
+    await fetchUser();
   }
 
   Future<void> getUsers() async {
