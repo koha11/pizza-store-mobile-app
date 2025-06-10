@@ -176,9 +176,7 @@ class AppUserSnapshot {
 
   //ADMIN ----------------
 
-  static Future<void> createUser({
-    required AppUser user,
-  }) async {
+  static Future<void> createUser({required AppUser user}) async {
     await SupabaseSnapshot.insert(
       table: AppUser.tableName,
       insertObject: {
@@ -193,18 +191,14 @@ class AppUserSnapshot {
     );
   }
 
-  static Future<void> deleteUser({
-    required AppUser user,
-  }) async {
+  static Future<void> deleteUser({required AppUser user}) async {
     await SupabaseSnapshot.delete(
       table: AppUser.tableName,
       equalObject: {'user_id': user.userId},
     );
   }
 
-  static Future<void> updateUser({
-    required AppUser user,
-  }) async {
+  static Future<void> updateUser({required AppUser user}) async {
     await SupabaseSnapshot.update(
       table: AppUser.tableName,
       updateObject: {
@@ -217,6 +211,17 @@ class AppUserSnapshot {
         "is_active": user.isActive,
       },
       equalObject: {"user_id": user.userId},
+    );
+  }
+
+  static Future<void> updateUserByObject({
+    required Map<String, dynamic> updateObject,
+    required Map<String, dynamic> equalObject,
+  }) async {
+    await SupabaseSnapshot.update(
+      table: AppUser.tableName,
+      updateObject: updateObject,
+      equalObject: equalObject,
     );
   }
 

@@ -39,21 +39,10 @@ class UserController extends GetxController {
       );
       if (res.isNotEmpty) {
         appUser = res.first;
-        await fetchAddress();
       }
     }
     isLoading = false;
     update(["user"]);
-  }
-
-  Future<void> fetchAddress() async {
-    if (appUser != null) {
-      userAddress = await UserAddressSnapshot.getUserAddress(
-        equalObject: {"user_id": appUser!.userId},
-      );
-
-      update(["address"]);
-    }
   }
 
   Future<void> signOut() async {
@@ -88,7 +77,6 @@ class UserController extends GetxController {
       userId: appUser!.userId,
     );
     await fetchUser();
-    update(["changeInfo"]);
   }
 
   Future<void> changePassword({
@@ -117,9 +105,8 @@ class UserController extends GetxController {
       txtNickName: txtNickName,
       userId: appUser!.userId,
     );
-    await fetchAddress();
+    await fetchUser();
     update(["addAddress"]);
-    update(["address"]);
   }
 
   Future<void> updateAddress({
@@ -135,9 +122,8 @@ class UserController extends GetxController {
       txtNickName: txtNickName,
       userId: appUser!.userId,
     );
-    await fetchAddress();
+    await fetchUser();
     update(["addAddress"]);
-    update(["address"]);
   }
 
   Future<void> deleteAddress({
@@ -149,9 +135,9 @@ class UserController extends GetxController {
       txtAddress: txtAddress,
       userId: appUser!.userId,
     );
-    await fetchAddress();
-    update(["addAddress"]);
-    update(["address"]);
+
+    await fetchUser();
+    update(["editAddress"]);
   }
 
   // Viết phần User Admin
@@ -183,7 +169,7 @@ class UserController extends GetxController {
     await getUsers();
     await loadRoles();
     calculateTotalPages();
-    fetchUser();
+    await fetchUser();
   }
 
   Future<void> getUsers() async {
@@ -335,7 +321,8 @@ class UserController extends GetxController {
     update();
 
     try {
-      final String path = 'profile/${DateTime.now().millisecondsSinceEpoch}-${file.name}';
+      final String path =
+          'profile/${DateTime.now().millisecondsSinceEpoch}-${file.name}';
 
       String publicUrl;
 
@@ -400,7 +387,10 @@ class UserController extends GetxController {
             final index = segments.indexOf('profile');
             if (index != -1) {
               imagePath = segments.sublist(index).join('/');
-              await SupabaseHelper.removeImage(bucket: 'profile', path: imagePath);
+              await SupabaseHelper.removeImage(
+                bucket: 'profile',
+                path: imagePath,
+              );
             }
           }
         } catch (e) {
@@ -450,7 +440,6 @@ class UserController extends GetxController {
     fetchUsersAdmin();
     update();
   }
-
 }
 
 class BindingsUserController extends Bindings {
