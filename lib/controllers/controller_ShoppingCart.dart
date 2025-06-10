@@ -201,8 +201,10 @@ class ShoppingCartController extends GetxController {
           (od) => od.itemId == item.itemId,
         );
       } catch (e) {
+        // throw e;
         myOD = null;
       }
+
       if (myOD != null) {
         OrderDetailSnapshot.updateItemAmount(
           _cart!.orderId,
@@ -233,6 +235,7 @@ class ShoppingCartController extends GetxController {
       );
     } catch (e) {
       print('Error adding to cart: $e');
+      await _loadCart();
       // await _loadCartItems();
       Get.snackbar(
         'Lỗi',
@@ -341,9 +344,11 @@ class ShoppingCartController extends GetxController {
             );
           } catch (e) {}
 
-          // tao order detail moi
           // var newOrderDetail = _cart!.orderDetails[item.key]!;
+
+          // tao order detail moi
           newOrderDetail!.orderId = newOrderId;
+
           await OrderDetailSnapshot.createOrderDetail(
             orderDetail: newOrderDetail,
           );
@@ -353,6 +358,30 @@ class ShoppingCartController extends GetxController {
             itemId: item.key,
             orderId: _cart!.orderId,
           );
+
+          // tao order variant moi
+          if (newOrderDetail.variantMaps.isNotEmpty) {
+            final myVariants =
+                newOrderDetail.variantMaps.values.expand((e) => e).toList();
+
+            myVariants.forEach((variant) async {
+              await OrderVariantSnapshot.insertOrderVariant(
+                OrderVariant(
+                  variantId: variant.variantId,
+                  itemId: newOrderDetail!.itemId,
+                  orderId: newOrderDetail.orderId,
+                ),
+              );
+              // xoa order variant
+              await OrderVariantSnapshot.deleteOrderVariant(
+                OrderVariant(
+                  variantId: variant.variantId,
+                  itemId: newOrderDetail.itemId,
+                  orderId: _cart!.orderId,
+                ),
+              );
+            });
+          }
         }
       }
 

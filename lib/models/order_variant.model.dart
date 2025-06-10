@@ -60,6 +60,9 @@ class OrderVariantSnapshot {
   }
 
   static Future<void> deleteOrderVariant(OrderVariant orderVariant) async {
-    await SupabaseSnapshot.delete(table: OrderVariant.tableName);
+    await SupabaseSnapshot.delete(
+      table: OrderVariant.tableName,
+      equalObject: orderVariant.toJson(),
+    );
   }
 }

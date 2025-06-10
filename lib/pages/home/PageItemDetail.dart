@@ -130,6 +130,7 @@ class PageItemDetail extends StatelessWidget {
                                         } else {
                                           return CheckboxListTile(
                                             value: true,
+
                                             title: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
