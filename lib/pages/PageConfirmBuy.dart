@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:pizza_store_app/pages/PageHistoryOrderCart.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOrderCart.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 import '../models/user_address.model.dart';

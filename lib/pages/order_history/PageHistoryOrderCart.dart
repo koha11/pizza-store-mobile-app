@@ -6,8 +6,8 @@ import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:pizza_store_app/pages/PageHistoryOderDetailCart..dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetailCart..dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PageHistoryOrderCart extends StatelessWidget {
