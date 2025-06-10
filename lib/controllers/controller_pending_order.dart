@@ -46,10 +46,10 @@ class OrderListController extends GetxController {
     isLoadingPending = true;
     update();
     pendingOrders = await CustomerOrderSnapshot.getOrders(
-        orObject: [
-          {"status": "pending"},
-          {"status": "shipping"},
-        ],
+      orObject: [
+        {"status": "pending"},
+        {"status": "shipping"},
+      ],
     );
     isLoadingPending = false;
     update();
