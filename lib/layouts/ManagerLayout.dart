@@ -20,7 +20,14 @@ class ManagerLayout extends StatelessWidget {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("${controller.getTitlePage()}"),
+            title: Text(
+              "${controller.getTitlePage()}",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           ),
           bottomNavigationBar: GetBuilder<DashboardManagerController>(
@@ -47,7 +54,7 @@ class ManagerLayout extends StatelessWidget {
                     ),
                     BottomNavigationBarItem(
                       icon: Icon(Icons.person),
-                      label: 'Profile',
+                      label: 'Hồ sơ',
                     ),
                   ],
                 ),

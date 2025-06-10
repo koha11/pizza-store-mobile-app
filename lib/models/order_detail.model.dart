@@ -1,10 +1,12 @@
 import 'package:pizza_store_app/models/customer_order.model.dart';
+import 'package:pizza_store_app/models/variant.model.dart';
 
 import '../helpers/supabase.helper.dart';
 import 'Item.model.dart';
 
 class OrderDetail {
   String orderId, itemId;
+  Map<String, List<Variant>> variantMaps = {};
   int amount, actualPrice;
   String? note;
   Item item;
@@ -20,18 +22,6 @@ class OrderDetail {
     required this.item,
   });
 
-  // factory OrderDetail.fromJson(Map<String, dynamic> json) {
-  //   return OrderDetail(
-  //     orderId: json["order_id"],
-  //     itemId: json["item_id"],
-  //     amount: json["amount"],
-  //     actualPrice: json["actual_price"],
-  //     note: json["note"],
-  //     item: json["item"] != null && json["item"] is Map<String, dynamic>
-  //         ? Item.fromJson(json["item"])
-  //         : null,
-  //   );
-  // }
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
     return OrderDetail(
       orderId: json["order_id"],

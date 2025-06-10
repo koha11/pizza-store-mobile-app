@@ -79,21 +79,21 @@ class PageChangeInfo extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PagePendingOrder(),
-                            ),
-                          );
-                        },
-                        child: Text("Giao hàng"),
-                      ),
-                    ),
+                    // SizedBox(height: 20),
+                    // SizedBox(
+                    //   width: double.infinity,
+                    //   child: ElevatedButton(
+                    //     onPressed: () {
+                    //       Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //           builder: (context) => PagePendingOrder(),
+                    //         ),
+                    //       );
+                    //     },
+                    //     child: Text("Giao hàng"),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

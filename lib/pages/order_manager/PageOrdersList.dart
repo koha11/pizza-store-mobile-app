@@ -7,17 +7,15 @@ import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 
+import '../../helpers/other.helper.dart';
+
 class PageOrdersList extends StatelessWidget {
   PageOrdersList({super.key});
 
-  final currencyFormat = NumberFormat.currency(locale: "vi_VN", symbol: "₫");
-  final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
+    return GetBuilder<OrdersManagerController>(
       id: "orders",
-      init: OrdersManagerController.get(),
       builder: (controller) {
         final selectStatus = controller.orderStatus;
         final orders = controller.orders;
@@ -148,7 +146,7 @@ class PageOrdersList extends StatelessWidget {
                                           ),
                                           Text(
                                             order.orderTime != null
-                                                ? dateFormat.format(
+                                                ? formatDateTime(
                                                   order.orderTime!,
                                                 )
                                                 : "Null",
@@ -169,7 +167,7 @@ class PageOrdersList extends StatelessWidget {
                                             style: TextStyle(fontSize: 16),
                                           ),
                                           Text(
-                                            order.paymentMethod!
+                                            order.paymentMethod
                                                 ? 'Đã thanh toán'
                                                 : 'Chưa thanh toán',
                                             style: TextStyle(fontSize: 16),

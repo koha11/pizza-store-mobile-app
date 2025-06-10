@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
-import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
-import 'package:pizza_store_app/pages/home/PageHome.dart';
-import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import '../dialogs/dialog.dart';
 
 class PageShoppingCart extends StatefulWidget {
@@ -54,7 +51,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
       ),
       body: GetBuilder<ShoppingCartController>(
         builder: (controller) {
-          if (controller.cartItems.isEmpty) {
+          if (controller.cart!.orderDetails == null) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +66,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      Get.to(MainLayout());
+                      Get.back();
                     },
                     child: const Text("Tìm kiếm món ăn"),
                   ),
@@ -86,10 +83,10 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: controller.cartItems.length,
+                  itemCount: controller.cart!.orderDetails!.length,
                   itemBuilder: (context, index) {
                     mycontext = context;
-                    final item = controller.cartItems.values.elementAt(index);
+                    final item = controller.cart!.orderDetails![index];
                     return Slidable(
                       key: ValueKey(item.itemId),
                       endActionPane: ActionPane(
@@ -100,7 +97,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                             onPressed: (context) async {
                               bool? xacNhan = await showConfirmDialog(
                                 mycontext,
-                                "Bạn có muốn xóa ${item.item?.itemName}?",
+                                "Bạn có muốn xóa ${item.item.itemName}?",
                               );
                               if (xacNhan == true) {
                                 await controller.removeFromCart(
@@ -108,7 +105,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                 );
                                 showSnackBar(
                                   mycontext,
-                                  message: "Đã xóa ${item.item?.itemName}",
+                                  message: "Đã xóa ${item.item.itemName}",
                                 );
                               }
                             },
@@ -138,9 +135,9 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                   controller.toggleItemCheck(item.itemId);
                                 },
                               ),
-                              item.item?.itemImage != null
+                              item.item.itemImage != null
                                   ? Image.network(
-                                    item.item!.itemImage!,
+                                    item.item.itemImage!,
                                     width: 50,
                                     height: 50,
                                     fit: BoxFit.cover,
@@ -148,12 +145,12 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                   : const Icon(Icons.fastfood, size: 40),
                             ],
                           ),
-                          title: Text(item.item?.itemName ?? "Không rõ tên"),
+                          title: Text(item.item.itemName ?? "Không rõ tên"),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text("${item.actualPrice} vnđ"),
-                              Text("${item.item?.category.categoryName}"),
+                              Text(item.item.category.categoryName),
                             ],
                           ),
 
@@ -163,14 +160,14 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                               IconButton(
                                 icon: const Icon(Icons.remove),
                                 onPressed: () {
-                                  controller.decrementAmount(item.itemId);
+                                  controller.updateAmount(item.itemId, true);
                                 },
                               ),
                               Text("${item.amount}"),
                               IconButton(
                                 icon: const Icon(Icons.add),
                                 onPressed: () {
-                                  controller.incrementAmount(item.itemId);
+                                  controller.updateAmount(item.itemId, false);
                                 },
                               ),
                             ],

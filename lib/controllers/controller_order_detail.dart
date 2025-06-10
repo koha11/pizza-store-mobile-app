@@ -31,11 +31,7 @@ class OrderDetailsController extends GetxController {
   }
 
   Future<void> _initData() async {
-    Future.wait([
-      fetchCustomer(),
-      getCustomerOrder(),
-      getOrderDetail(),
-    ]);
+    Future.wait([fetchCustomer(), getCustomerOrder(), getOrderDetail()]);
   }
 
   Future<void> getOrderDetail() async {
@@ -49,7 +45,9 @@ class OrderDetailsController extends GetxController {
   Future<void> getCustomerOrder() async {
     isLoadingCustomerOrder = true;
     update();
-    customerOrder = await CustomerOrderSnapshot.getOrderDetail(orderId: orderId);
+    customerOrder = await CustomerOrderSnapshot.getOrderDetail(
+      orderId: orderId,
+    );
     isLoadingCustomerOrder = false;
     update();
   }
@@ -80,7 +78,7 @@ class OrderDetailsController extends GetxController {
     }
     return customerOrder!.orderDetails!
         .map((e) => e.amount * e.item.price)
-        .fold(0,(a, b) => a + b);
+        .fold(0, (a, b) => a + b);
   }
 
   // Tính tổng cộng
@@ -134,7 +132,7 @@ class OrderDetailsController extends GetxController {
       await supabase
           .from('customer_order')
           .update({'status': 'finished'})
-          .eq('order_id', orderId);
+          .eq('order_id', orderId); // snapshot dau cha
 
       orderStatus.value = 'finished';
       Get.snackbar('Thành công', 'Đã hoàn tất đơn hàng');
@@ -155,17 +153,11 @@ class BindingOrderDetails extends Bindings {
   BindingOrderDetails(this.orderId);
   @override
   void dependencies() {
-    Get.lazyPut<OrderDetailsController>(() => OrderDetailsController(orderId: orderId));
+    Get.lazyPut<OrderDetailsController>(
+      () => OrderDetailsController(orderId: orderId),
+    );
   }
 }
-
-
-
-
-
-
-
-
 
 // import 'package:get/get.dart';
 // import 'package:pizza_store_app/models/order_items.dart';

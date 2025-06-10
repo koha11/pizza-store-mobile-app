@@ -17,14 +17,22 @@ class DashboardManagerController extends GetxController {
   };
   bool isLoading = true;
   int currentIndex = 0;
-  final List<Widget> _pages = [
-    PageDashboard(),
-    PageOrdersList(),
-    PageProfile(),
-  ];
+
+  Widget getPage(int index) {
+    switch (index) {
+      case 0:
+        return PageDashboard();
+      case 1:
+        return PageOrdersList();
+      case 2:
+        return PageProfile();
+      default:
+        return Container();
+    }
+  }
+
   static DashboardManagerController get() => Get.find();
 
-  Widget getPage(int index) => _pages[index];
   @override
   void onInit() {
     // TODO: implement onInit
@@ -60,11 +68,11 @@ class DashboardManagerController extends GetxController {
   }
 }
 
-class BindingDashboardDashboardController extends Bindings {
+class BindingDashboardController extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => DashboardManagerController());
-    Get.lazyPut(() => OrdersManagerController());
+    Get.lazyPut(() => OrdersManagerController(), fenix: true);
     Get.lazyPut(() => UserController());
   }
 }

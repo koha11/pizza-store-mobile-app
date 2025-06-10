@@ -12,13 +12,12 @@ class OrdersManagerController extends GetxController {
     null,
     ...OrderStatus.values.where((element) => element != OrderStatus.cart),
   ];
-  StreamSubscription<List<CustomerOrder>>? orderSub;
   static OrdersManagerController get() => Get.find();
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    listenToGetOrders();
+    getOrders();
   }
 
   void setStatus(OrderStatus? status) {
@@ -26,23 +25,14 @@ class OrdersManagerController extends GetxController {
     update(["orders"]);
   }
 
-  void listenToGetOrders() async {
+  Future<void> getOrders() async {
     isLoading = true;
     update(["orders"]);
-    orderSub = CustomerOrderSnapshot.getOrdersStream().listen((data) {
-      orders.assignAll(data);
-      isLoading = false;
-      update(["orders"]);
-    });
-
-    print(orders);
-  }
-
-  @override
-  void onClose() {
-    // TODO: implement onClose
-    super.onClose();
-    orderSub?.cancel();
+    orders = await CustomerOrderSnapshot.getOrders(
+      sortObject: {"order_time": false},
+    );
+    isLoading = false;
+    update(["orders"]);
   }
 }
 

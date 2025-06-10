@@ -1,6 +1,8 @@
+import 'package:get/get.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
+import 'package:pizza_store_app/models/order_variant.model.dart';
 
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';
@@ -15,14 +17,19 @@ class CustomerOrder {
   String? note = "", shippingAddress = "";
   OrderStatus status;
   DateTime? orderTime, acceptTime, deliveryTime, finishTime;
-  bool? paymentMethod = false;
+  bool paymentMethod = false;
   int? shippingFee, totalAmount = 0;
   List<OrderDetail>? orderDetails = [];
   int? total;
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
-      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)))";
+      "*, "
+      "customer:customer_id (*), "
+      "manager:manager_id (*), "
+      "shipper:shipper_id (*), "
+      "order_detail(*, item:item_id (*, category:category_id (*))), "
+      "order_variant(*, variant:variant_id(*, variant_type:variant_type_id(*)))";
 
   CustomerOrder({
     required this.orderId,
@@ -40,7 +47,7 @@ class CustomerOrder {
     this.acceptTime,
     this.deliveryTime,
     this.finishTime,
-    this.paymentMethod,
+    required this.paymentMethod,
     this.shippingFee,
     this.total,
     this.orderDetails,
@@ -48,6 +55,8 @@ class CustomerOrder {
 
   factory CustomerOrder.fromJson(Map<String, dynamic> json) {
     List<dynamic> orderDetailsJson = json["order_detail"] ?? [];
+    List<dynamic> orderVariantsJson =
+        json["order_variant"] ?? []; // list cac order_variant
 
     List<OrderDetail> orderDetails =
         orderDetailsJson.isEmpty
@@ -55,6 +64,26 @@ class CustomerOrder {
             : orderDetailsJson
                 .map((odJson) => OrderDetail.fromJson(odJson))
                 .toList();
+
+    List<OrderVariant> orderVariants =
+        orderVariantsJson.isEmpty
+            ? []
+            : orderVariantsJson.map((ov) => OrderVariant.fromJson(ov)).toList();
+
+    if (orderDetails.isNotEmpty && orderVariants.isNotEmpty) {
+      for (var ov in orderVariants) {
+        OrderDetail od = orderDetails.firstWhere(
+          (od) => od.itemId == ov.itemId,
+        );
+        final key = ov.variant.variantTypeId;
+        if (od.variantMaps.containsKey(key)) {
+          od.variantMaps[key]!.add(ov.variant);
+        } else {
+          od.variantMaps.assign(key, [ov.variant]);
+        }
+      }
+      print(orderDetails);
+    }
 
     return CustomerOrder(
       orderId: json["order_id"],
@@ -226,8 +255,7 @@ class CustomerOrderSnapshot {
   static Future<List<CustomerOrder>> getOrders({
     Map<String, String>? equalObject,
     List<Map<String, dynamic>>? orObject,
-    bool sortByPendingFirst = false,
-    bool sortByOrderTimeDesc = true,
+    Map<String, bool>? sortObject,
     Map<String, String>? gtObject,
     Map<String, String>? ltObject,
   }) async {
@@ -239,6 +267,7 @@ class CustomerOrderSnapshot {
       selectString: CustomerOrder.selectAllStr,
       gtObject: gtObject,
       ltObject: ltObject,
+      sortObject: sortObject,
     );
 
     return orders;
@@ -253,7 +282,7 @@ class CustomerOrderSnapshot {
     );
   }
 
-  static Future<String?> getCustomerCart(String customerId) async {
+  static Future<CustomerOrder?> getCustomerCart(String customerId) async {
     final cart = await SupabaseSnapshot.getList(
       table: CustomerOrder.tableName,
       fromJson: CustomerOrder.fromJson,
@@ -261,12 +290,12 @@ class CustomerOrderSnapshot {
       selectString: CustomerOrder.selectAllStr,
     );
 
-    return cart.isEmpty ? null : cart.first.orderId;
+    return cart.isEmpty ? null : cart.first;
   }
 
-  static Future<String> createNewOrder(String customerId) async {
-    final orderId = "OI${customerId}";
-    await supabase.from('customer_order').insert({
+  static Future<CustomerOrder> createNewOrder(String customerId) async {
+    final orderId = "OI-$customerId";
+    final order = await supabase.from('customer_order').insert({
       'order_id': orderId,
       'customer_id': customerId,
       'manager_id': null,
@@ -279,7 +308,7 @@ class CustomerOrderSnapshot {
       'note': null,
       'shipping_address': null,
     });
-    return orderId;
+    return order;
   }
 
   static Future<String> placeOrder({
@@ -301,52 +330,6 @@ class CustomerOrderSnapshot {
       'total_amount': totalAmount,
     });
     return orderId;
-  }
-
-  // // cập nhật trạng thái
-  // static Future<void> updateOrderStatus(String orderId, String status) async {
-  //   await supabase
-  //       .from('customer_order')
-  //       .update({'status': status})
-  //       .eq('order_id', orderId);
-  // }
-  //
-  // static Future<void> updateOrderStatusAndTotal(
-  //   String orderId,
-  //   OrderStatus status,
-  //   int totalAmount,
-  //   int shippingFee,
-  // ) async {
-  //   await supabase
-  //       .from('customer_order')
-  //       .update({
-  //         'status': status,
-  //         'total_amount': totalAmount,
-  //         'shipping_fee': shippingFee,
-  //       })
-  //       .eq('order_id', orderId);
-  // }
-
-  // Lấy thông tin sản phẩm trong giỏ hàng
-  static Future<Map<String, OrderDetail>> getCartItems(String orderId) async {
-    final items = await SupabaseSnapshot.getMapT<String, OrderDetail>(
-      table: OrderDetail.tableName,
-      fromJson: OrderDetail.fromJson,
-      selectString: "*, item(*)",
-      equalObject: {"order_id": orderId},
-      getId: (p0) => p0.itemId,
-    );
-
-    // final Map<String, OrderDetail> items = {};
-    // for (var item in response) {
-    //   try {
-    //     final orderDetail = OrderDetail.fromJson(item);
-    //     items[orderDetail.itemId] = orderDetail;
-    //   } catch (e) {
-    //     print('Lỗi chuyển item: $e');
-    //   }
-    // }
-    return items;
   }
 
   static Future<void> addItemToCart(
