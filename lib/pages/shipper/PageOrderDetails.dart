@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/controller_order_detail.dart';
+import '../../controllers/controller_order_detail.dart';
 
 class PageOrderDetails extends StatelessWidget {
   final String orderId;

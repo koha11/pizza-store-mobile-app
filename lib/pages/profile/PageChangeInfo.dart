@@ -4,7 +4,7 @@ import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
-import 'package:pizza_store_app/pages/PagePendingOrder.dart';
+import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PageChangeInfo extends StatelessWidget {

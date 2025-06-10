@@ -5,7 +5,7 @@ import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/pages/home/PageHome.dart';
 import 'package:pizza_store_app/pages/home/PageItem.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrderCart.dart';
-import 'package:pizza_store_app/pages/PagePendingOrder.dart';
+import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:pizza_store_app/pages/profile/PageProfile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

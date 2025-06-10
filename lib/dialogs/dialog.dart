@@ -8,10 +8,11 @@ import 'package:pizza_store_app/models/app_user.model.dart';
 import '../admin/item_admin/PageAddItem.dart';
 import '../admin/item_admin/PageUpdateItem.dart';
 import '../admin/user_admin/PageAddUser.dart';
+import '../controllers/controller_admin_user.dart';
 import '../controllers/controller_item.dart';
 
 final ItemController _itemController = Get.find<ItemController>();
-final UserController _userController = Get.find<UserController>();
+final AdminUserController _adminUserController = Get.find<AdminUserController>();
 
 Future<bool?> showConfirmDialog(BuildContext context, String message) async {
   return showDialog<bool>(
@@ -115,7 +116,7 @@ Future<void> showAddUserDialog(BuildContext context) async {
     },
   );
   if (result == true) {
-    _userController.fetchUsersAdmin();
+    _adminUserController.fetchUsersAdmin();
   }
 }
 
@@ -154,6 +155,6 @@ Future<void> showUpdateUserDialog(BuildContext context, AppUser user) async {
     },
   );
   if (result == true) {
-    _userController.fetchUsersAdmin();
+    _adminUserController.fetchUsersAdmin();
   }
 }

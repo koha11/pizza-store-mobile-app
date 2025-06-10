@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_role.model.dart';
 
+import '../../controllers/controller_admin_user.dart';
 import '../../controllers/controller_user.dart';
 
 class PageAddUser extends StatefulWidget {
@@ -13,7 +14,7 @@ class PageAddUser extends StatefulWidget {
 }
 
 class _PageAddUserState extends State<PageAddUser> {
-  final UserController _controller = Get.find<UserController>();
+  final AdminUserController _controller = Get.find<AdminUserController>();
 
   final TextEditingController txtId = TextEditingController();
   final TextEditingController txtUserName = TextEditingController();
@@ -144,7 +145,7 @@ class _PageAddUserState extends State<PageAddUser> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      GetBuilder<UserController>(
+                      GetBuilder<AdminUserController>(
                         builder: (controller) {
                           return DropdownButtonFormField<Role>(
                             value: controller.selectedRole,
@@ -178,7 +179,7 @@ class _PageAddUserState extends State<PageAddUser> {
                 Expanded(
                   child: Column(
                     children: [
-                      GetBuilder<UserController>(
+                      GetBuilder<AdminUserController>(
                         builder: (controller) => _buildImagePreview(controller),
                       ),
                       const SizedBox(height: 10),
@@ -206,7 +207,7 @@ class _PageAddUserState extends State<PageAddUser> {
     );
   }
 
-  Widget _buildImagePreview(UserController controller) {
+  Widget _buildImagePreview(AdminUserController controller) {
     return Container(
       height: 300,
       decoration: BoxDecoration(

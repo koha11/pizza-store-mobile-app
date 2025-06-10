@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import '../enums/OrderStatus.dart';
@@ -11,19 +12,15 @@ class OrderListController extends GetxController {
   List<AppUser> user = [];
   List<AppUser> shipper = [];
 
-  bool isLoadingPending = false;
-  bool isLoadingHistory = false;
-  bool isLoadingUser = false;
-  bool isLoadingShipper = false;
+  bool isLoadingPending = true;
+  bool isLoadingHistory = true;
+  bool isLoadingUser = true;
+  bool isLoadingShipper = true;
 
-  OrderStatus? orderStatus;
   List<dynamic> statuses = [
     null,
     ...OrderStatus.values.where((element) => element != OrderStatus.cart),
   ];
-
-  StreamSubscription<List<CustomerOrder>>? pendingOrderSub;
-  StreamSubscription<List<CustomerOrder>>? historyOrderSub;
 
   static OrderListController get() => Get.find();
 
@@ -43,31 +40,29 @@ class OrderListController extends GetxController {
   }
 
   Future<void> listenToGetPendingOrders() async{
-    isLoadingPending = true;
-    update();
     pendingOrders = await CustomerOrderSnapshot.getOrders(
       orObject: [
         {"status": "pending"},
         {"status": "shipping"},
       ],
+      equalObject: {"shipper_id": UserController.get().appUser!.userId}
     );
     isLoadingPending = false;
     update();
   }
 
   Future<void> listenToGetHistoryOrders() async{
-    isLoadingHistory = true;
-    update();
     historyOrders = await CustomerOrderSnapshot.getOrders(
-      equalObject: {"status": "finished"}
+      equalObject: {
+        "status": "finished",
+        "shipper_id": UserController.get().appUser!.userId
+      },
     );
     isLoadingHistory = false;
     update();
   }
 
   Future<void> fetchCustomer() async {
-    isLoadingUser = true;
-    update();
     user = await AppUserSnapshot.getAppUsers(
       equalObject: {"role_id": "CUSTOMER"},
     );
@@ -76,8 +71,6 @@ class OrderListController extends GetxController {
   }
 
   Future<void> fetchShipper() async {
-    isLoadingShipper = true;
-    update();
     shipper = await AppUserSnapshot.getAppUsers(
       equalObject: {"role_id": "SHIPPER"},
     );
@@ -85,12 +78,6 @@ class OrderListController extends GetxController {
     update();
   }
 
-  @override
-  void onClose() {
-    pendingOrderSub?.cancel();
-    historyOrderSub?.cancel();
-    super.onClose();
-  }
 }
 
 // Binding cho OrderListController

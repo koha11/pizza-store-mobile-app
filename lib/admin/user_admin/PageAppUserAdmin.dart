@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/dialogs/dialog.dart';
+import '../../controllers/controller_admin_user.dart';
 import '../../controllers/controller_user.dart';
 
 class PageAppUserAdmin extends StatefulWidget {
@@ -11,18 +12,18 @@ class PageAppUserAdmin extends StatefulWidget {
 }
 
 class _PageAppUserAdminState extends State<PageAppUserAdmin> {
-  final userController = Get.put(UserController());
+  final adminUserController = Get.put(AdminUserController());
 
   @override
   void initState() {
     super.initState();
-    userController.resetSearchState();
+    adminUserController.resetSearchState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<UserController>(
-      init: UserController.get(),
+    return GetBuilder<AdminUserController>(
+      init: AdminUserController.get(),
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(

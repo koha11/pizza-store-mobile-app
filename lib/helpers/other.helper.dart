@@ -13,7 +13,7 @@ import '../controllers/controller_home.dart';
 import '../layouts/MainLayout.dart';
 import '../layouts/ManagerLayout.dart';
 import '../models/variant.model.dart';
-import '../pages/PagePendingOrder.dart';
+import '../pages/shipper/PagePendingOrder.dart';
 
 Future<String> generateId({required String tableName}) async {
   StringBuffer id = StringBuffer();

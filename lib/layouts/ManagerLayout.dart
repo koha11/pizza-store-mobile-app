@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
-import 'package:pizza_store_app/pages/PagePendingOrder.dart';
+import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:pizza_store_app/pages/home/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
 
