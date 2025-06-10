@@ -82,7 +82,6 @@ class CustomerOrder {
           od.variantMaps.assign(key, [ov.variant]);
         }
       }
-      print(orderDetails);
     }
 
     return CustomerOrder(
