@@ -57,8 +57,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: PageAdmin(),
-      // home: MainLayout(),
-      home: ManagerLayout(),
+      home: MainLayout(),
+      // home: ManagerLayout(),
       debugShowCheckedModeBanner: false,
     );
   }
