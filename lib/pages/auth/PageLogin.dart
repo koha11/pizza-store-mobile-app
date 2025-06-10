@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
+import 'package:pizza_store_app/layouts/ManagerLayout.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/auth/PageRegister.dart';
 import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
@@ -9,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
 import '../../layouts/MainLayout.dart';
+import '../PagePendingOrder.dart';
 
 class PageLogin extends StatelessWidget {
   PageLogin({super.key});
@@ -92,18 +95,18 @@ class PageLogin extends StatelessWidget {
                             );
 
                         final User user = res.user!;
+                        final userController = UserController.get();
 
-                        await UserController.get().fetchUser();
+                        await userController.fetchUser();
+                        final myUser = userController.appUser;
                         HomePizzaStoreController.get().setCurrUser(user);
-                        await SupabaseSnapshot.update(
-                          table: AppUser.tableName,
+
+                        await AppUserSnapshot.updateUserByObject(
                           updateObject: {"is_active": true},
                           equalObject: {"user_id": user.id},
                         );
-                        Get.off(
-                          MainLayout(),
-                          binding: BindingsHomePizzaStore(),
-                        );
+
+                        checkRole(myUser!.roleId);
                       } on AuthException catch (e) {
                         if (e.message == "Email not confirmed") {
                           final supabase = Supabase.instance.client;
@@ -151,5 +154,21 @@ class PageLogin extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+void checkRole(String role) {
+  switch (role) {
+    case "ADMIN":
+      Get.off(PageAdmin());
+      break;
+    case "MANAGER":
+      Get.off(ManagerLayout());
+      break;
+    case "SHIPPER":
+      Get.off(PagePendingOrder());
+      break;
+    default:
+      Get.off(MainLayout(), binding: BindingsHomePizzaStore());
   }
 }
