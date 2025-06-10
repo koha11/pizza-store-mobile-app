@@ -22,7 +22,7 @@ class CustomerOrder {
 
   static const String tableName = "customer_order";
   static const String selectAllStr =
-      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)))";
+      "*, customer:customer_id (*), manager:manager_id (*), shipper:shipper_id (*), order_detail(*, item:item_id (*, category:category_id (*)), order_variant(*, variant:variant_id (*, variant_type:variant_type_id (*))))";
 
   CustomerOrder({
     required this.orderId,
