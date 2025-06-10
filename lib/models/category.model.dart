@@ -80,6 +80,7 @@ class CategorySnapshot {
 
   static Future<Category?> getCategoryById(String id) {
     return SupabaseSnapshot.getById(
+      selectString: Category.selectAllStr,
       table: Category.tableName,
       fromJson: Category.fromJson,
       idKey: "category_id",
