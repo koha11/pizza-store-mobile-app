@@ -140,13 +140,12 @@ class UserController extends GetxController {
   }
 
   // Viết phần User Admin
-
-
 }
 
 class BindingsUserController extends Bindings {
   @override
   void dependencies() {
-    Get.put<UserController>(UserController());
+    // Get.put<UserController>(UserController());
+    Get.lazyPut(() => UserController());
   }
 }

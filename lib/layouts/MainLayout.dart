@@ -70,7 +70,6 @@ class MainLayout extends StatelessWidget {
       ),
       bottomNavigationBar: GetBuilder(
         init: HomePizzaStoreController.get(),
-        id: "1",
         builder:
             (controller) => BottomNavigationBar(
               currentIndex: controller.currentIndex % 3,
@@ -94,7 +93,6 @@ class MainLayout extends StatelessWidget {
             ),
       ),
       body: GetBuilder(
-        id: "1",
         init: HomePizzaStoreController.get(),
         builder: (controller) => controller.getPage(controller.currentIndex),
       ),
