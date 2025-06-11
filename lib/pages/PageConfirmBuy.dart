@@ -245,6 +245,12 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
+                    Get.dialog(
+                      Center(child: CircularProgressIndicator()),
+                      barrierDismissible:
+                          false, // prevent closing by tapping outside
+                    );
+
                     await ShoppingCartController.get().placeOrder(
                       shippingFee: shippingFee,
                       address: selectedAddressId!,
