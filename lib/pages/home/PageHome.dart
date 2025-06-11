@@ -163,7 +163,10 @@ class ItemsGridView extends StatelessWidget {
                             Object error,
                             StackTrace? stackTrace,
                           ) {
-                            return Center(child: Text('Failed to load image'));
+                            return Image.asset(
+                              'asset/images/error_item_img.png',
+                              fit: BoxFit.cover,
+                            );
                           },
                         ),
                         SizedBox(height: 10),
