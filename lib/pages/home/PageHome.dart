@@ -128,6 +128,12 @@ class ItemsGridView extends StatelessWidget {
                 (item) => GridTile(
                   child: GestureDetector(
                     child: Container(
+                      padding: EdgeInsets.only(
+                        left: 12,
+                        top: 4,
+                        right: 12,
+                        bottom: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -142,61 +148,74 @@ class ItemsGridView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.network(
-                            item.itemImage ?? "",
-                            fit: BoxFit.fitWidth,
-                            height: 200,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                // Download complete, show the image
-                                return child;
-                              }
-                              // Still loading: calculate progress percent
-                              final int? expected =
-                                  loadingProgress.expectedTotalBytes?.toInt();
-                              final int loaded =
-                                  loadingProgress.cumulativeBytesLoaded.toInt();
-                              final double progress =
-                                  expected != null ? loaded / expected : 0;
+                          Expanded(
+                            flex: 3,
+                            child: Image.network(
+                              item.itemImage ?? "",
+                              fit: BoxFit.fitWidth,
+                              loadingBuilder: (
+                                context,
+                                child,
+                                loadingProgress,
+                              ) {
+                                if (loadingProgress == null) {
+                                  // Download complete, show the image
+                                  return child;
+                                }
+                                // Still loading: calculate progress percent
+                                final int? expected =
+                                    loadingProgress.expectedTotalBytes?.toInt();
+                                final int loaded =
+                                    loadingProgress.cumulativeBytesLoaded
+                                        .toInt();
+                                final double progress =
+                                    expected != null ? loaded / expected : 0;
 
-                              return Center(
-                                child: SizedBox(
-                                  height: 160,
-                                  width: 200,
-                                  child: CircularProgressIndicator(
-                                    value: expected != null ? progress : null,
-                                    strokeWidth: 1,
+                                return Center(
+                                  child: SizedBox(
+                                    height: 160,
+                                    width: 200,
+                                    child: CircularProgressIndicator(
+                                      value: expected != null ? progress : null,
+                                      strokeWidth: 1,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (
-                              BuildContext context,
-                              Object error,
-                              StackTrace? stackTrace,
-                            ) {
-                              return Image.asset(
-                                'asset/images/error_item_img.png',
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            item.itemName,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w400,
+                                );
+                              },
+                              errorBuilder: (
+                                BuildContext context,
+                                Object error,
+                                StackTrace? stackTrace,
+                              ) {
+                                return Image.asset(
+                                  'asset/images/error_item_img.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            formatMoney(money: item.price),
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary,
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              item.itemName,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              formatMoney(money: item.price),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.inversePrimary,
+                              ),
                             ),
                           ),
                         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
@@ -248,7 +249,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       address: selectedAddressId!,
                       totalAmount: totalAmount,
                     );
-                    Get.to(PageHistoryOrderCart());
+
                     Get.snackbar(
                       "Thành công",
                       "Đơn hàng đã được đặt!",
