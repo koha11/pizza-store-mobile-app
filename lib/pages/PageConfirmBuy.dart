@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetail.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 import '../models/user_address.model.dart';
@@ -245,11 +246,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    Get.dialog(
-                      Center(child: CircularProgressIndicator()),
-                      barrierDismissible:
-                          false, // prevent closing by tapping outside
-                    );
+                    loadingDialog();
 
                     await ShoppingCartController.get().placeOrder(
                       shippingFee: shippingFee,

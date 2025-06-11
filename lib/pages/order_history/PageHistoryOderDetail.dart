@@ -5,6 +5,10 @@ import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
+
+import '../../layouts/MainLayout.dart';
+import '../../widgets/LoadingDialog.dart';
 
 class PageHistoryOderDetail extends StatefulWidget {
   final List<OrderDetail> selectedItems;
@@ -212,18 +216,26 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
                   child: ElevatedButton(
                     onPressed: () async {
                       try {
+                        loadingDialog();
+
                         await OrderDetailSnapshot.clearCart(
                           orderId: widget.order.orderId,
                         );
+
                         // Cập nhật lại danh sách đơn hàng
                         final controller = Get.find<HistoryCartController>();
                         await controller.fetchPendingOrders();
-                        Get.back(); // Quay lại trang danh sách đơn hàng
+
                         Get.snackbar(
                           "Thành công",
                           "Đã hủy đơn hàng!",
                           snackPosition: SnackPosition.BOTTOM,
                         );
+
+                        Get.offAll(
+                          () => MainLayout(),
+                          binding: getRoleControllerBindings(""),
+                        ); // Quay lại trang danh sách đơn hàng
                       } catch (e) {
                         Get.snackbar(
                           "Lỗi",
