@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class HistoryCartController extends GetxController {
@@ -35,6 +36,11 @@ class HistoryCartController extends GetxController {
     pendingOrders = await CustomerOrderSnapshot.getOrders(
       equalObject: {"customer_id": UserController.get().appUser!.userId},
       sortObject: {"order_time": false},
+      orObject: [
+        {"status": OrderStatus.pending.name},
+        {"status": OrderStatus.shipping.name},
+        {"status": OrderStatus.finished.name},
+      ],
     );
 
     isLoading = false;
