@@ -335,10 +335,6 @@ class ShoppingCartController extends GetxController {
         totalAmount: totalAmount,
       );
 
-      if (newOrderId == null) {
-        throw Exception('Không thể tạo đơn hàng mới');
-      }
-
       // Chuyen nhung order detail dang co trang thai checked -> order moi
       for (var item in _checkedItems.entries) {
         if (item.value) {
@@ -412,9 +408,6 @@ class ShoppingCartController extends GetxController {
   void reset() {
     _cartItems.clear();
     _checkedItems.clear();
-    _cart!.orderId;
-    _customerId = null;
-    // _loadCartItems();
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
+import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_address.model.dart';
@@ -68,7 +69,9 @@ class UserController extends GetxController {
     }
 
     appUser = null;
-    update(["1"]);
+
+    HomePizzaStoreController.get().refreshHome();
+    update();
   }
 
   Future<void> updateInfo({
