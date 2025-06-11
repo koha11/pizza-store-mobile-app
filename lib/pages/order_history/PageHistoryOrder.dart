@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
@@ -99,7 +100,34 @@ class PageHistoryOrderCart extends StatelessWidget {
                       ),
 
                       Divider(height: 20, thickness: 1),
-                      Text("Ngày Đặt Hàng: ${order.orderTime}"),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: Colors.grey[600],
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Ngày đặt: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          Text(
+                            DateFormat(
+                              'dd/MM/yyyy HH:mm',
+                            ).format(order.orderTime!),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(
                         "Danh sách món:",
                         style: TextStyle(
