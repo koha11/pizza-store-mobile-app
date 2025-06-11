@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetailCart..dart';
-import 'package:pizza_store_app/pages/order_history/PageHistoryOrderCart.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetail.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 import '../models/user_address.model.dart';
@@ -119,12 +120,16 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text("${item.actualPrice}đ"),
+                                  child: Text(
+                                    formatMoney(money: item.actualPrice),
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
                                   child: Text(
-                                    "${item.actualPrice * item.amount}đ",
+                                    formatMoney(
+                                      money: item.actualPrice * item.amount,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -140,7 +145,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                             "Tạm tính:",
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Text("${subTotal}đ"),
+                          Text(formatMoney(money: subTotal)),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -151,7 +156,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                             "Phí vận chuyển:",
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Text("${shippingFee}đ"),
+                          Text(formatMoney(money: shippingFee)),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -163,7 +168,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "${total}đ",
+                            formatMoney(money: total),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
