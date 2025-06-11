@@ -118,7 +118,8 @@ class PageItemDetail extends StatelessWidget {
                                             groupValue:
                                                 controller
                                                     .variantCheckList[variant
-                                                    .variantTypeId],
+                                                        .variantTypeId]
+                                                    ?.first,
                                             onChanged: (value) {
                                               controller.checkVariant(
                                                 variantTypeId:
@@ -130,7 +131,8 @@ class PageItemDetail extends StatelessWidget {
                                         } else {
                                           return CheckboxListTile(
                                             value: true,
-
+                                            controlAffinity:
+                                                ListTileControlAffinity.leading,
                                             title: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -199,9 +201,16 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
     double totalVariantPrice = 0;
     selectedVariants.forEach((variantTypeId, variantId) {
       // Tìm variant tương ứng và cộng dồn priceChange
-      final variant = controller.variants?.firstWhere(
-        (v) => v.variantId == variantId,
-      );
+      Variant? variant;
+
+      try {
+        variant = controller.variants?.firstWhere(
+          (v) => v.variantId == variantId,
+        );
+      } catch (e) {
+        variant = null;
+      }
+
       if (variant != null) {
         totalVariantPrice += variant.priceChange;
       }
@@ -262,11 +271,10 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                final myVariantItem =
+                final myVariantMap =
                     ItemDetailController.get(item.itemId).variantCheckList;
                 final cartController = ShoppingCartController.get();
-                cartController.addToCart(item, amount);
-                // Get.back();
+                cartController.addToCart(item, amount, myVariantMap);
               },
               icon: Icon(Icons.shopping_cart),
               label: Text("Thêm vào giỏ hàng"),

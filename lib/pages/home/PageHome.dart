@@ -113,8 +113,8 @@ class ItemsGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
+      crossAxisSpacing: 20,
+      mainAxisSpacing: 20,
       childAspectRatio: 0.5,
       crossAxisCount: 2,
       shrinkWrap: true,
