@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
-import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
@@ -72,7 +69,5 @@ class BindingDashboardController extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => DashboardManagerController());
-    Get.lazyPut(() => OrdersManagerController(), fenix: true);
-    Get.lazyPut(() => UserController());
   }
 }

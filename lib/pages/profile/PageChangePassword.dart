@@ -40,10 +40,6 @@ class PageChangePassword extends StatelessWidget {
           appBar: AppBar(
             title: Text("Thay mật khẩu"),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            leading: IconButton(
-              onPressed: () => Get.back(),
-              icon: Icon(Icons.arrow_back),
-            ),
           ),
           body: Padding(
             padding: const EdgeInsets.all(24),

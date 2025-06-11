@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart' show LocationBinding;
 import 'package:pizza_store_app/layouts/MainLayout.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         LocationBinding().dependencies();
         BindingsUserController().dependencies();
         BindingDashboardController().dependencies();
+        BindingsOrderManagerController().dependencies();
       }),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

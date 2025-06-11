@@ -17,10 +17,6 @@ class PageAddress extends StatelessWidget {
       appBar: AppBar(
         title: Text("Địa chỉ của tôi"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
-        ),
       ),
       body: GetBuilder(
         init: UserController.get(),
@@ -100,8 +96,7 @@ class PageAddress extends StatelessWidget {
                             SlidableAction(
                               onPressed: (context) async {
                                 await controller.deleteAddress(
-                                  context: context,
-                                  txtAddress: txtAddress,
+                                  address: txtAddress.text,
                                 );
                               },
                               backgroundColor: Colors.red,

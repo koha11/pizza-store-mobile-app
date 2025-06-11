@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
+import 'package:pizza_store_app/controllers/controller_auth.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
@@ -63,9 +64,7 @@ class PageProfile extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             image: NetworkImage(
-                              user != null &&
-                                      user.avatar != null &&
-                                      user.avatar!.isNotEmpty
+                              user.avatar != null && user.avatar!.isNotEmpty
                                   ? user.avatar!
                                   : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
                             ),
@@ -163,7 +162,7 @@ class PageProfile extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          await controller.signOut();
+                          await AuthController.signOut();
                           Get.off(() => MainLayout());
                         },
                         style: ElevatedButton.styleFrom(

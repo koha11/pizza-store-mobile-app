@@ -12,16 +12,11 @@ class PageAddAddress extends StatelessWidget {
       init: UserController.get(),
       id: "addAddress",
       builder: (controller) {
-        final user = controller.appUser;
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             title: Text("Địa chỉ mới"),
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            leading: IconButton(
-              onPressed: () => Get.back(),
-              icon: Icon(Icons.arrow_back),
-            ),
           ),
           body: Padding(
             padding: const EdgeInsets.all(24),
@@ -45,10 +40,11 @@ class PageAddAddress extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () async {
                           await controller.addNewAddress(
-                            context: context,
-                            txtAddress: txtAddress,
-                            txtNickName: txtNickNameAddress,
+                            nickName: txtNickNameAddress.text,
+                            address: txtAddress.text,
                           );
+                          txtNickNameAddress.clear();
+                          txtAddress.clear();
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -60,7 +56,7 @@ class PageAddAddress extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          "Hoàn thành",
+                          "Thêm mới",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,

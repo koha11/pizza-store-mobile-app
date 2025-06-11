@@ -104,14 +104,12 @@ class UserController extends GetxController {
   }
 
   Future<void> addNewAddress({
-    required BuildContext context,
-    required TextEditingController txtAddress,
-    required TextEditingController txtNickName,
+    required String address,
+    required String nickName,
   }) async {
     await UserAddressSnapshot.addNewAddress(
-      context: context,
-      txtAddress: txtAddress,
-      txtNickName: txtNickName,
+      nickName: nickName,
+      address: address,
       userId: appUser!.userId,
     );
     await fetchUser();
@@ -119,29 +117,23 @@ class UserController extends GetxController {
   }
 
   Future<void> updateAddress({
-    required BuildContext context,
-    required TextEditingController txtNewAddress,
-    required TextEditingController txtNickName,
-    required TextEditingController txtCurrAddress,
+    required String newAddress,
+    required String nickName,
+    required String currAddress,
   }) async {
     await UserAddressSnapshot.updateAddress(
-      context: context,
-      txtNewAddress: txtNewAddress,
-      txtCurrAddress: txtCurrAddress,
-      txtNickName: txtNickName,
+      currAddress: currAddress,
+      newAddress: newAddress,
+      nickName: nickName,
       userId: appUser!.userId,
     );
     await fetchUser();
     update(["addAddress"]);
   }
 
-  Future<void> deleteAddress({
-    required BuildContext context,
-    required TextEditingController txtAddress,
-  }) async {
+  Future<void> deleteAddress({required String address}) async {
     await UserAddressSnapshot.deleteAddress(
-      context: context,
-      txtAddress: txtAddress,
+      address: address,
       userId: appUser!.userId,
     );
 
