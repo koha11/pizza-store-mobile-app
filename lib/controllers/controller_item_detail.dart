@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/category.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
 import 'package:flutter/material.dart';
@@ -6,17 +7,23 @@ import 'package:flutter/material.dart';
 class ItemDetailController extends GetxController {
   int amount = 1;
   final String categoryId, tag;
+  Category? _category;
+  Item? _item;
+  bool isItemDetailLoading = true;
 
   ItemDetailController(this.categoryId, this.tag);
 
   List<Variant>? _variants;
-  Map<String, List<Variant>>? _variantsMap;
-  Map<String, List<String>> _variantCheckList = {};
+  Map<String, List<Variant>>? _variantsMap; // key la variantTypeId
+  Map<String, List<String>> _variantCheckList =
+      {}; // key la variantTypeId, value la List<variantId>
 
   static ItemDetailController get(String id) => Get.find(tag: id);
+
+  Item? get item => _item;
+  Category? get category => _category;
   List<Variant>? get variants => _variants;
   Map<String, List<Variant>>? get variantsMap => _variantsMap;
-
   Map<String, List<String>> get variantCheckList => _variantCheckList;
 
   // get cart
@@ -26,27 +33,35 @@ class ItemDetailController extends GetxController {
     // TODO: implement onInit
     super.onInit();
 
-    final category = await CategorySnapshot.getCategoryById(categoryId);
+    _category = await CategorySnapshot.getCategoryById(categoryId);
+    _item = await ItemSnapshot.getItemById(tag);
 
-    _variants = category!.variants;
+    _variants = _category!.variants;
     _variantsMap = {};
 
     for (var variant in _variants!) {
       //
-      if (_variantsMap!.containsKey(variant.variantType.variantTypeName)) {
-        _variantsMap!.update(variant.variantType.variantTypeName, (
-          variantList,
-        ) {
+      if (_variantsMap!.containsKey(variant.variantTypeId)) {
+        _variantsMap!.update(variant.variantTypeId, (variantList) {
           variantList.add(variant);
           return variantList;
         });
       } else {
         // init _variantsMap va checklist
-        _variantsMap!.assign(variant.variantType.variantTypeName, [variant]);
+        _variantsMap!.assign(variant.variantTypeId, [variant]);
         _variantCheckList.assign(variant.variantTypeId, [""]);
       }
     }
 
+    update([tag]);
+  }
+
+  void adjustAmount(int amount) {
+    if (amount < 0) {
+      return;
+    }
+
+    this.amount = amount;
     update([tag]);
   }
 
@@ -75,23 +90,26 @@ class ItemDetailController extends GetxController {
     update([tag]);
   }
 
-  int totalVariant({required int totalPrice}) {
-    int total = totalPrice;
-    // Duyệt qua tất cả các variant type và variant được chọn
-    _variantCheckList.forEach((variantTypeId, variantIds) {
-      if (variantIds.isNotEmpty) {
-        // Tìm các variant tương ứng và cộng dồn priceChange
-        for (var variantId in variantIds) {
-          final variant = _variants?.firstWhere(
-            (v) => v.variantId == variantId,
-          );
+  int getItemDetailTotal() {
+    if (_item == null) {
+      return 0;
+    }
 
-          if (variant != null) {
-            total += variant.priceChange.toInt();
-          }
+    int total = _item!.price;
+
+    variantCheckList.forEach(
+      (variantTypeId, variantIds) => variantIds.forEach((variantId) {
+        if (variantId.isNotEmpty) {
+          total +=
+              variantsMap![variantTypeId]!
+                  .firstWhere((variant) => variant.variantId == variantId)
+                  .priceChange;
         }
-      }
-    });
+      }),
+    );
+
+    total *= amount;
+
     return total;
   }
 }
