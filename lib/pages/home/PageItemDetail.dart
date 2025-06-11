@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import '../../helpers/other.helper.dart';
 import '../../models/Item.model.dart';
 import '../../models/variant.model.dart';
@@ -199,11 +200,12 @@ class PageItemDetail extends StatelessWidget {
                                                     : Text(""),
                                               ],
                                             ),
-                                            onChanged: (variantId) {
+                                            onChanged: (isChecked) {
                                               controller.checkVariant(
                                                 variantTypeId:
                                                     variant.variantTypeId,
                                                 variantId: variant.variantId,
+                                                isChecked: isChecked ?? false,
                                               );
                                             },
                                           );
@@ -294,19 +296,42 @@ class ItemDetailBottomSheet extends StatelessWidget {
                       final myVariantMap = controller.variantCheckList;
                       final cartController = ShoppingCartController.get();
                       final variants = controller.variants;
+                      bool isError = false;
 
                       if (controller.item == null) {
                         return;
                       }
 
-                      loadingDialog();
+                      myVariantMap.forEach((variantTypeId, variantIds) {
+                        final variantType =
+                            variants!
+                                .firstWhere(
+                                  (variant) =>
+                                      variant.variantTypeId == variantTypeId,
+                                )
+                                .variantType;
 
-                      await cartController.addToCart(
-                        controller.item!,
-                        controller.amount,
-                        myVariantMap,
-                        variants!,
-                      );
+                        if (variantType.isRequired &&
+                            variantIds.first.isEmpty) {
+                          showSnackBar(
+                            desc:
+                                "vui lòng điền vào ${variantType.variantTypeName}",
+                            success: false,
+                          );
+                          isError = true;
+                        }
+                      });
+
+                      if (!isError) {
+                        loadingDialog();
+
+                        await cartController.addToCart(
+                          controller.item!,
+                          controller.amount,
+                          myVariantMap,
+                          variants!,
+                        );
+                      }
                     },
                     icon: Icon(Icons.shopping_cart),
                     label: Text("Thêm vào giỏ hàng"),

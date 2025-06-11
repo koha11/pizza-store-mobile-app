@@ -68,6 +68,7 @@ class ItemDetailController extends GetxController {
   void checkVariant({
     required String variantTypeId,
     required String variantId,
+    bool isChecked = false,
   }) {
     final isRequired =
         _variants!
@@ -77,14 +78,11 @@ class ItemDetailController extends GetxController {
     if (isRequired) {
       variantCheckList[variantTypeId] = [variantId];
     } else {
-      for (var vi in variantCheckList[variantTypeId]!) {
-        if (vi == variantId) {
-          variantCheckList[variantTypeId]!.remove(vi);
-          return;
-        }
+      if (isChecked) {
+        variantCheckList[variantTypeId]!.add(variantId);
+      } else {
+        variantCheckList[variantTypeId]!.remove(variantId);
       }
-
-      variantCheckList[variantTypeId]!.add(variantId);
     }
 
     update([tag]);
