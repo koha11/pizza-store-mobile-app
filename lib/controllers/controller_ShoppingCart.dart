@@ -215,13 +215,15 @@ class ShoppingCartController extends GetxController {
         myVariantMap.forEach((key, value) {
           if (value.isNotEmpty) {
             value.forEach((variantId) async {
-              await OrderVariantSnapshot.insertOrderVariant(
-                OrderVariant(
-                  variantId: variantId,
-                  itemId: item.itemId,
-                  orderId: _cart!.orderId,
-                ),
-              );
+              if (variantId.isNotEmpty) {
+                await OrderVariantSnapshot.insertOrderVariant(
+                  OrderVariant(
+                    variantId: variantId,
+                    itemId: item.itemId,
+                    orderId: _cart!.orderId,
+                  ),
+                );
+              }
             });
           }
         });
@@ -330,10 +332,6 @@ class ShoppingCartController extends GetxController {
         totalAmount: totalAmount,
       );
 
-      if (newOrderId == null) {
-        throw Exception('Không thể tạo đơn hàng mới');
-      }
-
       // Chuyen nhung order detail dang co trang thai checked -> order moi
       for (var item in _checkedItems.entries) {
         if (item.value) {
@@ -405,9 +403,6 @@ class ShoppingCartController extends GetxController {
   void reset() {
     _cartItems.clear();
     _checkedItems.clear();
-    _cart!.orderId;
-    _customerId = null;
-    _loadCart();
   }
 }
 

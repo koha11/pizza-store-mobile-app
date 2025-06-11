@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/category.model.dart';
@@ -9,7 +10,9 @@ import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/variant_type.model.dart';
 
 import '../admin/PageAdmin.dart';
+import '../controllers/controller_dashboard_manager.dart';
 import '../controllers/controller_home.dart';
+import '../controllers/controller_user.dart';
 import '../layouts/MainLayout.dart';
 import '../layouts/ManagerLayout.dart';
 import '../models/variant.model.dart';
@@ -116,8 +119,6 @@ String formatShortCurrency(int amount) {
 }
 
 Widget checkRole(String role) {
-  final myRole = role;
-  print(myRole);
   switch (role) {
     case "ADMIN":
       return PageAdmin();
@@ -127,5 +128,30 @@ Widget checkRole(String role) {
       return PagePendingOrder();
     default:
       return MainLayout();
+  }
+}
+
+BindingsBuilder? getRoleControllerBindings(String role) {
+  switch (role) {
+    case "ADMIN":
+      return BindingsBuilder(() {
+        LocationBinding().dependencies();
+        BindingsUserController().dependencies();
+      });
+    case "MANAGER":
+      return BindingsBuilder(() {
+        BindingDashboardController().dependencies();
+      });
+    case "SHIPPER":
+      return BindingsBuilder(() {
+        LocationBinding().dependencies();
+        BindingsUserController().dependencies();
+      });
+    default:
+      return BindingsBuilder(() {
+        LocationBinding().dependencies();
+        BindingsUserController().dependencies();
+        BindingsHomePizzaStore().dependencies();
+      });
   }
 }

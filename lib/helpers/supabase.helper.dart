@@ -23,14 +23,6 @@ Future<void> register() async {
   await supabase.auth.signOut();
 }
 
-Future<AuthResponse> verify(String token, String email) async {
-  return await supabase.auth.verifyOTP(
-    type: OtpType.email,
-    token: token,
-    email: email,
-  );
-}
-
 // Future<String> uploadImage({
 //   required File image,
 //   required String bucket,

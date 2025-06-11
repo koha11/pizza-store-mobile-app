@@ -5,6 +5,7 @@ import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../controllers/controller_auth.dart';
 import '../../controllers/controller_home.dart';
 import '../home/PageHome.dart';
 
@@ -100,25 +101,12 @@ class PageRegister extends StatelessWidget {
                           Theme.of(context).colorScheme.inversePrimary,
                     ),
                     onPressed: () async {
-                      final supabase = Supabase.instance.client;
-                      final AuthResponse res = await supabase.auth.signUp(
+                      AuthController.register(
                         email: emailTxt.text,
-                        password: pwdTxt.text,
+                        pwd: pwdTxt.text,
+                        name: nameTxt.text,
+                        phone: phoneTxt.text,
                       );
-
-                      final User? user = res.user;
-
-                      if (user != null) {
-                        await supabase.from('app_user').insert({
-                          'user_id': user.id,
-                          'user_name': nameTxt.text,
-                          'phone_number': phoneTxt.text,
-                          'user_email': user.email,
-                          'role_id': "CUSTOMER",
-                        });
-
-                        Get.to(PageVerifyEmail(email: user.email!));
-                      }
                     },
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
