@@ -289,7 +289,7 @@ class ItemDetailBottomSheet extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       final myVariantMap = controller.variantCheckList;
                       final cartController = ShoppingCartController.get();
                       final variants = controller.variants;
@@ -298,7 +298,13 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         return;
                       }
 
-                      cartController.addToCart(
+                      Get.dialog(
+                        Center(child: CircularProgressIndicator()),
+                        barrierDismissible:
+                            false, // prevent closing by tapping outside
+                      );
+
+                      await cartController.addToCart(
                         controller.item!,
                         controller.amount,
                         myVariantMap,

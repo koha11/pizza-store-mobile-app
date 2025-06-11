@@ -69,12 +69,19 @@ class MySearchingBar extends StatelessWidget {
           controller.searchItem(value);
         },
         trailing: [
-          IconButton(
-            onPressed: () {
-              searchController.clear();
-              controller.searchItem("");
-            },
-            icon: Icon(Icons.clear),
+          GetBuilder(
+            init: SearchItemController.get(),
+            builder:
+                (controller) =>
+                    controller.searchString == ""
+                        ? IconButton(onPressed: () {}, icon: Icon(Icons.search))
+                        : IconButton(
+                          onPressed: () {
+                            searchController.clear();
+                            controller.searchItem("");
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
           ),
         ],
       ),

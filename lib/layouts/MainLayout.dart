@@ -13,6 +13,8 @@ import '../controllers/controller_search.dart';
 import '../controllers/controller_location.dart';
 
 class MainLayout extends StatelessWidget {
+  const MainLayout({super.key});
+
   // final LocationController controller = Get.put(LocationController());
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class MainLayout extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: GetX<LocationController>(
-          init: Get.put(LocationController()),
+          init: LocationController.get(),
           builder: (controller) {
             return Row(
               mainAxisSize: MainAxisSize.min,
@@ -50,7 +52,7 @@ class MainLayout extends StatelessWidget {
             icon: Icon(Icons.search),
           ),
           GetBuilder<ShoppingCartController>(
-            init: Get.put(ShoppingCartController()),
+            init: ShoppingCartController.get(),
             builder: (controller) {
               return badges.Badge(
                 position: badges.BadgePosition.topEnd(top: 0, end: 3),
@@ -61,7 +63,14 @@ class MainLayout extends StatelessWidget {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    Get.to(PageShoppingCart(), binding: BindingsShoppingCart());
+                    if (UserController.get().appUser == null) {
+                      Get.to(() => PageLogin());
+                    } else {
+                      Get.to(
+                        PageShoppingCart(),
+                        binding: BindingsShoppingCart(),
+                      );
+                    }
                   },
                   icon: Icon(Icons.shopping_cart),
                 ),
