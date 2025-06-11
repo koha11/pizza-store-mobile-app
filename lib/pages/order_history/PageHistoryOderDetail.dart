@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
+import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
@@ -205,48 +206,49 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      await OrderDetailSnapshot.clearCart(
-                        orderId: widget.order.orderId,
-                      );
-                      // Cập nhật lại danh sách đơn hàng
-                      final controller = Get.find<HistoryCartController>();
-                      await controller.fetchPendingOrders();
-                      Get.back(); // Quay lại trang danh sách đơn hàng
-                      Get.snackbar(
-                        "Thành công",
-                        "Đã hủy đơn hàng!",
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    } catch (e) {
-                      Get.snackbar(
-                        "Lỗi",
-                        "Không thể hủy đơn hàng: $e",
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
+              if (widget.order.status == OrderStatus.pending)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await OrderDetailSnapshot.clearCart(
+                          orderId: widget.order.orderId,
+                        );
+                        // Cập nhật lại danh sách đơn hàng
+                        final controller = Get.find<HistoryCartController>();
+                        await controller.fetchPendingOrders();
+                        Get.back(); // Quay lại trang danh sách đơn hàng
+                        Get.snackbar(
+                          "Thành công",
+                          "Đã hủy đơn hàng!",
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      } catch (e) {
+                        Get.snackbar(
+                          "Lỗi",
+                          "Không thể hủy đơn hàng: $e",
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    "Hủy đơn hàng",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                    child: const Text(
+                      "Hủy đơn hàng",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
