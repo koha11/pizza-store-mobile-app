@@ -122,10 +122,6 @@ class OrderDetailSnapshot {
   static Future<void> clearCart({required String orderId}) async {
     try {
       await SupabaseSnapshot.delete(
-        table: OrderDetail.tableName,
-        equalObject: {'order_id': orderId},
-      );
-      await SupabaseSnapshot.delete(
         table: CustomerOrder.tableName,
         equalObject: {'order_id': orderId},
       );

@@ -5,6 +5,9 @@ import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetail.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 
@@ -329,6 +332,33 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    loadingDialog();
+
+                    await ShoppingCartController.get().placeOrder(
+                      shippingFee: shippingFee,
+                      address: selectedAddressId!,
+                      totalAmount: totalAmount,
+                    );
+
+                    HomePizzaStoreController.get().changePage(1);
+                    Get.offAll(
+                      () => MainLayout(),
+                      binding: getRoleControllerBindings(""),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
                     ),
                   ),
                 ),

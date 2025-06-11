@@ -10,15 +10,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class ShoppingCartController extends GetxController {
-  //final SupabaseClient _supabase = Supabase.instance.client;
   Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
   String? _customerId;
   CustomerOrder? _cart;
+  bool isCartLoading = false;
+
   Map<String, OrderDetail> get cartItems => _cartItems;
   CustomerOrder? get cart => _cart;
   Map<String, bool> get checkedItems => _checkedItems;
+
   static ShoppingCartController get() => Get.find();
+
   Future<void> loadCart() async => await _loadCart();
   Future<void> initializeCart() async => await _initializeCart();
 
@@ -154,23 +157,6 @@ class ShoppingCartController extends GetxController {
     update();
   }
 
-  // Future<void> _loadCartItems() async {
-  //   if (_cart == null) {
-  //     // _cartItems.clear();
-  //     _checkedItems.clear();
-  //     update();
-  //     return;
-  //   }
-  //   // _cartItems = _cart!.orderId as Map<String, OrderDetail>;
-  //   for (var od in _cart!.orderDetails!) {
-  //     _checkedItems[od.itemId] = false;
-  //   }
-  //
-  //   _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
-  //
-  //   update();
-  // }
-
   int calcODActualPrice(
     Item item,
     int amount,
@@ -263,6 +249,8 @@ class ShoppingCartController extends GetxController {
         });
       }
 
+      Get.back();
+
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
@@ -298,25 +286,6 @@ class ShoppingCartController extends GetxController {
     }
   }
 
-  // Future<void> updateItemAmount(String itemId, int newAmount) async {
-  //   if (_cart?.orderId == null) return;
-  //
-  //   try {
-  //     if (newAmount <= 0) {
-  //       await removeFromCart(itemId: itemId);
-  //       return;
-  //     }
-  //     if (_cartItems.containsKey(itemId)) {
-  //       _cartItems[itemId]!.amount = newAmount;
-  //       update();
-  //       await _updateAmountInDatabase(itemId, newAmount);
-  //     }
-  //   } catch (e) {
-  //     print('Lỗi cập nhật số lượng: $e');
-  //     await _loadCartItems();
-  //   }
-  // }
-
   Future<void> updateAmount(String itemId, bool isDes) async {
     final itemAmount =
         _cart!.orderDetails
@@ -330,22 +299,6 @@ class ShoppingCartController extends GetxController {
 
     await _loadCart();
   }
-
-  // Future<void> _updateAmountInDatabase(String itemId, int newAmount) async {
-  //   if (_cart == null) return;
-  //
-  //   try {
-  //     await SupabaseSnapshot.update(
-  //       table: 'order_detail',
-  //       updateObject: {'amount': newAmount},
-  //       equalObject: {'order_id': _cart?.orderId, 'item_id': itemId},
-  //     );
-  //   } catch (e) {
-  //     print('Lỗi cập nhật số lượng trong database: $e');
-  //
-  //     await _loadCartItems();
-  //   }
-  // }
 
   Future<void> placeOrder({
     required int shippingFee,
@@ -364,6 +317,9 @@ class ShoppingCartController extends GetxController {
     }
 
     try {
+      isCartLoading = true;
+      update();
+
       // Tao 1 order moi co thong tin cua user hien tai + shipping fee + address + status=pending
       final newOrderId = await CustomerOrderSnapshot.placeOrder(
         customerId: _customerId!,
@@ -430,6 +386,8 @@ class ShoppingCartController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+
+      isCartLoading = false;
 
       await _loadCart();
 
