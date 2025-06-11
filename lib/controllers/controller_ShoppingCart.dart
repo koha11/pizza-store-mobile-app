@@ -124,9 +124,15 @@ class ShoppingCartController extends GetxController {
               .toList();
 
       for (var itemId in itemsToRemove) {
-        await removeFromCart(itemId: itemId);
+        OrderDetail? od = _cart!.orderDetails?.firstWhere(
+          (od) => od.itemId == itemId,
+        );
+        if (od != null) {
+          await removeFromCart(orderDetail: od);
+        }
         _checkedItems.remove(itemId);
       }
+
       update();
     } catch (e) {
       print('Lỗi xóa item đã chọn: $e');
@@ -246,13 +252,27 @@ class ShoppingCartController extends GetxController {
     await _loadCart();
   }
 
-  Future<void> removeFromCart({required String itemId}) async {
+  Future<void> removeFromCart({required OrderDetail orderDetail}) async {
     if (_cart == null) return;
+
     try {
       await OrderDetailSnapshot.deleteOrderDetail(
         orderId: _cart!.orderId,
-        itemId: itemId,
+        itemId: orderDetail.itemId,
       );
+
+      orderDetail.variantMaps.forEach(
+        (key, value) => value.forEach(
+          (variant) async => await OrderVariantSnapshot.deleteOrderVariant(
+            OrderVariant(
+              variantId: variant.variantId,
+              itemId: orderDetail.itemId,
+              orderId: orderDetail.orderId,
+            ),
+          ),
+        ),
+      );
+
       await _loadCart();
     } catch (e) {
       print('Error removing from cart: $e');

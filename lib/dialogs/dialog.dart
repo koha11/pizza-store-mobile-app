@@ -37,16 +37,6 @@ Future<bool?> showConfirmDialog(BuildContext context, String message) async {
   );
 }
 
-void showSnackBar(
-  BuildContext context, {
-  required String message,
-  Color? backgroundColor,
-}) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message), backgroundColor: backgroundColor),
-  );
-}
-
 Future<void> showAddItemDialog(BuildContext context) async {
   final result = await showDialog(
     context: context,

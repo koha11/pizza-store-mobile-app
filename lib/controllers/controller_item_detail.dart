@@ -34,7 +34,7 @@ class ItemDetailController extends GetxController {
     super.onInit();
 
     _item = await ItemSnapshot.getItemById(tag);
-    _category = _item!.category;
+    _category = await CategorySnapshot.getCategoryById(categoryId);
 
     _variants = _category!.variants;
     _variantsMap = {};

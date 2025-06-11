@@ -6,6 +6,7 @@ import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
 import '../dialogs/dialog.dart';
+import '../widgets/ShowSnackbar.dart';
 
 class PageShoppingCart extends StatefulWidget {
   const PageShoppingCart({super.key});
@@ -42,9 +43,10 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                 context,
                 "Bạn có muốn xóa các mục đã chọn?",
               );
+
               if (xacNhan == true) {
                 await controller.removeSelectedItems();
-                showSnackBar(context, message: "Đã xóa các mục đã chọn");
+                showSnackBar(desc: "Đã xóa các mục đã chọn", success: true);
               }
             },
             tooltip: 'Xóa mục đã chọn',
@@ -60,25 +62,31 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
           }
 
           if (controller.cart!.orderDetails!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("asset/images/anhnen.png", width: 150),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Giỏ hàng trống!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: const Text("Tìm kiếm món ăn"),
-                  ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () => controller.loadCart(),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset("asset/images/anhnen.png", width: 150),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Giỏ hàng trống!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: const Text("Tìm kiếm món ăn"),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -93,6 +101,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                     itemBuilder: (context, index) {
                       mycontext = context;
                       final item = controller.cart!.orderDetails![index];
+
                       return Slidable(
                         key: ValueKey(item.itemId),
                         endActionPane: ActionPane(
@@ -105,13 +114,14 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                   mycontext,
                                   "Bạn có muốn xóa ${item.item.itemName}?",
                                 );
+
                                 if (xacNhan == true) {
                                   await controller.removeFromCart(
-                                    itemId: item.itemId,
+                                    orderDetail: item,
                                   );
                                   showSnackBar(
-                                    mycontext,
-                                    message: "Đã xóa ${item.item.itemName}",
+                                    desc: "Đã xóa các mục đã chọn",
+                                    success: true,
                                   );
                                 }
                               },
@@ -151,7 +161,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                                     : const Icon(Icons.fastfood, size: 40),
                               ],
                             ),
-                            title: Text(item.item.itemName ?? "Không rõ tên"),
+                            title: Text(item.item.itemName),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -231,8 +241,8 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                             final selectedItems = controller.getSelectedItems();
                             if (selectedItems.isEmpty) {
                               showSnackBar(
-                                context,
-                                message: "Vui lòng chọn ít nhất một món",
+                                desc: "Vui lòng chọn ít nhất một món",
+                                success: false,
                               );
                               return;
                             }
