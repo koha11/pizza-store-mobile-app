@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/models/user_address.model.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../helpers/supabase.helper.dart';
@@ -84,93 +85,57 @@ class AppUserSnapshot {
   }
 
   static Future<void> updateInfoAppUser({
-    required BuildContext context,
-    required TextEditingController txtUserName,
-    required TextEditingController txtPhoneNumber,
+    required String userName,
+    required String phoneNumber,
     required String userId,
   }) async {
-    final userName = txtUserName.text;
-    final phoneNumber = txtPhoneNumber.text;
-    ScaffoldMessenger.of(context).clearSnackBars();
     if (userName.isEmpty || phoneNumber.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
+      showSnackBar(desc: "Thông tin trống", success: false);
       return;
     }
     final Map<String, dynamic> updates = {};
     updates['user_name'] = userName;
     updates['phone_number'] = phoneNumber;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
+
     try {
       await SupabaseSnapshot.update(
         table: AppUser.tableName,
         updateObject: updates,
         equalObject: {'user_id': userId},
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Cập nhật thành công")));
+      showSnackBar(desc: "Cập nhật thành công", success: true);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
+      showSnackBar(desc: e.toString(), success: false);
     }
   }
 
   static Future<void> updatePassword({
-    required BuildContext context,
-    required TextEditingController txtCurrPw,
-    required TextEditingController txtNewPw,
-    required TextEditingController txtConfirmNewPw,
+    required String currPwd,
+    required String newPwd,
+    required String confirmPwd,
   }) async {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    final currPwd = txtCurrPw.text;
-    final newPwd = txtNewPw.text;
-    final confirmPwd = txtConfirmNewPw.text;
-
     if (currPwd.isEmpty || newPwd.isEmpty || confirmPwd.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng điền đầy đủ thông tin")));
+      showSnackBar(desc: "Nhập thông tin", success: false);
       return;
     }
     if (confirmPwd != newPwd) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Mật khẩu mới không khớp")));
+      showSnackBar(desc: "Mật khẩu không khớp", success: false);
       return;
     }
     final email = getCurrentUser()!.email;
     if (email == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Bạn chưa đăng nhập")));
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Đang xử lý...")));
+
     try {
       await supabase.auth.signInWithPassword(email: email, password: currPwd);
 
       await supabase.auth.updateUser(UserAttributes(password: newPwd));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đổi mật khẩu thành công")));
-      txtCurrPw.clear();
-      txtNewPw.clear();
-      txtConfirmNewPw.clear();
+      showSnackBar(desc: "Đổi mật khẩu thành công", success: true);
     } on AuthApiException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Mật khẩu cũ không đúng")));
+      showSnackBar(desc: "Mật khẩu cũ không đúng", success: false);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi không xác định")));
+      showSnackBar(desc: e.toString(), success: false);
     }
   }
 

@@ -71,10 +71,9 @@ class PageChangePassword extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () async {
                           await controller.changePassword(
-                            context: context,
-                            txtCurrPw: txtCurrPw,
-                            txtNewPw: txtNewPw,
-                            txtConfirmNewPw: txtConfirmNewPw,
+                            newPwd: txtNewPw.text,
+                            confirmNewPw: txtConfirmNewPw.text,
+                            currPwd: txtCurrPw.text,
                           );
                         },
                         style: ElevatedButton.styleFrom(
