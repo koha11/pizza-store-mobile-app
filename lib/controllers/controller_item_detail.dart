@@ -11,13 +11,13 @@ class ItemDetailController extends GetxController {
 
   List<Variant>? _variants;
   Map<String, List<Variant>>? _variantsMap;
-  Map<String, String> _variantCheckList = {};
+  Map<String, List<String>> _variantCheckList = {};
 
   static ItemDetailController get(String id) => Get.find(tag: id);
   List<Variant>? get variants => _variants;
   Map<String, List<Variant>>? get variantsMap => _variantsMap;
 
-  Map<String, String> get variantCheckList => _variantCheckList;
+  Map<String, List<String>> get variantCheckList => _variantCheckList;
 
   // get cart
 
@@ -32,6 +32,7 @@ class ItemDetailController extends GetxController {
     _variantsMap = {};
 
     for (var variant in _variants!) {
+      //
       if (_variantsMap!.containsKey(variant.variantType.variantTypeName)) {
         _variantsMap!.update(variant.variantType.variantTypeName, (
           variantList,
@@ -40,9 +41,9 @@ class ItemDetailController extends GetxController {
           return variantList;
         });
       } else {
+        // init _variantsMap va checklist
         _variantsMap!.assign(variant.variantType.variantTypeName, [variant]);
-
-        _variantCheckList.assign(variant.variantTypeId, "");
+        _variantCheckList.assign(variant.variantTypeId, [""]);
       }
     }
 
@@ -53,7 +54,24 @@ class ItemDetailController extends GetxController {
     required String variantTypeId,
     required String variantId,
   }) {
-    variantCheckList[variantTypeId] = variantId;
+    final isRequired =
+        _variants!
+            .firstWhere((element) => element.variantTypeId == variantTypeId)
+            .variantType
+            .isRequired;
+    if (isRequired) {
+      variantCheckList[variantTypeId] = [variantId];
+    } else {
+      for (var vi in variantCheckList[variantTypeId]!) {
+        if (vi == variantId) {
+          variantCheckList[variantTypeId]!.remove(vi);
+          return;
+        }
+      }
+
+      variantCheckList[variantTypeId]!.add(variantId);
+    }
+
     update([tag]);
   }
 }

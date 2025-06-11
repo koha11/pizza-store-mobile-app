@@ -174,7 +174,11 @@ class ShoppingCartController extends GetxController {
   //   update();
   // }
 
-  Future<void> addToCart(Item item, int amount) async {
+  Future<void> addToCart(
+    Item item,
+    int amount,
+    Map<String, List<String>> myVariantMap,
+  ) async {
     try {
       if (_customerId == null) {
         final userId = Supabase.instance.client.auth.currentUser?.id;
@@ -189,12 +193,12 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
+
       if (_cart == null) {
         await _initializeCart();
       }
+
       OrderDetail? myOD;
-      Map<String, String> myVariantMap =
-          ItemDetailController.get(item.itemId).variantCheckList;
 
       try {
         myOD = _cart!.orderDetails?.firstWhere(
@@ -213,21 +217,22 @@ class ShoppingCartController extends GetxController {
         );
       } else {
         await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
-        myVariantMap.forEach((key, value) async {
+        myVariantMap.forEach((key, value) {
           if (value.isNotEmpty) {
-            await OrderVariantSnapshot.insertOrderVariant(
-              OrderVariant(
-                variantId: value,
-                itemId: item.itemId,
-                orderId: _cart!.orderId,
-              ),
-            );
+            value.forEach((variantId) async {
+              await OrderVariantSnapshot.insertOrderVariant(
+                OrderVariant(
+                  variantId: variantId,
+                  itemId: item.itemId,
+                  orderId: _cart!.orderId,
+                ),
+              );
+            });
           }
         });
-
-        // await _loadCartItems();
-        await _loadCart();
       }
+      await _loadCart();
+
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
