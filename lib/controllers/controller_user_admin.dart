@@ -175,7 +175,6 @@ class UserAdminController extends GetxController {
       return;
     }
 
-    isUploadingImage = true;
     uploadedImageUrl = null;
     update();
 

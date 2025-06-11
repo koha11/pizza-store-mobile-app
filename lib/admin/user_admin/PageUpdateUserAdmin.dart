@@ -68,16 +68,6 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
       return;
     }
 
-    // // Kiểm tra email đã tồn tại hay chưa, bỏ qua email của người dùng hiện tại
-    // if (txtEmail.text != widget.userToUpdate.email) { // Chỉ kiểm tra nếu email đã thay đổi
-    //   final bool emailExists = await _controller.checkEmailExistsForUpdate(
-    //       txtEmail.text, widget.userToUpdate.userId);
-    //   if (emailExists) {
-    //     Get.snackbar('Lỗi', 'Email này đã được sử dụng bởi người dùng khác. Vui lòng chọn email khác.');
-    //     return;
-    //   }
-    // }
-
     if (_controller.selectedRole == null) {
       Get.snackbar('Lỗi', 'Vui lòng chọn vai trò.');
       return;
@@ -102,9 +92,6 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
     );
 
     await _controller.updateUser(updatedUser);
-
-    // Không cần reset form vì thường sẽ quay lại trang danh sách sau khi cập nhật
-    // Get.back() đã được gọi trong controller.updateUser
   }
 
   @override
@@ -169,7 +156,14 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
                       GetBuilder<UserAdminController>(
                         builder: (controller) {
                           return DropdownButtonFormField<Role>(
-                            value: controller.selectedRole,
+                            value:
+                                controller.selectedRole != null &&
+                                        controller.role != null &&
+                                        controller.role!.contains(
+                                          controller.selectedRole!,
+                                        )
+                                    ? controller.selectedRole
+                                    : null,
                             decoration: const InputDecoration(
                               labelText: "Vai trò",
                               border: OutlineInputBorder(),
@@ -178,7 +172,7 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
                                 controller.role?.map((Role role) {
                                   return DropdownMenuItem<Role>(
                                     value: role,
-                                    child: Text(role.roleId),
+                                    child: Text(role.roleName ?? ""),
                                   );
                                 }).toList(),
                             onChanged: (Role? newValue) {
@@ -266,7 +260,7 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
     txtUserName.dispose();
     txtEmail.dispose();
     txtPhone.dispose();
-    _controller.resetImageState();
+    // _controller.resetImageState();
     super.dispose();
   }
 }
