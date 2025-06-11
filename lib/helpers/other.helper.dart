@@ -10,6 +10,7 @@ import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/variant_type.model.dart';
 
 import '../admin/PageAdmin.dart';
+import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_dashboard_manager.dart';
 import '../controllers/controller_home.dart';
 import '../controllers/controller_user.dart';
@@ -152,6 +153,7 @@ BindingsBuilder? getRoleControllerBindings(String role) {
         LocationBinding().dependencies();
         BindingsUserController().dependencies();
         BindingsHomePizzaStore().dependencies();
+        BindingsShoppingCart().dependencies();
       });
   }
 }

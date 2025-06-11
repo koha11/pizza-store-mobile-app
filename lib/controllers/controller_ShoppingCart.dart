@@ -191,10 +191,13 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
+
       if (_cart == null) {
         await _initializeCart();
       }
+
       OrderDetail? myOD;
+
       try {
         myOD = _cart!.orderDetails?.firstWhere(
           (od) => od.itemId == item.itemId,
@@ -228,17 +231,17 @@ class ShoppingCartController extends GetxController {
           }
         });
       }
-      await _loadCart();
 
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
         snackPosition: SnackPosition.BOTTOM,
       );
+
+      await _loadCart();
     } catch (e) {
       print('Error adding to cart: $e');
-      await _loadCart();
-      // await _loadCartItems();
+
       Get.snackbar(
         'Lỗi',
         'Không thể thêm sản phẩm vào giỏ hàng',
@@ -382,14 +385,16 @@ class ShoppingCartController extends GetxController {
           }
         }
       }
-      await _loadCart();
-      // await _loadCartItems();
-      _checkedItems.clear();
+
       Get.snackbar(
         'Thành công',
         'Đặt hàng thành công!',
         snackPosition: SnackPosition.BOTTOM,
       );
+
+      await _loadCart();
+
+      _checkedItems.clear();
     } catch (e) {
       print('Lỗi khi đặt hàng: $e');
       Get.snackbar(
