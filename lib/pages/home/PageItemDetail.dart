@@ -258,7 +258,11 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 ],
               ),
               Text(
-                formatMoney(money: (item.price * amount)),
+                formatMoney(
+                  money: controller.totalVariant(
+                    totalPrice: (item.price * amount).toInt(),
+                  ),
+                ),
                 style: TextStyle(
                   fontSize: 20,
                   color: Theme.of(context).colorScheme.inversePrimary,

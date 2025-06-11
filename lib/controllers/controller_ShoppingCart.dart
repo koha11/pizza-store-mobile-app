@@ -184,7 +184,7 @@ class ShoppingCartController extends GetxController {
           Get.snackbar(
             'Thông báo',
             'Bạn cần đăng nhập để sử dụng giỏ hàng',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
           );
           return;
         }
@@ -233,7 +233,7 @@ class ShoppingCartController extends GetxController {
       Get.snackbar(
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       print('Error adding to cart: $e');
@@ -242,7 +242,7 @@ class ShoppingCartController extends GetxController {
       Get.snackbar(
         'Lỗi',
         'Không thể thêm sản phẩm vào giỏ hàng',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     }
   }
@@ -318,7 +318,7 @@ class ShoppingCartController extends GetxController {
       Get.snackbar(
         'Lỗi',
         'Vui lòng đăng nhập để đặt hàng',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -388,14 +388,14 @@ class ShoppingCartController extends GetxController {
       Get.snackbar(
         'Thành công',
         'Đặt hàng thành công!',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       print('Lỗi khi đặt hàng: $e');
       Get.snackbar(
         'Lỗi',
         'Không thể đặt hàng: $e',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     }
   }

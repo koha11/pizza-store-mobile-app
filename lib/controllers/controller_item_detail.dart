@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:pizza_store_app/models/Item_variant.model.dart';
 import 'package:pizza_store_app/models/category.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
+import 'package:flutter/material.dart';
 
 class ItemDetailController extends GetxController {
   int amount = 1;
@@ -73,6 +73,26 @@ class ItemDetailController extends GetxController {
     }
 
     update([tag]);
+  }
+
+  int totalVariant({required int totalPrice}) {
+    int total = totalPrice;
+    // Duyệt qua tất cả các variant type và variant được chọn
+    _variantCheckList.forEach((variantTypeId, variantIds) {
+      if (variantIds.isNotEmpty) {
+        // Tìm các variant tương ứng và cộng dồn priceChange
+        for (var variantId in variantIds) {
+          final variant = _variants?.firstWhere(
+            (v) => v.variantId == variantId,
+          );
+
+          if (variant != null) {
+            total += variant.priceChange.toInt();
+          }
+        }
+      }
+    });
+    return total;
   }
 }
 
