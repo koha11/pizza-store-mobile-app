@@ -348,6 +348,7 @@ class CustomerOrderSnapshot {
     String orderId,
     Item item,
     int amount,
+    int actualPrice,
   ) async {
     try {
       await SupabaseSnapshot.insert(
@@ -356,7 +357,7 @@ class CustomerOrderSnapshot {
           'order_id': orderId,
           'item_id': item.itemId,
           'amount': amount,
-          'actual_price': item.price * amount,
+          'actual_price': actualPrice,
           'note': null,
         },
       );

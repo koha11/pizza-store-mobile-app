@@ -103,9 +103,9 @@ class PageItemDetail extends StatelessWidget {
                       ListView(
                         shrinkWrap: true,
                         children:
-                            controller.variantsMap!.keys.map((variantTypeName) {
+                            controller.variantsMap!.keys.map((variantTypeId) {
                               final List<Variant>? variants =
-                                  controller.variantsMap![variantTypeName];
+                                  controller.variantsMap![variantTypeId];
                               return ListTile(
                                 contentPadding: EdgeInsets.zero,
                                 title: Row(
@@ -114,7 +114,11 @@ class PageItemDetail extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      variantTypeName,
+                                      variants
+                                              ?.first
+                                              .variantType
+                                              .variantTypeName ??
+                                          "",
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500,
@@ -218,122 +222,104 @@ class PageItemDetail extends StatelessWidget {
           );
         },
       ),
-      bottomSheet: ItemDetailBottomSheet(item: item),
+      bottomSheet: ItemDetailBottomSheet(itemId: item.itemId),
     );
   }
 }
 
-class ItemDetailBottomSheet extends StatefulWidget {
-  Item item;
+class ItemDetailBottomSheet extends StatelessWidget {
+  final itemId;
+  const ItemDetailBottomSheet({super.key, required this.itemId});
 
-  ItemDetailBottomSheet({super.key, required this.item});
-
-  @override
-  State<ItemDetailBottomSheet> createState() => _ItemDetailBottomSheetState();
-}
-
-class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
   @override
   Widget build(BuildContext context) {
-    Item item = widget.item;
-    final controller = ItemDetailController.get(item.itemId);
-    int amount = controller.amount;
-
-    // final selectedVariants = controller.variantCheckList;
-    // double totalVariantPrice = 0;
-    // selectedVariants.forEach((variantTypeId, variantId) {
-    //   // Tìm variant tương ứng và cộng dồn priceChange
-    //   Variant? variant;
-    //
-    //   try {
-    //     variant = controller.variants?.firstWhere(
-    //       (v) => v.variantId == variantId,
-    //     );
-    //   } catch (e) {
-    //     variant = null;
-    //   }
-    //
-    //   if (variant != null) {
-    //     totalVariantPrice += variant.priceChange;
-    //   }
-    // });
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  ElevatedButton(
-                    child: Icon(Icons.remove),
-                    onPressed: () {
-                      if (amount > 1) {
-                        setState(() {
-                          controller.amount = --amount;
-                        });
-                      }
-                    },
-                  ),
-                  SizedBox(width: 8),
-                  Text("$amount", style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 8),
-                  ElevatedButton(
-                    child: Icon(Icons.add),
-                    onPressed: () {
-                      setState(() {
-                        controller.amount = ++amount;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Text(
-                formatMoney(
-                  money: controller.totalVariant(
-                    totalPrice: (item.price * amount).toInt(),
-                  ),
-                ),
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.inversePrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
+    return GetBuilder(
+      init: ItemDetailController.get(itemId),
+      tag: itemId,
+      id: itemId,
+      builder:
+          (controller) => Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                final myVariantMap =
-                    ItemDetailController.get(item.itemId).variantCheckList;
-                final cartController = ShoppingCartController.get();
-
-                cartController.addToCart(item, amount, myVariantMap);
-              },
-              icon: Icon(Icons.shopping_cart),
-              label: Text("Thêm vào giỏ hàng"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          child: Icon(Icons.remove),
+                          onPressed: () {
+                            if (controller.amount > 1) {
+                              controller.adjustAmount(--controller.amount);
+                            }
+                          },
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "${controller.amount}",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(width: 8),
+                        ElevatedButton(
+                          child: Icon(Icons.add),
+                          onPressed: () {
+                            controller.adjustAmount(++controller.amount);
+                          },
+                        ),
+                      ],
+                    ),
+                    Text(
+                      formatMoney(money: controller.getItemDetailTotal()),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final myVariantMap = controller.variantCheckList;
+                      final cartController = ShoppingCartController.get();
+                      final variants = controller.variants;
+
+                      if (controller.item == null) {
+                        return;
+                      }
+
+                      cartController.addToCart(
+                        controller.item!,
+                        controller.amount,
+                        myVariantMap,
+                        variants!,
+                      );
+                    },
+                    icon: Icon(Icons.shopping_cart),
+                    label: Text("Thêm vào giỏ hàng"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.inversePrimary,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
     );
   }
 }
