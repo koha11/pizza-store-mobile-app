@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_auth.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
@@ -295,7 +296,7 @@ class PagePendingOrder extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () async {
-                              await UserController.get().signOut();
+                              await AuthController.signOut();
                               Get.off(() => MainLayout());
                             },
                             style: ElevatedButton.styleFrom(

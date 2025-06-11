@@ -34,7 +34,7 @@ class OrderDetailManagerController extends GetxController {
     isLoading = true;
     update();
     shipperList = await AppUserSnapshot.getAppUsers(
-      equalObject: {"role_id": "SHIPPER"},
+      equalObject: {"role_id": "SHIPPER", "is_active": true},
     );
     isLoading = false;
     update();

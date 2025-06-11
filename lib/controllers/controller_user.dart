@@ -52,53 +52,27 @@ class UserController extends GetxController {
     update(["user"]);
   }
 
-  Future<void> signOut() async {
-    await supabase.auth.signOut();
-    await SupabaseSnapshot.update(
-      table: AppUser.tableName,
-      updateObject: {"is_active": false},
-      equalObject: {"user_id": appUser!.userId},
-    );
-
-    // Reset các controller
-    if (Get.isRegistered<HistoryCartController>()) {
-      Get.find<HistoryCartController>().reset();
-    }
-    if (Get.isRegistered<ShoppingCartController>()) {
-      Get.find<ShoppingCartController>().reset();
-    }
-
-    appUser = null;
-
-    HomePizzaStoreController.get().refreshHome();
-    update();
-  }
-
   Future<void> updateInfo({
-    required BuildContext context,
-    required TextEditingController txtUserName,
-    required TextEditingController txtPhoneNumber,
+    required String userName,
+    required String phoneNumber,
   }) async {
     await AppUserSnapshot.updateInfoAppUser(
-      context: context,
-      txtUserName: txtUserName,
-      txtPhoneNumber: txtPhoneNumber,
+      phoneNumber: phoneNumber,
+      userName: userName,
       userId: appUser!.userId,
     );
     await fetchUser();
   }
 
   Future<void> changePassword({
-    required BuildContext context,
-    required TextEditingController txtCurrPw,
-    required TextEditingController txtNewPw,
-    required TextEditingController txtConfirmNewPw,
+    required String currPwd,
+    required String newPwd,
+    required String confirmNewPw,
   }) async {
     await AppUserSnapshot.updatePassword(
-      context: context,
-      txtCurrPw: txtCurrPw,
-      txtNewPw: txtNewPw,
-      txtConfirmNewPw: txtConfirmNewPw,
+      currPwd: currPwd,
+      confirmPwd: confirmNewPw,
+      newPwd: newPwd,
     );
     update(["changePassword"]);
   }
@@ -140,14 +114,11 @@ class UserController extends GetxController {
     await fetchUser();
     update(["editAddress"]);
   }
-
-  // Viết phần User Admin
 }
 
 class BindingsUserController extends Bindings {
   @override
   void dependencies() {
-    // Get.put<UserController>(UserController());
     Get.lazyPut(() => UserController());
   }
 }

@@ -52,9 +52,8 @@ class PageChangeInfo extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () async {
                           await controller.updateInfo(
-                            context: context,
-                            txtUserName: txtName,
-                            txtPhoneNumber: txtPhoneNumber,
+                            phoneNumber: txtPhoneNumber.text,
+                            userName: txtName.text,
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -75,21 +74,6 @@ class PageChangeInfo extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // SizedBox(height: 20),
-                    // SizedBox(
-                    //   width: double.infinity,
-                    //   child: ElevatedButton(
-                    //     onPressed: () {
-                    //       Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //           builder: (context) => PagePendingOrder(),
-                    //         ),
-                    //       );
-                    //     },
-                    //     child: Text("Giao hàng"),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
