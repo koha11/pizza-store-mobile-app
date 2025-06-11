@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/models/order_variant.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
-import 'package:pizza_store_app/helpers/supabase.helper.dart';
 
 class ShoppingCartController extends GetxController {
   //final SupabaseClient _supabase = Supabase.instance.client;
@@ -128,7 +126,7 @@ class ShoppingCartController extends GetxController {
       update();
     } catch (e) {
       print('Lỗi xóa item đã chọn: $e');
-      // await _loadCartItems();
+      await _loadCart();
     }
   }
 
@@ -193,13 +191,10 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
-
       if (_cart == null) {
         await _initializeCart();
       }
-
       OrderDetail? myOD;
-
       try {
         myOD = _cart!.orderDetails?.firstWhere(
           (od) => od.itemId == item.itemId,
@@ -387,11 +382,9 @@ class ShoppingCartController extends GetxController {
           }
         }
       }
-
+      await _loadCart();
       // await _loadCartItems();
       _checkedItems.clear();
-      update();
-
       Get.snackbar(
         'Thành công',
         'Đặt hàng thành công!',

@@ -115,12 +115,15 @@ class CustomerOrder {
               : null,
       status: OrderStatus.fromString(json["status"]),
       paymentMethod: json["payment_method"],
-      shippingFee: (json["shipping_fee"] as num).toInt(),
+      shippingFee:
+          json["shipping_fee"] == null
+              ? 0
+              : (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
       orderDetails: orderDetails,
       total: orderDetails.fold(
         0,
-        (sum, item) => sum! + item.amount * item.actualPrice,
+        (sum, item) => (sum ?? 0) + item.amount * item.actualPrice,
       ),
     );
   }

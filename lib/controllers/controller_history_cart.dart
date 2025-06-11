@@ -35,11 +35,11 @@ class HistoryCartController extends GetxController {
     // Lấy danh sách đơn hàng có status = 'pending'
     pendingOrders = await CustomerOrderSnapshot.getOrders(
       equalObject: {"customer_id": UserController.get().appUser!.userId},
-      sortObject: {"order_time": false},
+      sortObject: {"order_time": true},
       orObject: [
-        {"status": OrderStatus.pending.name},
-        {"status": OrderStatus.shipping.name},
-        {"status": OrderStatus.finished.name},
+        {"status": "pending"},
+        {"status": "confirmed"},
+        {"status": "shipping"},
       ],
     );
 
