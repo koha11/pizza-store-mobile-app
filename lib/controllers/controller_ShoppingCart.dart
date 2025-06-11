@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
+import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/models/order_variant.model.dart';
+import 'package:pizza_store_app/models/variant.model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
@@ -10,14 +12,10 @@ class ShoppingCartController extends GetxController {
   //final SupabaseClient _supabase = Supabase.instance.client;
   Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
-
   String? _customerId;
   CustomerOrder? _cart;
-
   Map<String, OrderDetail> get cartItems => _cartItems;
-
   CustomerOrder? get cart => _cart;
-
   Map<String, bool> get checkedItems => _checkedItems;
   static ShoppingCartController get() => Get.find();
   Future<void> loadCart() async => await _loadCart();
@@ -172,10 +170,35 @@ class ShoppingCartController extends GetxController {
   //   update();
   // }
 
+  int calcODActualPrice(
+    Item item,
+    int amount,
+    Map<String, List<String>> myVariantMap,
+    List<Variant> variants,
+  ) {
+    int total = item.price;
+
+    myVariantMap.forEach(
+      (variantTypeId, variantIds) => variantIds.forEach((variantId) {
+        if (variantId.isNotEmpty) {
+          total +=
+              variants
+                  .firstWhere((variant) => variant.variantId == variantId)
+                  .priceChange;
+        }
+      }),
+    );
+
+    total *= amount;
+
+    return total;
+  }
+
   Future<void> addToCart(
     Item item,
     int amount,
     Map<String, List<String>> myVariantMap,
+    List<Variant> variants,
   ) async {
     try {
       if (_customerId == null) {
@@ -214,7 +237,12 @@ class ShoppingCartController extends GetxController {
           ++myOD.amount,
         );
       } else {
-        await CustomerOrderSnapshot.addItemToCart(_cart!.orderId, item, amount);
+        await CustomerOrderSnapshot.addItemToCart(
+          _cart!.orderId,
+          item,
+          amount,
+          calcODActualPrice(item, amount, myVariantMap, variants),
+        );
         myVariantMap.forEach((key, value) {
           if (value.isNotEmpty) {
             value.forEach((variantId) async {
