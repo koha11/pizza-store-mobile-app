@@ -220,13 +220,14 @@ class ShoppingCartController extends GetxController {
         myVariantMap.forEach((key, value) {
           if (value.isNotEmpty) {
             value.forEach((variantId) async {
-              await OrderVariantSnapshot.insertOrderVariant(
-                OrderVariant(
-                  variantId: variantId,
-                  itemId: item.itemId,
-                  orderId: _cart!.orderId,
-                ),
-              );
+              if (variantId.isNotEmpty)
+                await OrderVariantSnapshot.insertOrderVariant(
+                  OrderVariant(
+                    variantId: variantId,
+                    itemId: item.itemId,
+                    orderId: _cart!.orderId,
+                  ),
+                );
             });
           }
         });

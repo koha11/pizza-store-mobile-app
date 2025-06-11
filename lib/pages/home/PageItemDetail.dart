@@ -129,8 +129,12 @@ class PageItemDetail extends StatelessWidget {
                                             },
                                           );
                                         } else {
+                                          final isChecked = controller
+                                              .variantCheckList[variant
+                                                  .variantTypeId]
+                                              ?.contains(variant.variantId);
                                           return CheckboxListTile(
-                                            value: true,
+                                            value: isChecked,
                                             controlAffinity:
                                                 ListTileControlAffinity.leading,
                                             title: Row(
@@ -152,12 +156,12 @@ class PageItemDetail extends StatelessWidget {
                                                     : Text(""),
                                               ],
                                             ),
-                                            onChanged: (value) {
-                                              // controller.checkVariant(
-                                              //   variantTypeId:
-                                              //       variant.variantTypeId,
-                                              //   variantId: value!,
-                                              // );
+                                            onChanged: (variantId) {
+                                              controller.checkVariant(
+                                                variantTypeId:
+                                                    variant.variantTypeId,
+                                                variantId: variant.variantId,
+                                              );
                                             },
                                           );
                                         }
