@@ -34,6 +34,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
       (sum, item) => sum + item.amount,
     );
     int total = subTotal + shippingFee;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chi tiết đơn hàng"),
@@ -57,314 +58,264 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.shopping_cart,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "Chi tiết đơn hàng",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      ...widget.selectedItems.map(
-                        (item) => Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.item.itemName ?? "Không rõ tên",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    ...item.variantMaps.entries.map((entry) {
-                                      final variantNames = entry.value
-                                          .map((variant) => variant.variantName)
-                                          .join(", ");
-                                      return Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Text(
-                                          "• $variantNames",
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "x${item.amount}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    formatMoney(
-                                      money: item.actualPrice * item.amount,
-                                    ),
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Divider(height: 24),
-                      _buildPriceRow("Tạm tính:", formatMoney(money: subTotal)),
-                      const SizedBox(height: 8),
-                      _buildPriceRow(
-                        "Phí vận chuyển:",
-                        formatMoney(money: shippingFee),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildPriceRow(
-                        "Tổng cộng:",
-                        formatMoney(money: total),
-                        isTotal: true,
-                      ),
-                    ],
-                  ),
-                ),
+                _buildOrderDetails(subTotal, total),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "Thông tin giao hàng",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      GetBuilder<UserController>(
-                        builder: (userController) {
-                          final addresses =
-                              userController.appUser!.addresses ?? [];
-                          return Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child:
-                                      addresses.isEmpty
-                                          ? const Text(
-                                            "Không có địa chỉ",
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                          )
-                                          : DropdownButton<String>(
-                                            isExpanded: true,
-                                            value: selectedAddressId,
-                                            items:
-                                                addresses.map((address) {
-                                                  return DropdownMenuItem<
-                                                    String
-                                                  >(
-                                                    value: address.address,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          address.addressNickName ??
-                                                              "",
-                                                          style:
-                                                              const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                        ),
-                                                        Text(
-                                                          address.address,
-                                                          style: TextStyle(
-                                                            color:
-                                                                Colors
-                                                                    .grey[600],
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                selectedAddressId = value;
-                                              });
-                                            },
-                                            underline: Container(),
-                                          ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                _buildShippingAddress(),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (selectedAddressId == null) {
-                        Get.snackbar(
-                          "Lỗi",
-                          "Vui lòng chọn địa chỉ giao hàng",
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                        return;
-                      }
-                      await ShoppingCartController.get().placeOrder(
-                        shippingFee: shippingFee,
-                        address: selectedAddressId!,
-                        totalAmount: totalAmount,
-                      );
-
-                      HomePizzaStoreController.get().changePage(1);
-                      Get.off(
-                        () => MainLayout(),
-                        binding: getRoleControllerBindings(""),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      "Đặt Hàng",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    loadingDialog();
-
-                    await ShoppingCartController.get().placeOrder(
-                      shippingFee: shippingFee,
-                      address: selectedAddressId!,
-                      totalAmount: totalAmount,
-                    );
-
-                    HomePizzaStoreController.get().changePage(1);
-                    Get.offAll(
-                      () => MainLayout(),
-                      binding: getRoleControllerBindings(""),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                  ),
-                ),
+                _buildPlaceOrderButton(totalAmount),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderDetails(int subTotal, int total) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.shopping_cart, color: Theme.of(context).primaryColor),
+              const SizedBox(width: 8),
+              const Text(
+                "Chi tiết đơn hàng",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...widget.selectedItems.map((item) => _buildItemCard(item)),
+          const Divider(height: 24),
+          _buildPriceRow("Tạm tính:", formatMoney(money: subTotal)),
+          const SizedBox(height: 8),
+          _buildPriceRow("Phí vận chuyển:", formatMoney(money: shippingFee)),
+          const SizedBox(height: 8),
+          _buildPriceRow(
+            "Tổng cộng:",
+            formatMoney(money: total),
+            isTotal: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemCard(OrderDetail item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.item.itemName ?? "Không rõ tên",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...item.variantMaps.entries.map((entry) {
+                  final variantNames = entry.value
+                      .map((v) => v.variantName)
+                      .join(", ");
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      "• $variantNames",
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "x${item.amount}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                formatMoney(money: item.actualPrice * item.amount),
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShippingAddress() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.location_on, color: Theme.of(context).primaryColor),
+              const SizedBox(width: 8),
+              const Text(
+                "Thông tin giao hàng",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          GetBuilder<UserController>(
+            builder: (userController) {
+              final addresses = userController.appUser!.addresses ?? [];
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.red, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child:
+                          addresses.isEmpty
+                              ? const Text(
+                                "Không có địa chỉ",
+                                style: TextStyle(color: Colors.grey),
+                              )
+                              : DropdownButton<String>(
+                                isExpanded: true,
+                                value: selectedAddressId,
+                                items:
+                                    addresses.map((address) {
+                                      return DropdownMenuItem<String>(
+                                        value: address.address,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              address.addressNickName ?? "",
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              address.address,
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedAddressId = value;
+                                  });
+                                },
+                                underline: Container(),
+                              ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceOrderButton(int totalAmount) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: () async {
+          if (selectedAddressId == null) {
+            Get.snackbar(
+              "Lỗi",
+              "Vui lòng chọn địa chỉ giao hàng",
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
+            return;
+          }
+
+          loadingDialog();
+
+          await ShoppingCartController.get().placeOrder(
+            shippingFee: shippingFee,
+            address: selectedAddressId!,
+            totalAmount: totalAmount,
+          );
+
+          HomePizzaStoreController.get().changePage(1);
+          Get.offAll(
+            () => MainLayout(),
+            binding: getRoleControllerBindings(""),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: const Text(
+          "Đặt Hàng",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
     );
