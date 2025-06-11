@@ -5,6 +5,7 @@ import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import '../../helpers/other.helper.dart';
 import '../../models/Item.model.dart';
 import '../../models/variant.model.dart';
+import '../../widgets/LoadingDialog.dart';
 
 class PageItemDetail extends StatelessWidget {
   Item item;
@@ -298,11 +299,7 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         return;
                       }
 
-                      Get.dialog(
-                        Center(child: CircularProgressIndicator()),
-                        barrierDismissible:
-                            false, // prevent closing by tapping outside
-                      );
+                      loadingDialog();
 
                       await cartController.addToCart(
                         controller.item!,

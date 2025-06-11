@@ -3,6 +3,7 @@ import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/order_variant.model.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 
 import '../enums/OrderStatus.dart';
 import '../helpers/supabase.helper.dart';
@@ -75,7 +76,9 @@ class CustomerOrder {
         OrderDetail od = orderDetails.firstWhere(
           (od) => od.itemId == ov.itemId,
         );
+
         final key = ov.variant!.variantTypeId;
+
         if (od.variantMaps.containsKey(key)) {
           od.variantMaps[key]!.add(ov.variant!);
         } else {
@@ -287,6 +290,20 @@ class CustomerOrderSnapshot {
     return orders;
   }
 
+  static Future<void> deletePendingOrder(CustomerOrder order) async {
+    if (order.status != OrderStatus.pending) {
+      showSnackBar(
+        desc: "Khong duoc phep xoa don hang ko phai dang cho",
+        success: false,
+      );
+    } else {
+      await SupabaseSnapshot.delete(
+        table: AppUser.tableName,
+        equalObject: {"order_id": order.orderId},
+      );
+    }
+  }
+
   static Future<Map<String, CustomerOrder>> getMapOrders() {
     return SupabaseSnapshot.getMapT<String, CustomerOrder>(
       table: CustomerOrder.tableName,
@@ -332,17 +349,18 @@ class CustomerOrderSnapshot {
       'note': null,
       'shipping_address': null,
     });
+
     return order;
   }
 
-  static Future<String> placeOrder({
+  static Future<String> createOrder({
     required String customerId,
     required String address,
     required int shippingFee,
     required int totalAmount,
   }) async {
     final orderId = await generateId(tableName: CustomerOrder.tableName);
-    //final orderId = 'OI' + DateTime.now().millisecondsSinceEpoch.toString();
+
     await supabase.from('customer_order').insert({
       'order_id': orderId,
       'customer_id': customerId,
@@ -353,6 +371,7 @@ class CustomerOrderSnapshot {
       'shipping_address': address,
       'total_amount': totalAmount,
     });
+
     return orderId;
   }
 
@@ -378,33 +397,4 @@ class CustomerOrderSnapshot {
       throw e;
     }
   }
-
-  // // tính tiền
-  // static Future<void> updateOrderTotal(String orderId, int total) async {
-  //   await supabase
-  //       .from('customer_order')
-  //       .update({'total_amount': total})
-  //       .eq('order_id', orderId);
-  // }
-  //
-  // Phương thức cập nhật số lượng sản phẩm trong giỏ hàng
-  // static Future<void> updateCartItemAmount({required String orderId,
-  //   required String itemId,
-  //   required int newAmount,}) async {
-  //   try {
-  //     await SupabaseSnapshot.update(
-  //         table: OrderDetail.tableName,
-  //         updateObject: {
-  //           'total_amount': new
-  //         });
-  //     // await supabase
-  //     //     .from('order_detail')
-  //     //     .update({'amount': newAmount})
-  //     //     .eq('order_id', orderId)
-  //     //     .eq('item_id', itemId);
-  //   } catch (e) {
-  //     print('Lỗi cập nhật số lượng trong database: $e');
-  //     rethrow;
-  //   }
-  // }
 }
