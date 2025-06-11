@@ -10,19 +10,19 @@ import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
 import '../../layouts/MainLayout.dart';
 import '../../widgets/LoadingDialog.dart';
 
-class PageHistoryOderDetail extends StatefulWidget {
+class PageHistoryOrderDetail extends StatefulWidget {
   final List<OrderDetail> selectedItems;
-  PageHistoryOderDetail({
+  PageHistoryOrderDetail({
     super.key,
     required this.selectedItems,
     required this.order,
   });
   final CustomerOrder order;
   @override
-  State<PageHistoryOderDetail> createState() => _PageHistoryOderDetailState();
+  State<PageHistoryOrderDetail> createState() => _PageHistoryOrderDetailState();
 }
 
-class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
+class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
   @override
   Widget build(BuildContext context) {
     int subTotal = widget.selectedItems.fold(
@@ -182,64 +182,63 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
                 ),
               ),
               const SizedBox(height: 24),
-              if (widget.order.status == OrderStatus.pending)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        loadingDialog();
-
-                        await OrderDetailSnapshot.clearCart(
-                          orderId: widget.order.orderId,
-                        );
-
-                        // Cập nhật lại danh sách đơn hàng
-                        final controller = Get.find<HistoryCartController>();
-                        await controller.fetchPendingOrders();
-
-                        Get.snackbar(
-                          "Thành công",
-                          "Đã hủy đơn hàng!",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-
-                        Get.offAll(
-                          () => MainLayout(),
-                          binding: getRoleControllerBindings(""),
-                        ); // Quay lại trang danh sách đơn hàng
-                      } catch (e) {
-                        Get.snackbar(
-                          "Lỗi",
-                          "Không thể hủy đơn hàng: $e",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                    ),
-                    child: const Text(
-                      "Hủy đơn hàng",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
+              // if (widget.order.status == OrderStatus.pending)
+              //   SizedBox(
+              //     width: double.infinity,
+              //     child: ElevatedButton(
+              //       onPressed: () async {
+              //         try {
+              //           loadingDialog();
+              //
+              //           await CustomerOrderSnapshot.deletePendingOrder(
+              //             widget.order,
+              //           );
+              //
+              //           // Cập nhật lại danh sách đơn hàng
+              //           await HistoryCartController.get().fetchPendingOrders();
+              //
+              //           Get.snackbar(
+              //             "Thành công",
+              //             "Đã hủy đơn hàng!",
+              //             snackPosition: SnackPosition.BOTTOM,
+              //           );
+              //
+              //           Get.offAll(
+              //             () => MainLayout(),
+              //             binding: getRoleControllerBindings(""),
+              //           ); // Quay lại trang danh sách đơn hàng
+              //         } catch (e) {
+              //           Get.snackbar(
+              //             "Lỗi",
+              //             "Không thể hủy đơn hàng: $e",
+              //             snackPosition: SnackPosition.BOTTOM,
+              //           );
+              //         }
+              //       },
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor: Colors.red,
+              //         padding: const EdgeInsets.symmetric(vertical: 16),
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(40),
+              //         ),
+              //       ),
+              //       child: const Text(
+              //         "Hủy đơn hàng",
+              //         style: TextStyle(
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.bold,
+              //           color: Colors.black,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
             ],
           ),
         ),
       ),
     );
   }
-  
+
   Widget _buildPriceRow(String label, String value, {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -263,4 +262,3 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
     );
   }
 }
-

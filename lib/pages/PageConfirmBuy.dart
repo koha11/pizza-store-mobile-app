@@ -5,7 +5,7 @@ import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
-import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetail.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOrderDetail.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
 import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import '../controllers/controller_ShoppingCart.dart';

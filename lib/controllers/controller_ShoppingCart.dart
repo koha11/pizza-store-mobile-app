@@ -6,6 +6,8 @@ import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/models/order_variant.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
@@ -140,7 +142,10 @@ class ShoppingCartController extends GetxController {
     // Tìm giỏ hàng đang cart của user
     await _loadCart(); // Nếu không có giỏ hàng nào, tạo mới
 
-    _cart ??= await CustomerOrderSnapshot.createNewOrder(_customerId!);
+    if (_cart == null) {
+      await CustomerOrderSnapshot.createNewOrder(_customerId!);
+      await _loadCart();
+    }
 
     update();
   }
@@ -187,90 +192,58 @@ class ShoppingCartController extends GetxController {
     Map<String, List<String>> myVariantMap,
     List<Variant> variants,
   ) async {
-    try {
-      if (_customerId == null) {
-        final userId = Supabase.instance.client.auth.currentUser?.id;
-        if (userId == null) {
-          Get.snackbar(
-            'Thông báo',
-            'Bạn cần đăng nhập để sử dụng giỏ hàng',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-          return;
-        }
-        _customerId = userId;
-        await _initializeCart();
-      }
-
-      if (_cart == null) {
-        await _initializeCart();
-      }
-
-      OrderDetail? myOD;
-
-      try {
-        myOD = _cart!.orderDetails?.firstWhere(
-          (od) => od.itemId == item.itemId,
-        );
-      } catch (e) {
-        // throw e;
-        myOD = null;
-      }
-
-      if (myOD != null) {
-        OrderDetailSnapshot.updateItemAmount(
-          _cart!.orderId,
-          item.itemId,
-          ++myOD.amount,
-        );
-      } else {
-        await CustomerOrderSnapshot.addItemToCart(
-          _cart!.orderId,
-          item,
-          amount,
-          calcODActualPrice(item, amount, myVariantMap, variants),
-        );
-        myVariantMap.forEach((key, value) {
-          if (value.isNotEmpty) {
-            value.forEach((variantId) async {
-              if (variantId.isNotEmpty) {
-                await OrderVariantSnapshot.insertOrderVariant(
-                  OrderVariant(
-                    variantId: variantId,
-                    itemId: item.itemId,
-                    orderId: _cart!.orderId,
-                  ),
-                );
-              }
-            });
-          }
-        });
-      }
-
-      Get.back();
-
-      Get.snackbar(
-        'Thành công',
-        'Đã thêm sản phẩm vào giỏ hàng',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-
-      await _loadCart();
-    } catch (e) {
-      print('Error adding to cart: $e');
-
-      Get.snackbar(
-        'Lỗi',
-        'Không thể thêm sản phẩm vào giỏ hàng',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+    if (UserController.get().appUser == null) {
+      showSnackBar(desc: "bạn cần đăng nhập", success: false);
     }
+
+    if (_cart == null) {
+      await _initializeCart();
+    }
+
+    OrderDetail? myOD;
+
+    try {
+      myOD = _cart!.orderDetails?.firstWhere((od) => od.itemId == item.itemId);
+    } catch (e) {
+      // throw e;
+      myOD = null;
+    }
+
+    if (myOD != null) {
+      OrderDetailSnapshot.updateItemAmount(
+        _cart!.orderId,
+        item.itemId,
+        ++myOD.amount,
+      );
+    } else {
+      await CustomerOrderSnapshot.addItemToCart(
+        _cart!.orderId,
+        item,
+        amount,
+        calcODActualPrice(item, amount, myVariantMap, variants),
+      );
+      myVariantMap.forEach((key, value) {
+        if (value.isNotEmpty) {
+          value.forEach((variantId) async {
+            if (variantId.isNotEmpty) {
+              await OrderVariantSnapshot.insertOrderVariant(
+                OrderVariant(
+                  variantId: variantId,
+                  itemId: item.itemId,
+                  orderId: _cart!.orderId,
+                ),
+              );
+            }
+          });
+        }
+      });
+    }
+
+    Get.back();
+
+    showSnackBar(desc: 'Đã thêm sản phẩm vào giỏ hàng', success: true);
+
+    await _loadCart();
   }
 
   Future<void> removeFromCart({required String itemId}) async {
@@ -305,6 +278,7 @@ class ShoppingCartController extends GetxController {
     required String address,
     required int totalAmount,
   }) async {
+    loadingDialog();
     if (_customerId == null) {
       Get.snackbar(
         'Lỗi',
@@ -316,92 +290,71 @@ class ShoppingCartController extends GetxController {
       return;
     }
 
-    try {
-      isCartLoading = true;
-      update();
+    // Tao 1 order moi co thong tin cua user hien tai + shipping fee + address + status=pending
+    final newOrderId = await CustomerOrderSnapshot.createOrder(
+      customerId: _customerId!,
+      address: address,
+      shippingFee: shippingFee,
+      totalAmount: totalAmount,
+    );
 
-      // Tao 1 order moi co thong tin cua user hien tai + shipping fee + address + status=pending
-      final newOrderId = await CustomerOrderSnapshot.placeOrder(
-        customerId: _customerId!,
-        address: address,
-        shippingFee: shippingFee,
-        totalAmount: totalAmount,
-      );
+    // Chuyen nhung order detail dang co trang thai checked -> order moi
+    for (var item in _checkedItems.entries) {
+      if (item.value) {
+        OrderDetail? newOrderDetail;
 
-      // Chuyen nhung order detail dang co trang thai checked -> order moi
-      for (var item in _checkedItems.entries) {
-        if (item.value) {
-          OrderDetail? newOrderDetail;
-          try {
-            newOrderDetail = _cart!.orderDetails?.firstWhere(
-              (od) => od.itemId == item.key,
+        try {
+          newOrderDetail = _cart!.orderDetails?.firstWhere(
+            (od) => od.itemId == item.key,
+          );
+        } catch (e) {
+          newOrderDetail = null;
+        }
+
+        // var newOrderDetail = _cart!.orderDetails[item.key]!;
+
+        // tao order detail moi
+        newOrderDetail!.orderId = newOrderId;
+
+        await OrderDetailSnapshot.createOrderDetail(
+          orderDetail: newOrderDetail,
+        );
+
+        // xoa order detail
+        await OrderDetailSnapshot.deleteOrderDetail(
+          itemId: item.key,
+          orderId: _cart!.orderId,
+        );
+
+        // tao order variant moi
+        if (newOrderDetail.variantMaps.isNotEmpty) {
+          final myVariants =
+              newOrderDetail.variantMaps.values.expand((e) => e).toList();
+
+          myVariants.forEach((variant) async {
+            await OrderVariantSnapshot.insertOrderVariant(
+              OrderVariant(
+                variantId: variant.variantId,
+                itemId: newOrderDetail!.itemId,
+                orderId: newOrderDetail.orderId,
+              ),
             );
-          } catch (e) {}
-
-          // var newOrderDetail = _cart!.orderDetails[item.key]!;
-
-          // tao order detail moi
-          newOrderDetail!.orderId = newOrderId;
-
-          await OrderDetailSnapshot.createOrderDetail(
-            orderDetail: newOrderDetail,
-          );
-
-          // xoa order detail
-          await OrderDetailSnapshot.deleteOrderDetail(
-            itemId: item.key,
-            orderId: _cart!.orderId,
-          );
-
-          // tao order variant moi
-          if (newOrderDetail.variantMaps.isNotEmpty) {
-            final myVariants =
-                newOrderDetail.variantMaps.values.expand((e) => e).toList();
-
-            myVariants.forEach((variant) async {
-              await OrderVariantSnapshot.insertOrderVariant(
-                OrderVariant(
-                  variantId: variant.variantId,
-                  itemId: newOrderDetail!.itemId,
-                  orderId: newOrderDetail.orderId,
-                ),
-              );
-              // xoa order variant
-              await OrderVariantSnapshot.deleteOrderVariant(
-                OrderVariant(
-                  variantId: variant.variantId,
-                  itemId: newOrderDetail.itemId,
-                  orderId: _cart!.orderId,
-                ),
-              );
-            });
-          }
+            // xoa order variant
+            await OrderVariantSnapshot.deleteOrderVariant(
+              OrderVariant(
+                variantId: variant.variantId,
+                itemId: newOrderDetail.itemId,
+                orderId: _cart!.orderId,
+              ),
+            );
+          });
         }
       }
-
-      Get.snackbar(
-        'Thành công',
-        'Đặt hàng thành công!',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-
-      isCartLoading = false;
-
-      await _loadCart();
-
-      _checkedItems.clear();
-    } catch (e) {
-      print('Lỗi khi đặt hàng: $e');
-      Get.snackbar(
-        'Lỗi',
-        'Không thể đặt hàng: $e',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
     }
+    _checkedItems.clear();
+    await _loadCart();
+    Get.back();
+    showSnackBar(desc: "Dat hang thanh cong", success: true);
   }
 
   void reset() {

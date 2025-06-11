@@ -298,12 +298,6 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         return;
                       }
 
-                      Get.dialog(
-                        Center(child: CircularProgressIndicator()),
-                        barrierDismissible:
-                            false, // prevent closing by tapping outside
-                      );
-
                       await cartController.addToCart(
                         controller.item!,
                         controller.amount,

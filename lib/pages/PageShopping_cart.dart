@@ -83,179 +83,186 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
             );
           }
 
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: controller.cart!.orderDetails!.length,
-                  itemBuilder: (context, index) {
-                    mycontext = context;
-                    final item = controller.cart!.orderDetails![index];
-                    return Slidable(
-                      key: ValueKey(item.itemId),
-                      endActionPane: ActionPane(
-                        extentRatio: 0.3,
-                        motion: ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) async {
-                              bool? xacNhan = await showConfirmDialog(
-                                mycontext,
-                                "Bạn có muốn xóa ${item.item.itemName}?",
-                              );
-                              if (xacNhan == true) {
-                                await controller.removeFromCart(
-                                  itemId: item.itemId,
-                                );
-                                showSnackBar(
+          return RefreshIndicator(
+            onRefresh: () => controller.loadCart(),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: controller.cart!.orderDetails!.length,
+                    itemBuilder: (context, index) {
+                      mycontext = context;
+                      final item = controller.cart!.orderDetails![index];
+                      return Slidable(
+                        key: ValueKey(item.itemId),
+                        endActionPane: ActionPane(
+                          extentRatio: 0.3,
+                          motion: ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) async {
+                                bool? xacNhan = await showConfirmDialog(
                                   mycontext,
-                                  message: "Đã xóa ${item.item.itemName}",
+                                  "Bạn có muốn xóa ${item.item.itemName}?",
                                 );
-                              }
-                            },
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete_forever,
-                            label: 'Xóa',
-                            autoClose: true,
-                            flex: 1,
+                                if (xacNhan == true) {
+                                  await controller.removeFromCart(
+                                    itemId: item.itemId,
+                                  );
+                                  showSnackBar(
+                                    mycontext,
+                                    message: "Đã xóa ${item.item.itemName}",
+                                  );
+                                }
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete_forever,
+                              label: 'Xóa',
+                              autoClose: true,
+                              flex: 1,
+                            ),
+                          ],
+                        ),
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          child: ListTile(
+                            leading: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Checkbox(
+                                  value:
+                                      controller.checkedItems[item.itemId] ??
+                                      false,
+                                  onChanged: (bool? value) {
+                                    controller.toggleItemCheck(item.itemId);
+                                  },
+                                ),
+                                item.item.itemImage != null
+                                    ? Image.network(
+                                      item.item.itemImage!,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    )
+                                    : const Icon(Icons.fastfood, size: 40),
+                              ],
+                            ),
+                            title: Text(item.item.itemName ?? "Không rõ tên"),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...item.variantMaps.entries.map((entry) {
+                                  return Text(
+                                    "  * ${entry.value.map((variant) => variant.variantName).join(", ")},",
+                                  );
+                                }),
+                                Text(formatMoney(money: item.actualPrice)),
+                              ],
+                            ),
+
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () {
+                                    controller.updateAmount(item.itemId, true);
+                                  },
+                                ),
+                                Text("${item.amount}"),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () {
+                                    controller.updateAmount(item.itemId, false);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(color: Colors.black12, blurRadius: 5),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Tổng tiền:",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            formatMoney(money: controller.totalSelectedAmount),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
                           ),
                         ],
                       ),
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        child: ListTile(
-                          leading: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Checkbox(
-                                value:
-                                    controller.checkedItems[item.itemId] ??
-                                    false,
-                                onChanged: (bool? value) {
-                                  controller.toggleItemCheck(item.itemId);
-                                },
-                              ),
-                              item.item.itemImage != null
-                                  ? Image.network(
-                                    item.item.itemImage!,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                  )
-                                  : const Icon(Icons.fastfood, size: 40),
-                            ],
-                          ),
-                          title: Text(item.item.itemName ?? "Không rõ tên"),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ...item.variantMaps.entries.map((entry) {
-                                return Text(
-                                  "  * ${entry.value.map((variant) => variant.variantName).join(", ")},",
-                                );
-                              }),
-                              Text(formatMoney(money: item.actualPrice)),
-                            ],
-                          ),
-
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () {
-                                  controller.updateAmount(item.itemId, true);
-                                },
-                              ),
-                              Text("${item.amount}"),
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () {
-                                  controller.updateAmount(item.itemId, false);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Tổng tiền:",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          formatMoney(money: controller.totalSelectedAmount),
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.inversePrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          final selectedItems = controller.getSelectedItems();
-                          if (selectedItems.isEmpty) {
-                            showSnackBar(
-                              context,
-                              message: "Vui lòng chọn ít nhất một món",
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final selectedItems = controller.getSelectedItems();
+                            if (selectedItems.isEmpty) {
+                              showSnackBar(
+                                context,
+                                message: "Vui lòng chọn ít nhất một món",
+                              );
+                              return;
+                            }
+                            Get.to(
+                              () =>
+                                  PageConfirmBuy(selectedItems: selectedItems),
                             );
-                            return;
-                          }
-                          Get.to(
-                            () => PageConfirmBuy(selectedItems: selectedItems),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.inversePrimary,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.inversePrimary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          "Đặt hàng",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                          child: const Text(
+                            "Đặt hàng",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
