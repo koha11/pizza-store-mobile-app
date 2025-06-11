@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
+import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'dart:math';
 import 'package:pizza_store_app/models/order_detail.model.dart';
@@ -250,10 +251,10 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                       totalAmount: totalAmount,
                     );
 
-                    Get.snackbar(
-                      "Thành công",
-                      "Đơn hàng đã được đặt!",
-                      snackPosition: SnackPosition.BOTTOM,
+                    HomePizzaStoreController.get().changePage(1);
+                    Get.off(
+                      () => MainLayout(),
+                      binding: getRoleControllerBindings(""),
                     );
                   },
                   style: ElevatedButton.styleFrom(

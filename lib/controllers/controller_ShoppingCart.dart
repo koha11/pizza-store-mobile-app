@@ -191,6 +191,7 @@ class ShoppingCartController extends GetxController {
         _customerId = userId;
         await _initializeCart();
       }
+
       if (_cart == null) {
         await _initializeCart();
       }
@@ -384,15 +385,16 @@ class ShoppingCartController extends GetxController {
           }
         }
       }
-      await _loadCart();
-
-      _checkedItems.clear();
 
       Get.snackbar(
         'Thành công',
         'Đặt hàng thành công!',
         snackPosition: SnackPosition.BOTTOM,
       );
+
+      await _loadCart();
+
+      _checkedItems.clear();
     } catch (e) {
       print('Lỗi khi đặt hàng: $e');
       Get.snackbar(
