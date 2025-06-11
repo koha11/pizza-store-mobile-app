@@ -14,6 +14,7 @@ import '../models/category.model.dart';
 class HomePizzaStoreController extends GetxController {
   late int currentIndex;
   late String _currentCategoryId;
+  bool isHomeLoading = true;
 
   final List<Widget> _pages = [
     PageHome(),
@@ -30,14 +31,15 @@ class HomePizzaStoreController extends GetxController {
   Iterable<Category> get categories => _categoryMaps.values;
 
   @override
-  void onReady() async {
-    // TODO: implement onReady
-    super.onReady();
+  void onInit() async {
+    super.onInit();
+
     currentIndex = 0;
     _currentCategoryId = "CI0001";
     _itemMaps = await ItemSnapshot.getMapItems();
     _categoryMaps = await CategorySnapshot.getMapCategories();
 
+    isHomeLoading = false;
     update();
   }
 

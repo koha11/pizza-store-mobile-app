@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:pizza_store_app/pages/home/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
@@ -74,7 +76,11 @@ class MainLayout extends StatelessWidget {
             (controller) => BottomNavigationBar(
               currentIndex: controller.currentIndex % 3,
               onTap: (value) {
-                controller.changePage(value);
+                if (value == 2 && UserController.get().appUser == null) {
+                  Get.to(() => PageLogin());
+                } else {
+                  controller.changePage(value);
+                }
               },
               selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
               iconSize: 32.0,
