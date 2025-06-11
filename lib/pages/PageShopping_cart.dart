@@ -156,8 +156,12 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${item.actualPrice} vnđ"),
-                              Text(item.item.category.categoryName),
+                              ...item.variantMaps.entries.map((entry) {
+                                return Text(
+                                  "  * ${entry.value.map((variant) => variant.variantName).join(", ")},",
+                                );
+                              }),
+                              Text(formatMoney(money: item.actualPrice)),
                             ],
                           ),
 
