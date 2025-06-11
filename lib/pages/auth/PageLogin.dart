@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_auth.dart';
 import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
@@ -88,37 +89,10 @@ class PageLogin extends StatelessWidget {
                           Theme.of(context).colorScheme.inversePrimary,
                     ),
                     onPressed: () async {
-                      final supabase = Supabase.instance.client;
-                      try {
-                        final AuthResponse res = await supabase.auth
-                            .signInWithPassword(
-                              email: emailTxt.text,
-                              password: pwdTxt.text,
-                            );
-
-                        final User user = res.user!;
-                        final userController = UserController.get();
-
-                        await userController.fetchUser();
-                        final myUser = userController.appUser;
-                        HomePizzaStoreController.get().setCurrUser(user);
-
-                        await AppUserSnapshot.updateUserByObject(
-                          updateObject: {"is_active": true},
-                          equalObject: {"user_id": user.id},
-                        );
-
-                        Get.off(checkRole(myUser!.roleId));
-                      } on AuthException catch (e) {
-                        if (e.message == "Email not confirmed") {
-                          final supabase = Supabase.instance.client;
-                          await supabase.auth.signInWithOtp(
-                            email: emailTxt.text,
-                          );
-
-                          Get.to(PageVerifyEmail(email: emailTxt.text));
-                        }
-                      }
+                      AuthController.login(
+                        email: emailTxt.text,
+                        pwd: pwdTxt.text,
+                      );
                     },
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,

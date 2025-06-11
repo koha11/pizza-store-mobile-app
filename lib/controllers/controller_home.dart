@@ -12,31 +12,34 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/category.model.dart';
 
 class HomePizzaStoreController extends GetxController {
-  int currentIndex = 0;
-  String _currentCategoryId = "CI0001";
+  late int currentIndex;
+  late String _currentCategoryId;
+  bool isHomeLoading = true;
+
   final List<Widget> _pages = [
     PageHome(),
-    //./PagePendingOrder(),
     PageHistoryOrderCart(),
     PageProfile(),
     PageItem(),
   ];
+
   Map<String, Item> _itemMaps = {};
   Map<String, Category> _categoryMaps = {};
-
-  User? _currUser;
 
   Iterable<Item> get items => _itemMaps.values;
   static HomePizzaStoreController get() => Get.find();
   Iterable<Category> get categories => _categoryMaps.values;
 
   @override
-  void onReady() async {
-    // TODO: implement onReady
-    super.onReady();
+  void onInit() async {
+    super.onInit();
+
+    currentIndex = 0;
+    _currentCategoryId = "CI0001";
     _itemMaps = await ItemSnapshot.getMapItems();
     _categoryMaps = await CategorySnapshot.getMapCategories();
 
+    isHomeLoading = false;
     update();
   }
 
@@ -45,10 +48,6 @@ class HomePizzaStoreController extends GetxController {
   Iterable<Item> getItems(String categoryId) =>
       items.where((item) => item.category.categoryId == categoryId);
 
-  User? getCurrUser(User user) {
-    return _currUser;
-  }
-
   String getCurrCategoryId() => _currentCategoryId;
 
   void changePage(int index) {
@@ -56,19 +55,14 @@ class HomePizzaStoreController extends GetxController {
     update();
   }
 
-  void setCurrUser(User user) {
-    _currUser = user;
-  }
-
   void setCurrCategoryId(String categoryId) {
     _currentCategoryId = categoryId;
     update();
   }
 
-  Future<void> signOut() async {
-    final supabase = Supabase.instance.client;
-    await supabase.auth.signOut();
-    _currUser = null;
+  void refreshHome() {
+    _currentCategoryId = "CI0001";
+    currentIndex = 0;
     update();
   }
 }

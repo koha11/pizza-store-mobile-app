@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pizza Store',
       initialBinding: BindingsBuilder(() {
         BindingsHomePizzaStore().dependencies();
         LocationBinding().dependencies();
@@ -50,7 +50,6 @@ class MyApp extends StatelessWidget {
           if (controller.isLoading) {
             return Center(child: CircularProgressIndicator());
           }
-
           return checkRole(controller.appUser?.roleId ?? "");
         },
       ),
