@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
@@ -194,6 +195,8 @@ class ShoppingCartController extends GetxController {
             'Thông báo',
             'Bạn cần đăng nhập để sử dụng giỏ hàng',
             snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
           );
           return;
         }
@@ -252,6 +255,8 @@ class ShoppingCartController extends GetxController {
         'Thành công',
         'Đã thêm sản phẩm vào giỏ hàng',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
 
       await _loadCart();
@@ -262,6 +267,8 @@ class ShoppingCartController extends GetxController {
         'Lỗi',
         'Không thể thêm sản phẩm vào giỏ hàng',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     }
   }
@@ -303,6 +310,8 @@ class ShoppingCartController extends GetxController {
         'Lỗi',
         'Vui lòng đăng nhập để đặt hàng',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
       return;
     }
@@ -374,6 +383,8 @@ class ShoppingCartController extends GetxController {
         'Thành công',
         'Đặt hàng thành công!',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
 
       isCartLoading = false;
@@ -387,6 +398,8 @@ class ShoppingCartController extends GetxController {
         'Lỗi',
         'Không thể đặt hàng: $e',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     }
   }

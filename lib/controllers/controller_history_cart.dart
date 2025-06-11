@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/enums/OrderStatus.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class HistoryCartController extends GetxController {

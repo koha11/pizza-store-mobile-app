@@ -41,154 +41,126 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Chi tiết đơn hàng",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Table(
-                        columnWidths: const {
-                          0: FlexColumnWidth(2),
-                          1: FlexColumnWidth(1),
-                          2: FlexColumnWidth(2),
-                          3: FlexColumnWidth(2),
-                        },
-                        border: const TableBorder(
-                          horizontalInside: BorderSide(
-                            width: 0.5,
-                            color: Colors.black12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "Chi tiết đơn hàng",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        children: [
-                          const TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text(
-                                  "Món",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text(
-                                  "SL",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text(
-                                  "Đơn giá",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6),
-                                child: Text(
-                                  "Thành tiền",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ],
-                          ),
-                          ...widget.selectedItems.map(
-                            (item) => TableRow(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text(
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ...widget.selectedItems.map(
+                      (item) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
                                     item.item.itemName ?? "Không rõ tên",
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text("${item.amount}"),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text(
-                                    formatMoney(money: item.actualPrice),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text(
-                                    formatMoney(
-                                      money: item.actualPrice * item.amount,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
                                     ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  ...item.variantMaps.entries.map((entry) {
+                                    final variantNames = entry.value
+                                        .map((variant) => variant.variantName)
+                                        .join(", ");
+                                    return Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Text(
+                                        "• $variantNames",
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "x${item.amount}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  formatMoney(
+                                    money: item.actualPrice * item.amount,
+                                  ),
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Tạm tính:",
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          Text(formatMoney(money: subTotal)),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Phí vận chuyển:",
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            formatMoney(
-                              money: widget.order.shippingFee!.toInt(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Tổng cộng:",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            formatMoney(money: total),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                    const Divider(height: 24),
+                    _buildPriceRow("Tạm tính:", formatMoney(money: subTotal)),
+                    const SizedBox(height: 8),
+                    _buildPriceRow(
+                      "Phí vận chuyển:",
+                      formatMoney(money: widget.order.shippingFee!),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildPriceRow(
+                      "Tổng cộng:",
+                      formatMoney(money: total),
+                      isTotal: true,
+                    ),
+                    SizedBox(height: 24),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text(
-                "Thông tin giao hàng",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              const Text("Thông tin giao hàng"),
               const SizedBox(height: 12),
-
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -267,4 +239,28 @@ class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
       ),
     );
   }
+  
+  Widget _buildPriceRow(String label, String value, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+            fontSize: isTotal ? 18 : 16,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+            fontSize: isTotal ? 18 : 16,
+            color: isTotal ? Theme.of(context).primaryColor : null,
+          ),
+        ),
+      ],
+    );
+  }
 }
+

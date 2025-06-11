@@ -139,22 +139,48 @@ class PageHistoryOrderCart extends StatelessWidget {
                       ...orderDetails.map(
                         (detail) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 2.0),
-                          child: Row(
+                          child: Column(
                             children: [
-                              Icon(
-                                Icons.local_pizza,
-                                size: 18,
-                                color: Colors.orange,
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.local_pizza,
+                                    size: 18,
+                                    color: Colors.orange,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "${detail.item.itemName ?? 'Món'} x${detail.amount}",
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  "${detail.item.itemName ?? 'Món'} x${detail.amount}",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              ),
+                              ...detail.variantMaps.entries.map((entry) {
+                                return Text(
+                                  "  * ${entry.value.map((variant) => variant.variantName).join(", ")}",
+                                );
+                              }),
                             ],
                           ),
+                          // child: Row(
+                          //   children: [
+                          //     Icon(
+                          //       Icons.local_pizza,
+                          //       size: 18,
+                          //       color: Colors.orange,
+                          //     ),
+                          //     SizedBox(width: 6),
+                          //     Expanded(
+                          //
+                          //       child: Column(
+                          //         children: [
+
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ),
                       ),
 
