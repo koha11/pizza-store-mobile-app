@@ -28,7 +28,43 @@ class PageItemDetail extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.network(item.itemImage ?? ""),
+                Image.network(
+                  item.itemImage ?? "",
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      // Download complete, show the image
+                      return child;
+                    }
+                    // Still loading: calculate progress percent
+                    final int? expected =
+                        loadingProgress.expectedTotalBytes?.toInt();
+                    final int loaded =
+                        loadingProgress.cumulativeBytesLoaded.toInt();
+                    final double progress =
+                        expected != null ? loaded / expected : 0;
+
+                    return Center(
+                      child: SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: CircularProgressIndicator(
+                          value: expected != null ? progress : null,
+                          strokeWidth: 1,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (
+                    BuildContext context,
+                    Object error,
+                    StackTrace? stackTrace,
+                  ) {
+                    return Image.asset(
+                      'asset/images/error_item_img.png',
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -38,11 +74,14 @@ class PageItemDetail extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "${item.itemName}",
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              "${item.itemName}",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              softWrap: true,
                             ),
                           ),
                           SizedBox(width: 10),
@@ -203,6 +242,7 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
 
     final selectedVariants = controller.variantCheckList;
     double totalVariantPrice = 0;
+
     selectedVariants.forEach((variantTypeId, variantId) {
       // Tìm variant tương ứng và cộng dồn priceChange
       Variant? variant;
@@ -278,6 +318,7 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 final myVariantMap =
                     ItemDetailController.get(item.itemId).variantCheckList;
                 final cartController = ShoppingCartController.get();
+
                 cartController.addToCart(item, amount, myVariantMap);
               },
               icon: Icon(Icons.shopping_cart),

@@ -116,8 +116,8 @@ class ItemsGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisSpacing: 20,
-      mainAxisSpacing: 20,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
       childAspectRatio: 0.5,
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -127,66 +127,80 @@ class ItemsGridView extends StatelessWidget {
               .map(
                 (item) => GridTile(
                   child: GestureDetector(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          item.itemImage ?? "",
-                          fit: BoxFit.fitWidth,
-                          height: 200,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              // Download complete, show the image
-                              return child;
-                            }
-                            // Still loading: calculate progress percent
-                            final int? expected =
-                                loadingProgress.expectedTotalBytes?.toInt();
-                            final int loaded =
-                                loadingProgress.cumulativeBytesLoaded.toInt();
-                            final double progress =
-                                expected != null ? loaded / expected : 0;
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                            offset: Offset(0, 4 / 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.network(
+                            item.itemImage ?? "",
+                            fit: BoxFit.fitWidth,
+                            height: 200,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                // Download complete, show the image
+                                return child;
+                              }
+                              // Still loading: calculate progress percent
+                              final int? expected =
+                                  loadingProgress.expectedTotalBytes?.toInt();
+                              final int loaded =
+                                  loadingProgress.cumulativeBytesLoaded.toInt();
+                              final double progress =
+                                  expected != null ? loaded / expected : 0;
 
-                            return Center(
-                              child: SizedBox(
-                                height: 200,
-                                width: 200,
-                                child: CircularProgressIndicator(
-                                  value: expected != null ? progress : null,
-                                  strokeWidth: 1,
+                              return Center(
+                                child: SizedBox(
+                                  height: 160,
+                                  width: 200,
+                                  child: CircularProgressIndicator(
+                                    value: expected != null ? progress : null,
+                                    strokeWidth: 1,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (
-                            BuildContext context,
-                            Object error,
-                            StackTrace? stackTrace,
-                          ) {
-                            return Image.asset(
-                              'asset/images/error_item_img.png',
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          item.itemName,
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w400,
+                              );
+                            },
+                            errorBuilder: (
+                              BuildContext context,
+                              Object error,
+                              StackTrace? stackTrace,
+                            ) {
+                              return Image.asset(
+                                'asset/images/error_item_img.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          formatMoney(money: item.price),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                          SizedBox(height: 10),
+                          Text(
+                            item.itemName,
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 10),
+                          Text(
+                            formatMoney(money: item.price),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     onTap: () {
                       Get.to(
