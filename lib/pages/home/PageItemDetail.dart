@@ -195,6 +195,18 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
     final controller = ItemDetailController.get(item.itemId);
     int amount = controller.amount;
 
+    final selectedVariants = controller.variantCheckList;
+    double totalVariantPrice = 0;
+    selectedVariants.forEach((variantTypeId, variantId) {
+      // Tìm variant tương ứng và cộng dồn priceChange
+      final variant = controller.variants?.firstWhere(
+        (v) => v.variantId == variantId,
+      );
+      if (variant != null) {
+        totalVariantPrice += variant.priceChange;
+      }
+    });
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       width: double.infinity,
@@ -234,7 +246,9 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 ],
               ),
               Text(
-                "${item.price * amount}",
+                formatMoney(
+                  money: ((item.price * amount) + totalVariantPrice).toInt(),
+                ),
                 style: TextStyle(
                   fontSize: 20,
                   color: Theme.of(context).colorScheme.inversePrimary,

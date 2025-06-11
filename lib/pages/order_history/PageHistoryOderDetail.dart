@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 
-class PagePendingDetailCart extends StatefulWidget {
+class PageHistoryOderDetail extends StatefulWidget {
   final List<OrderDetail> selectedItems;
-  PagePendingDetailCart({
+  PageHistoryOderDetail({
     super.key,
     required this.selectedItems,
     required this.order,
   });
   final CustomerOrder order;
   @override
-  State<PagePendingDetailCart> createState() => _PagePendingDetailCartState();
+  State<PageHistoryOderDetail> createState() => _PageHistoryOderDetailState();
 }
 
-class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
+class _PageHistoryOderDetailState extends State<PageHistoryOderDetail> {
   @override
   Widget build(BuildContext context) {
     int subTotal = widget.selectedItems.fold(
@@ -111,12 +112,16 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
-                                  child: Text("${item.actualPrice}đ"),
+                                  child: Text(
+                                    formatMoney(money: item.actualPrice),
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(vertical: 6),
                                   child: Text(
-                                    "${item.actualPrice * item.amount}đ",
+                                    formatMoney(
+                                      money: item.actualPrice * item.amount,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -133,7 +138,7 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                             "Tạm tính:",
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Text("${subTotal}đ"),
+                          Text(formatMoney(money: subTotal)),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -144,7 +149,11 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                             "Phí vận chuyển:",
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
-                          Text("${widget.order.shippingFee}đ"),
+                          Text(
+                            formatMoney(
+                              money: widget.order.shippingFee!.toInt(),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -156,7 +165,7 @@ class _PagePendingDetailCartState extends State<PagePendingDetailCart> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "${total}đ",
+                            formatMoney(money: total),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
 import '../dialogs/dialog.dart';
 
@@ -207,7 +208,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                           ),
                         ),
                         Text(
-                          "${controller.totalSelectedAmount} vnđ",
+                          formatMoney(money: controller.totalSelectedAmount),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

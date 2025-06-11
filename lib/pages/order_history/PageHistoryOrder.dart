@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_history_cart.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
-import 'package:pizza_store_app/enums/OrderStatus.dart';
-import 'package:pizza_store_app/models/customer_order.model.dart';
-import 'package:pizza_store_app/models/order_detail.model.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
-import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetailCart..dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pizza_store_app/pages/order_history/PageHistoryOderDetail.dart';
 
 class PageHistoryOrderCart extends StatelessWidget {
   const PageHistoryOrderCart({super.key});
@@ -124,7 +120,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  "${detail.item?.itemName ?? 'Món'} x${detail.amount}",
+                                  "${detail.item.itemName ?? 'Món'} x${detail.amount}",
                                   style: TextStyle(fontSize: 14),
                                 ),
                               ),
@@ -146,7 +142,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "$subTotal vnđ",
+                            formatMoney(money: subTotal),
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
@@ -202,7 +198,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Get.to(
-                              PagePendingDetailCart(
+                              PageHistoryOderDetail(
                                 selectedItems: orderDetails,
                                 order: order,
                               ),
