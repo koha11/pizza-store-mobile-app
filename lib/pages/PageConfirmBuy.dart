@@ -258,7 +258,7 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
                     );
 
                     HomePizzaStoreController.get().changePage(1);
-                    Get.off(
+                    Get.offAll(
                       () => MainLayout(),
                       binding: getRoleControllerBindings(""),
                     );

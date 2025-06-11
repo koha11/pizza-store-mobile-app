@@ -34,7 +34,7 @@ class AuthController {
         equalObject: {"user_id": user.id},
       );
 
-      Get.off(
+      Get.offAll(
         checkRole(myUser!.roleId),
         binding: getRoleControllerBindings(myUser.roleId),
       );

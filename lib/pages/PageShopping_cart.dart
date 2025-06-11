@@ -78,10 +78,6 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                     },
                     child: const Text("Tìm kiếm món ăn"),
                   ),
-                  // GestureDetector(
-                  //   child: Text("Bạn chưa đăng nhập, click để đăng nhập "),
-                  //   onTap: () => Get.off(PageLogin()),
-                  // ),
                 ],
               ),
             );
