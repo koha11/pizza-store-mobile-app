@@ -19,10 +19,6 @@ class PageChangeInfo extends StatelessWidget {
       appBar: AppBar(
         title: Text("Sửa hồ sơ"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back),
-        ),
       ),
       body: GetBuilder(
         init: UserController.get(),

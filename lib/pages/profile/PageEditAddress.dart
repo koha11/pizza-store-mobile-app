@@ -50,10 +50,9 @@ class PageEditAddress extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () async {
                           await controller.updateAddress(
-                            context: context,
-                            txtCurrAddress: txtCurrAddress,
-                            txtNewAddress: txtNewAddress,
-                            txtNickName: txtNickNameAddress,
+                            currAddress: txtCurrAddress.text,
+                            newAddress: txtNewAddress.text,
+                            nickName: txtNickNameAddress.text,
                           );
                         },
                         style: ElevatedButton.styleFrom(

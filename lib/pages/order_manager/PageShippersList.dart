@@ -68,124 +68,117 @@ class PageListShipper extends StatelessWidget {
                                             child: Column(
                                               children: [
                                                 SizedBox(height: 20),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    Get.back(result: e);
-                                                  },
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      e.avatar != null
-                                                          ? Container(
-                                                            width: 90,
-                                                            height: 90,
-                                                            color: Colors.white,
-                                                            child:
-                                                                Image.network(
-                                                                  e.avatar!,
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    e.avatar != null
+                                                        ? Container(
+                                                          width: 90,
+                                                          height: 90,
+                                                          color: Colors.white,
+                                                          child: Image.network(
+                                                            e.avatar!,
+                                                          ),
+                                                        )
+                                                        : Container(
+                                                          width: 90,
+                                                          height: 90,
+                                                          color: Colors.white,
+                                                          child: Image.network(
+                                                            "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
+                                                          ),
+                                                        ),
+
+                                                    SizedBox(width: 10),
+
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Text(
+                                                                "Mã nhân viên:",
+                                                                style: TextStyle(
+                                                                  fontSize: 17,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
                                                                 ),
-                                                          )
-                                                          : Container(
-                                                            width: 90,
-                                                            height: 90,
-                                                            color: Colors.white,
-                                                            child: Image.network(
-                                                              "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=",
-                                                            ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+                                                              Expanded(
+                                                                child: Text(
+                                                                  e.userId,
+                                                                  style:
+                                                                      TextStyle(
+                                                                        fontSize:
+                                                                            17,
+                                                                      ),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
 
-                                                      SizedBox(width: 10),
+                                                          SizedBox(height: 4),
 
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  "Mã nhân viên:",
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        17,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    e.userId,
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          17,
-                                                                    ),
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ),
-                                                              ],
+                                                          Text(
+                                                            e.userName,
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
                                                             ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
 
-                                                            SizedBox(height: 4),
+                                                          SizedBox(height: 4),
 
-                                                            Text(
-                                                              e.userName,
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                          Text(
+                                                            "(+84) ${e.phoneNumber}",
+                                                            style: TextStyle(
+                                                              fontSize: 15,
+                                                              color:
+                                                                  Colors
+                                                                      .grey[600],
                                                             ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
 
-                                                            SizedBox(height: 4),
+                                                          SizedBox(height: 4),
 
-                                                            Text(
-                                                              "(+84) ${e.phoneNumber}",
-                                                              style: TextStyle(
-                                                                fontSize: 15,
-                                                                color:
-                                                                    Colors
-                                                                        .grey[600],
-                                                              ),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                          Text(
+                                                            e.email ?? "",
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              color:
+                                                                  Colors
+                                                                      .blueAccent,
                                                             ),
-
-                                                            SizedBox(height: 4),
-
-                                                            Text(
-                                                              e.email ?? "",
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                color:
-                                                                    Colors
-                                                                        .blueAccent,
-                                                              ),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ],
-                                                        ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),

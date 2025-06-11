@@ -186,6 +186,12 @@ class CustomerOrderSnapshot {
     List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
       ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
       gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
+      orObject: [
+        {"status": OrderStatus.pending.name},
+        {"status": OrderStatus.finished.name},
+        {"status": OrderStatus.confirmed.name},
+        {"status": OrderStatus.shipping.name},
+      ],
     );
     for (CustomerOrder order in orders) {
       final orderTime = order.orderTime;
@@ -212,6 +218,12 @@ class CustomerOrderSnapshot {
     List<CustomerOrder> ordersToday = await CustomerOrderSnapshot.getOrders(
       ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
       gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
+      orObject: [
+        {"status": OrderStatus.pending.name},
+        {"status": OrderStatus.finished.name},
+        {"status": OrderStatus.confirmed.name},
+        {"status": OrderStatus.shipping.name},
+      ],
     );
     for (CustomerOrder order in ordersToday) {
       summary["totalOrder"] = (summary["totalOrder"] ?? 0) + 1;

@@ -363,6 +363,27 @@ class PageOrderDetailManager extends StatelessWidget {
                                                             fontSize: 15,
                                                           ),
                                                         ),
+                                                        Row(
+                                                          children:
+                                                              e.variantMaps.entries.map((
+                                                                e,
+                                                              ) {
+                                                                return Row(
+                                                                  children: [
+                                                                    Column(
+                                                                      children:
+                                                                          e.value.map((
+                                                                            a,
+                                                                          ) {
+                                                                            return Text(
+                                                                              a.variantName,
+                                                                            );
+                                                                          }).toList(),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              }).toList(),
+                                                        ),
                                                         Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment

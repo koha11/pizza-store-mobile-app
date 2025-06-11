@@ -12,7 +12,19 @@ class RevenueBarChart extends StatelessWidget {
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        barTouchData: BarTouchData(enabled: true),
+        barTouchData: BarTouchData(
+          enabled: true,
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              final value = formatShortCurrency(rod.toY.toInt());
+              return BarTooltipItem(
+                value,
+                TextStyle(color: Colors.white, fontSize: 14),
+              );
+            },
+          ),
+        ),
+
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(

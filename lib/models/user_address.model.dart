@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 
 import '../helpers/supabase.helper.dart';
 
@@ -56,18 +57,12 @@ class UserAddressSnapshot {
   }
 
   static Future<void> addNewAddress({
-    required BuildContext context,
-    required TextEditingController txtAddress,
-    required TextEditingController txtNickName,
+    required String address,
+    required String nickName,
     required String userId,
   }) async {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    final address = txtAddress.text;
-    final nickName = txtNickName.text;
     if (address.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng nhập đẩy đủ thông tin")));
+      showSnackBar(desc: "Địa chỉ không được trống", success: false);
       return;
     }
     try {
@@ -80,38 +75,23 @@ class UserAddressSnapshot {
         table: UserAddress.tableName,
         insertObject: inserts,
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Thêm địa chỉ thành công")));
-      txtAddress.clear();
-      txtNickName.clear();
+      showSnackBar(desc: "Thêm thành công", success: true);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${e}")));
+      showSnackBar(desc: e.toString(), success: false);
     }
   }
 
   static Future<void> updateAddress({
-    required BuildContext context,
-    required TextEditingController txtNewAddress,
-    required TextEditingController txtNickName,
-    required TextEditingController txtCurrAddress,
+    required String newAddress,
+    required String currAddress,
+    required String nickName,
     required String userId,
   }) async {
-    final newAddress = txtNewAddress.text;
-    final currAddress = txtCurrAddress.text;
-    final nickName = txtNickName.text;
-    ScaffoldMessenger.of(context).clearSnackBars();
     if (newAddress.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Vui lòng nhập đầy đủ thông tin")));
+      showSnackBar(desc: "Địa chỉ không được trống", success: false);
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
+
     try {
       final Map<String, dynamic> updates = {};
       updates['address'] = newAddress;
@@ -122,44 +102,29 @@ class UserAddressSnapshot {
         updateObject: updates,
         equalObject: {'user_id': userId, 'address': currAddress},
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Cập nhật địa chỉ thành công")));
+      showSnackBar(desc: "Cập nhật thành công", success: true);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${e}")));
+      showSnackBar(desc: e.toString(), success: false);
     }
   }
 
   static Future<void> deleteAddress({
-    required BuildContext context,
-    required TextEditingController txtAddress,
+    required String address,
     required String userId,
   }) async {
-    final address = txtAddress.text;
-    ScaffoldMessenger.of(context).clearSnackBars();
     if (address.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Đã xảy ra lỗi")));
+      showSnackBar(desc: "Địa chỉ trống", success: false);
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("Đang cập nhật...")));
+
     try {
       await SupabaseSnapshot.delete(
         table: UserAddress.tableName,
         equalObject: {'user_id': userId, 'address': address},
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Xoá địa chỉ thành công")));
+      showSnackBar(desc: "Xoá thành công", success: true);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${e}")));
+      showSnackBar(desc: e.toString(), success: false);
     }
   }
 }
