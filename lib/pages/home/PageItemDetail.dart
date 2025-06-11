@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import '../../helpers/other.helper.dart';
@@ -39,7 +38,7 @@ class PageItemDetail extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "${item.itemName}",
+                            item.itemName,
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -47,7 +46,7 @@ class PageItemDetail extends StatelessWidget {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "${formatMoney(money: item.price)}",
+                            formatMoney(money: item.price),
                             style: TextStyle(
                               fontSize: 24,
                               color:
@@ -197,24 +196,24 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
     final controller = ItemDetailController.get(item.itemId);
     int amount = controller.amount;
 
-    final selectedVariants = controller.variantCheckList;
-    double totalVariantPrice = 0;
-    selectedVariants.forEach((variantTypeId, variantId) {
-      // Tìm variant tương ứng và cộng dồn priceChange
-      Variant? variant;
-
-      try {
-        variant = controller.variants?.firstWhere(
-          (v) => v.variantId == variantId,
-        );
-      } catch (e) {
-        variant = null;
-      }
-
-      if (variant != null) {
-        totalVariantPrice += variant.priceChange;
-      }
-    });
+    // final selectedVariants = controller.variantCheckList;
+    // double totalVariantPrice = 0;
+    // selectedVariants.forEach((variantTypeId, variantId) {
+    //   // Tìm variant tương ứng và cộng dồn priceChange
+    //   Variant? variant;
+    //
+    //   try {
+    //     variant = controller.variants?.firstWhere(
+    //       (v) => v.variantId == variantId,
+    //     );
+    //   } catch (e) {
+    //     variant = null;
+    //   }
+    //
+    //   if (variant != null) {
+    //     totalVariantPrice += variant.priceChange;
+    //   }
+    // });
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -255,9 +254,7 @@ class _ItemDetailBottomSheetState extends State<ItemDetailBottomSheet> {
                 ],
               ),
               Text(
-                formatMoney(
-                  money: ((item.price * amount) + totalVariantPrice).toInt(),
-                ),
+                formatMoney(money: (item.price * amount)),
                 style: TextStyle(
                   fontSize: 20,
                   color: Theme.of(context).colorScheme.inversePrimary,

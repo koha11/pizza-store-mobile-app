@@ -99,6 +99,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                       ),
 
                       Divider(height: 20, thickness: 1),
+                      Text("Ngày Đặt Hàng: ${order.orderTime}"),
                       Text(
                         "Danh sách món:",
                         style: TextStyle(
@@ -162,7 +163,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "${order.shippingFee} vnđ",
+                            formatMoney(money: order.shippingFee!),
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
@@ -183,7 +184,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "$total vnđ",
+                            formatMoney(money: total),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
