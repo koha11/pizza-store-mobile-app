@@ -200,11 +200,12 @@ class PageItemDetail extends StatelessWidget {
                                                     : Text(""),
                                               ],
                                             ),
-                                            onChanged: (variantId) {
+                                            onChanged: (isChecked) {
                                               controller.checkVariant(
                                                 variantTypeId:
                                                     variant.variantTypeId,
                                                 variantId: variant.variantId,
+                                                isChecked: isChecked ?? false,
                                               );
                                             },
                                           );
