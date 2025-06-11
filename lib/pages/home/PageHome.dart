@@ -131,6 +131,37 @@ class ItemsGridView extends StatelessWidget {
                           item.itemImage ?? "",
                           fit: BoxFit.fitWidth,
                           height: 200,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              // Download complete, show the image
+                              return child;
+                            }
+                            // Still loading: calculate progress percent
+                            final int? expected =
+                                loadingProgress.expectedTotalBytes?.toInt();
+                            final int loaded =
+                                loadingProgress.cumulativeBytesLoaded.toInt();
+                            final double progress =
+                                expected != null ? loaded / expected : 0;
+
+                            return Center(
+                              child: SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: CircularProgressIndicator(
+                                  value: expected != null ? progress : null,
+                                  strokeWidth: 1,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (
+                            BuildContext context,
+                            Object error,
+                            StackTrace? stackTrace,
+                          ) {
+                            return Center(child: Text('Failed to load image'));
+                          },
                         ),
                         SizedBox(height: 10),
                         Text(
