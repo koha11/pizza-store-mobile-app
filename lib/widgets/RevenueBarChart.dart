@@ -76,7 +76,8 @@ class RevenueBarChart extends StatelessWidget {
         gridData: FlGridData(show: false),
         maxY:
             revenueByDay.values.isNotEmpty
-                ? revenueByDay.values.reduce((a, b) => a > b ? a : b) + 50
+                ? ((revenueByDay.values.reduce((a, b) => a > b ? a : b)) * 1.2)
+                    .ceilToDouble()
                 : 100,
       ),
     );
