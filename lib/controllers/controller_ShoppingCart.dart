@@ -228,6 +228,7 @@ class ShoppingCartController extends GetxController {
         amount,
         calcODActualPrice(item, amount, myVariantMap, variants),
       );
+
       myVariantMap.forEach((key, value) {
         if (value.isNotEmpty) {
           value.forEach((variantId) async {
