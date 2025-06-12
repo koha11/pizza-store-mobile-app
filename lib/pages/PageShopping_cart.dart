@@ -66,6 +66,15 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
             icon: const Icon(Icons.delete_outline),
             onPressed: () async {
               final controller = Get.find<ShoppingCartController>();
+              final selectedItems = controller.getSelectedItems();
+              if (selectedItems.isEmpty) {
+                showSnackBar(
+                  desc: "Vui lòng chọn ít nhất một món",
+                  success: false,
+                );
+                return;
+              }
+
               bool? xacNhan = await showConfirmDialog(
                 context,
                 "Bạn có muốn xóa các mục đã chọn?",
