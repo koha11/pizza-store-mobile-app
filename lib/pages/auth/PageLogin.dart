@@ -9,6 +9,7 @@ import 'package:pizza_store_app/layouts/ManagerLayout.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/auth/PageRegister.dart';
 import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
@@ -16,12 +17,21 @@ import '../../helpers/other.helper.dart';
 import '../../layouts/MainLayout.dart';
 import '../shipper/PagePendingOrder.dart';
 
-class PageLogin extends StatelessWidget {
+class PageLogin extends StatefulWidget {
   PageLogin({super.key});
 
+  @override
+  State<PageLogin> createState() => _PageLoginState();
+}
+
+class _PageLoginState extends State<PageLogin> {
   final _formKey = GlobalKey<FormState>();
+
   final emailTxt = TextEditingController();
+
   final pwdTxt = TextEditingController();
+
+  bool _obscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +75,17 @@ class PageLogin extends StatelessWidget {
                   SizedBox(height: 10),
                   TextFormField(
                     controller: pwdTxt,
-                    decoration: InputDecoration(labelText: "Mật khẩu"),
-                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Mật khẩu",
+                      suffixIcon: IconButton(
+                        // toggle password show/hide
+                        onPressed: () => setState(() => _obscure = !_obscure),
+                        icon: Icon(
+                          _obscure ? Icons.visibility_off : Icons.visibility,
+                        ),
+                      ),
+                    ),
+                    obscureText: _obscure,
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -89,6 +108,8 @@ class PageLogin extends StatelessWidget {
                           Theme.of(context).colorScheme.inversePrimary,
                     ),
                     onPressed: () async {
+                      loadingDialog();
+
                       AuthController.login(
                         email: emailTxt.text,
                         pwd: pwdTxt.text,

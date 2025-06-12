@@ -3,21 +3,36 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../controllers/controller_auth.dart';
 import '../../controllers/controller_home.dart';
 import '../home/PageHome.dart';
 
-class PageRegister extends StatelessWidget {
+class PageRegister extends StatefulWidget {
   PageRegister({super.key});
 
+  @override
+  State<PageRegister> createState() => _PageRegisterState();
+}
+
+class _PageRegisterState extends State<PageRegister> {
   final _formKey = GlobalKey<FormState>();
+
   final emailTxt = TextEditingController();
+
   final pwdTxt = TextEditingController();
+
   final rePwdTxt = TextEditingController();
+
   final nameTxt = TextEditingController();
+
   final phoneTxt = TextEditingController();
+
+  bool _pwdObscure = true;
+
+  bool _rePwdObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +86,36 @@ class PageRegister extends StatelessWidget {
                   SizedBox(height: 10),
                   TextFormField(
                     controller: pwdTxt,
-                    decoration: InputDecoration(labelText: "Mật khẩu"),
-                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Mật khẩu",
+                      suffixIcon: IconButton(
+                        // toggle password show/hide
+                        onPressed:
+                            () => setState(() => _pwdObscure = !_pwdObscure),
+                        icon: Icon(
+                          _pwdObscure ? Icons.visibility_off : Icons.visibility,
+                        ),
+                      ),
+                    ),
+                    obscureText: _pwdObscure,
                   ),
                   SizedBox(height: 10),
                   TextFormField(
                     controller: rePwdTxt,
-                    decoration: InputDecoration(labelText: "Nhập lai Mật khẩu"),
+                    decoration: InputDecoration(
+                      labelText: "Nhập lai Mật khẩu",
+                      suffixIcon: IconButton(
+                        // toggle password show/hide
+                        onPressed:
+                            () =>
+                                setState(() => _rePwdObscure = !_rePwdObscure),
+                        icon: Icon(
+                          _rePwdObscure
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
+                    ),
                     obscureText: true,
                   ),
                   SizedBox(height: 20),
@@ -101,6 +139,8 @@ class PageRegister extends StatelessWidget {
                           Theme.of(context).colorScheme.inversePrimary,
                     ),
                     onPressed: () async {
+                      loadingDialog();
+
                       AuthController.register(
                         email: emailTxt.text,
                         pwd: pwdTxt.text,
