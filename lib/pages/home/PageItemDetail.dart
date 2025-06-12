@@ -293,43 +293,24 @@ class ItemDetailBottomSheet extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      final myVariantMap = controller.variantCheckList;
-                      final cartController = ShoppingCartController.get();
-                      final variants = controller.variants;
-                      bool isError = false;
-
                       if (controller.item == null) {
                         return;
                       }
 
-                      myVariantMap.forEach((variantTypeId, variantIds) {
-                        final variantType =
-                            variants!
-                                .firstWhere(
-                                  (variant) =>
-                                      variant.variantTypeId == variantTypeId,
-                                )
-                                .variantType;
-
-                        if (variantType.isRequired &&
-                            variantIds.first.isEmpty) {
-                          showSnackBar(
-                            desc:
-                                "vui lòng điền vào ${variantType.variantTypeName}",
-                            success: false,
-                          );
-                          isError = true;
-                        }
-                      });
-
-                      if (!isError) {
+                      if (controller.checkRequiredVariant()) {
                         loadingDialog();
 
-                        await cartController.addToCart(
+                        await ShoppingCartController.get().addToCart(
                           controller.item!,
                           controller.amount,
-                          myVariantMap,
-                          variants!,
+                          controller.variantCheckList,
+                          controller.variants!,
+                        );
+                      } else {
+                        showSnackBar(
+                          desc:
+                              "vui lòng điền vào thành phần bắt buộc",
+                          success: false,
                         );
                       }
                     },
