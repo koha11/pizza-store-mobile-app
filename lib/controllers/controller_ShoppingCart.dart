@@ -10,10 +10,9 @@ import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class ShoppingCartController extends GetxController {
-  Map<String, bool> _checkedItems = {};
+  Map<String, bool> _checkedItems = {}; // lưu trạng thái của các item/ itemId
   String? _customerId;
-  CustomerOrder? _cart;
-  bool isCartLoading = false;
+  CustomerOrder? _cart; // lưu giỏ hàng
 
   CustomerOrder? get cart => _cart;
   Map<String, bool> get checkedItems => _checkedItems;
@@ -154,7 +153,7 @@ class ShoppingCartController extends GetxController {
 
   Future<void> _loadCart() async {
     _cart = await CustomerOrderSnapshot.getCustomerCart(_customerId!);
-
+    // khởi tạo trạng thái check cho từng item
     if (_cart != null) {
       for (var od in _cart!.orderDetails!) {
         _checkedItems[od.itemId] = false;
