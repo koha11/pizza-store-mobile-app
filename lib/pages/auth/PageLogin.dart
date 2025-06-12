@@ -155,12 +155,14 @@ class _PageLoginState extends State<PageLogin> {
                           Theme.of(context).colorScheme.inversePrimary,
                     ),
                     onPressed: () async {
-                      loadingDialog();
+                      if (_formKey.currentState!.validate()) {
+                        loadingDialog();
 
-                      AuthController.login(
-                        email: emailTxt.text,
-                        pwd: pwdTxt.text,
-                      );
+                        AuthController.login(
+                          email: emailTxt.text,
+                          pwd: pwdTxt.text,
+                        );
+                      }
                     },
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,

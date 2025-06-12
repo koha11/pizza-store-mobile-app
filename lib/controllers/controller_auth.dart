@@ -94,15 +94,19 @@ class AuthController {
     if (otpCode.length == 6) {
       loadingDialog();
 
-      AuthResponse res = await supabase.auth.verifyOTP(
-        type: OtpType.email,
-        token: otpCode,
-        email: email,
-      );
+      try {
+        AuthResponse res = await supabase.auth.verifyOTP(
+          type: OtpType.email,
+          token: otpCode,
+          email: email,
+        );
 
-      if (res.user != null) {
-        await UserController.get().fetchUser();
-        Get.offAll(MainLayout(), binding: getRoleControllerBindings(""));
+        if (res.user != null) {
+          await UserController.get().fetchUser();
+          Get.offAll(MainLayout(), binding: getRoleControllerBindings(""));
+        }
+      } catch (e) {
+        rethrow;
       }
     }
   }
