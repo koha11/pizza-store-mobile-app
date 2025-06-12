@@ -34,11 +34,16 @@ class PageDashboard extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+
+                              Wrap(
+                                spacing: 2,
+                                runSpacing: 6,
                                 children: [
-                                  Expanded(
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
                                     child: Card(
                                       color: Colors.white,
                                       shape: RoundedRectangleBorder(
@@ -71,8 +76,11 @@ class PageDashboard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Expanded(
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
                                     child: Card(
                                       color: Colors.white,
                                       shape: RoundedRectangleBorder(
@@ -105,8 +113,122 @@ class PageDashboard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Expanded(
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
+                                    child: Card(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      elevation: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(14.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Đã xác nhận",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              "${controller.summary["totalConfirmedOrder"]}",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
+                                    child: Card(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      elevation: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(14.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Đang giao",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              "${controller.summary["totalShippingOrder"]}",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
+                                    child: Card(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      elevation: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(14.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Hoàn thành",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              "${controller.summary["totalFinishedOrder"]}",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        (MediaQuery.of(context).size.width -
+                                            32) /
+                                        3,
                                     child: Card(
                                       color: Colors.white,
                                       shape: RoundedRectangleBorder(
@@ -139,6 +261,7 @@ class PageDashboard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                  // Thêm các Card khác ở đây nếu cần, copy y nguyên cấu trúc
                                 ],
                               ),
                               SizedBox(height: 20),
