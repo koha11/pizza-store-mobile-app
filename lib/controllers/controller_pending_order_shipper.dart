@@ -53,11 +53,6 @@ class OrderListShipperController extends GetxController {
         "shipper_id": UserController.get().appUser!.userId,
       },
     );
-    historyOrders.sort(
-      (a, b) =>
-          (b.finishTime ?? DateTime(0)).compareTo(a.finishTime ?? DateTime(0)),
-    );
-    isLoadingHistory = false;
     update();
   }
 }
