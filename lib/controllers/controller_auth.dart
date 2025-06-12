@@ -62,6 +62,7 @@ class AuthController {
   }) async {
     try {
       final supabase = Supabase.instance.client;
+
       final AuthResponse res = await supabase.auth.signUp(
         email: email,
         password: pwd,
@@ -80,8 +81,17 @@ class AuthController {
 
         Get.to(PageVerifyEmail(email: user.email!));
       }
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      if (e.message == "Email not confirmed") {
+        // await supabase.auth.signInWithOtp(email: email);
+        // Get.back();
+        // Get.to(() => PageVerifyEmail(email: email));
+      }
+
+      if (e.message == "Invalid login credentials") {
+        // Get.back();
+        // showSnackBar(desc: "Sai Email hoặc mật khẩu", success: false);
+      }
     }
   }
 

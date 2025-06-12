@@ -10,6 +10,7 @@ import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/pages/auth/PageRegister.dart';
 import 'package:pizza_store_app/pages/auth/PageVertifyEmail.dart';
 import 'package:pizza_store_app/widgets/LoadingDialog.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 
@@ -145,6 +146,12 @@ class _PageLoginState extends State<PageLogin> {
                             color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                         ),
+                        onTap: () {
+                          showSnackBar(
+                            desc: "Chức năng này đang phát triển",
+                            success: false,
+                          );
+                        },
                       ),
                     ],
                   ),
