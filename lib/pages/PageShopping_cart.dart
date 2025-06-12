@@ -65,7 +65,12 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () async {
-              final controller = Get.find<ShoppingCartController>();
+              final controller = ShoppingCartController.get();
+
+              if (controller.cart == null) {
+                return;
+              }
+
               final selectedItems = controller.getSelectedItems();
               if (selectedItems.isEmpty) {
                 showSnackBar(
