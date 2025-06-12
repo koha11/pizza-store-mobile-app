@@ -289,16 +289,6 @@ class ShoppingCartController extends GetxController {
     required int totalAmount,
   }) async {
     loadingDialog();
-    // if (_customerId == null) {
-    //   Get.snackbar(
-    //     'Lỗi',
-    //     'Vui lòng đăng nhập để đặt hàng',
-    //     snackPosition: SnackPosition.TOP,
-    //     backgroundColor: Colors.red,
-    //     colorText: Colors.white,
-    //   );
-    //   return;
-    // }
 
     // Tao 1 order moi co thong tin cua user hien tai + shipping fee + address + status=pending
     final newOrderId = await CustomerOrderSnapshot.createOrder(
