@@ -200,9 +200,38 @@ class _OrderDetailsCard extends StatelessWidget {
                       children: [
                         Expanded(
                           flex: 4,
-                          child: Text(
-                            orderDetail.item.itemName,
-                            style: const TextStyle(fontSize: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                orderDetail.item.itemName,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                              Row(
+                                children:
+                                    orderDetail.variantMaps.entries.map((
+                                      orderDetail,
+                                    ) {
+                                      return Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children:
+                                                orderDetail.value.map((a) {
+                                                  return Text(
+                                                    "  - ${a.variantName}",
+                                                  );
+                                                }).toList(),
+                                          ),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ],
                           ),
                         ),
                         Expanded(

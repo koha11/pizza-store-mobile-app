@@ -38,6 +38,10 @@ class OrderListShipperController extends GetxController {
       ],
       equalObject: {"shipper_id": UserController.get().appUser!.userId},
     );
+    pendingOrders.sort(
+      (a, b) =>
+          (b.orderTime ?? DateTime(0)).compareTo(a.orderTime ?? DateTime(0)),
+    );
     isLoadingPending = false;
     update();
   }
@@ -48,6 +52,10 @@ class OrderListShipperController extends GetxController {
         "status": "finished",
         "shipper_id": UserController.get().appUser!.userId,
       },
+    );
+    historyOrders.sort(
+      (a, b) =>
+          (b.finishTime ?? DateTime(0)).compareTo(a.finishTime ?? DateTime(0)),
     );
     isLoadingHistory = false;
     update();
