@@ -163,54 +163,15 @@ class CustomerOrderSnapshot {
     );
   }
 
-  static Future<List<CustomerOrder>> getOrdersByCurrentMonthAndYear() async {
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final firstDayOfNextMonth =
-        (now.month == 12)
-            ? DateTime(now.year + 1, 1, 1)
-            : DateTime(now.year, now.month + 1, 1);
-    List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
-      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
-      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
-    );
-    return orders;
-  }
-
-  static Future<Map<int, int>> groupDataToStatisticChart() async {
+  static Future<Map<String, dynamic>> getOrderSummaryStatistic() async {
     Map<int, int> dailyRevenue = {};
-
-    final now = DateTime.now();
-    final firstDayOfMonth = DateTime(now.year, now.month, 1);
-    final firstDayOfNextMonth =
-        (now.month == 12)
-            ? DateTime(now.year + 1, 1, 1)
-            : DateTime(now.year, now.month + 1, 1);
-    List<CustomerOrder> orders = await CustomerOrderSnapshot.getOrders(
-      ltObject: {"order_time": firstDayOfNextMonth.toIso8601String()},
-      gtObject: {"order_time": firstDayOfMonth.toIso8601String()},
-      orObject: [
-        {"status": OrderStatus.pending.name},
-        {"status": OrderStatus.finished.name},
-        {"status": OrderStatus.confirmed.name},
-        {"status": OrderStatus.shipping.name},
-      ],
-    );
-    for (CustomerOrder order in orders) {
-      final orderTime = order.orderTime;
-      if (orderTime == null || order.status.name != OrderStatus.finished.name)
-        continue;
-      final day = orderTime.day;
-      dailyRevenue[day] = (dailyRevenue[day] ?? 0) + (order.total ?? 0);
-    }
-    return dailyRevenue;
-  }
-
-  static Future<Map<String, int>> getOrderSummaryStatistic() async {
     Map<String, int> summary = {
       "totalOrder": 0,
       "totalProcessingOrder": 0,
       "totalRevenue": 0,
+      "totalShippingOrder": 0,
+      "totalFinishedOrder": 0,
+      "totalConfirmedOrder": 0,
     };
     final now = DateTime.now();
     final firstDayOfMonth = DateTime(now.year, now.month, 1);
@@ -229,15 +190,26 @@ class CustomerOrderSnapshot {
       ],
     );
     for (CustomerOrder order in ordersToday) {
+      final orderTime = order.orderTime;
       summary["totalOrder"] = (summary["totalOrder"] ?? 0) + 1;
       if (order.status.name == OrderStatus.pending.name) {
         summary["totalProcessingOrder"] =
             (summary["totalProcessingOrder"] ?? 0) + 1;
       } else if (order.status.name == OrderStatus.finished.name) {
+        final day = orderTime!.day;
+        dailyRevenue[day] = (dailyRevenue[day] ?? 0) + (order.total ?? 0);
         summary["totalRevenue"] = (summary["totalRevenue"] ?? 0) + order.total!;
+        summary["totalFinishedOrder"] =
+            (summary["totalFinishedOrder"] ?? 0) + 1;
+      } else if (order.status.name == OrderStatus.shipping.name) {
+        summary["totalShippingOrder"] =
+            (summary["totalShippingOrder"] ?? 0) + 1;
+      } else if (order.status.name == OrderStatus.confirmed.name) {
+        summary["totalConfirmedOrder"] =
+            (summary["totalConfirmedOrder"] ?? 0) + 1;
       }
     }
-    return summary;
+    return {"summary": summary, "dailyRevenue": dailyRevenue};
   }
 
   static Future<CustomerOrder?> getOrderDetail({

@@ -12,6 +12,7 @@ import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/models/app_user.model.dart';
 import 'package:pizza_store_app/models/user_address.model.dart';
 import 'package:pizza_store_app/models/user_role.model.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../dialogs/dialog.dart';
@@ -113,6 +114,21 @@ class UserController extends GetxController {
 
     await fetchUser();
     update(["editAddress"]);
+  }
+
+  Future<void> updateAvatarUser({
+    required File image,
+    bool upsert = false,
+  }) async {
+    loadingDialog();
+    await AppUserSnapshot.updateAvatar(
+      image: image,
+      userId: appUser!.userId,
+      upsert: upsert,
+    );
+    Get.back();
+    await fetchUser();
+    update(["user"]);
   }
 }
 
