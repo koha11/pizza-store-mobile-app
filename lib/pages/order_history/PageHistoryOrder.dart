@@ -171,11 +171,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            formatMoney(
-                              money:
-                                  ((order.total ?? 0) -
-                                      (order.shippingFee ?? 0)),
-                            ),
+                            formatMoney(money: order.total ?? 0),
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
@@ -216,7 +212,10 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            formatMoney(money: order.total ?? 0),
+                            formatMoney(
+                              money:
+                                  (order.total ?? 0) + (order.shippingFee ?? 0),
+                            ),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

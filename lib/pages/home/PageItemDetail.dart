@@ -306,10 +306,31 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         return;
                       }
 
+                      final shoppingCartController =
+                          ShoppingCartController.get();
+
+                      // BUGS
+                      for (var od
+                          in shoppingCartController.cart!.orderDetails!) {
+                        if (od.itemId == controller.item?.itemId) {
+                          if (controller.category == null) {
+                            return;
+                          }
+
+                          if (controller.category!.variants!.isNotEmpty) {
+                            showSnackBar(
+                              desc: "Chưa xử lý trường hợp này",
+                              success: false,
+                            );
+                            return;
+                          }
+                        }
+                      }
+
                       if (controller.checkRequiredVariant()) {
                         loadingDialog();
 
-                        await ShoppingCartController.get().addToCart(
+                        await shoppingCartController.addToCart(
                           controller.item!,
                           controller.amount,
                           controller.variantCheckList,
