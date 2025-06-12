@@ -23,16 +23,10 @@ class ShoppingCartController extends GetxController {
   Future<void> initializeCart() async => await _initializeCart();
 
   @override
-  void onInit() async {
-    // TODO: implement onInit
-    super.onInit();
-    await _initializeCart();
-  }
-
-  @override
   void onReady() async {
-    // TODO: implement onReady
+    // TODO: implement onInit
     super.onReady();
+    await _initializeCart();
   }
 
   // Thêm getter để lấy tổng số lượng sản phẩm
@@ -137,13 +131,12 @@ class ShoppingCartController extends GetxController {
   Future<void> _initializeCart() async {
     final userId = UserController.get().appUser?.userId;
     if (userId == null) return;
-    _customerId = userId;
 
     // Tìm giỏ hàng đang cart của user
     await _loadCart(); // Nếu không có giỏ hàng nào, tạo mới
 
     if (_cart == null) {
-      await CustomerOrderSnapshot.createNewOrder(_customerId!);
+      await CustomerOrderSnapshot.createNewOrder(userId);
       await _loadCart();
     }
 
