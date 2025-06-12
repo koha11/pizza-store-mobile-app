@@ -197,8 +197,10 @@ class CustomerOrderSnapshot {
             (summary["totalProcessingOrder"] ?? 0) + 1;
       } else if (order.status.name == OrderStatus.finished.name) {
         final day = orderTime!.day;
-        dailyRevenue[day] = (dailyRevenue[day] ?? 0) + (order.total ?? 0);
-        summary["totalRevenue"] = (summary["totalRevenue"] ?? 0) + order.total!;
+        dailyRevenue[day] =
+            (dailyRevenue[day] ?? 0) + (order.total! + order.shippingFee!);
+        summary["totalRevenue"] =
+            (summary["totalRevenue"] ?? 0) + order.total! + order.shippingFee!;
         summary["totalFinishedOrder"] =
             (summary["totalFinishedOrder"] ?? 0) + 1;
       } else if (order.status.name == OrderStatus.shipping.name) {
