@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../helpers/other.helper.dart';
@@ -41,7 +43,13 @@ class AuthController {
     } on AuthException catch (e) {
       if (e.message == "Email not confirmed") {
         await supabase.auth.signInWithOtp(email: email);
-        Get.to(PageVerifyEmail(email: email));
+        Get.back();
+        Get.to(() => PageVerifyEmail(email: email));
+      }
+
+      if (e.message == "Invalid login credentials") {
+        Get.back();
+        showSnackBar(desc: "Sai Email hoặc mật khẩu", success: false);
       }
     }
   }
@@ -52,24 +60,28 @@ class AuthController {
     required String name,
     required String phone,
   }) async {
-    final supabase = Supabase.instance.client;
-    final AuthResponse res = await supabase.auth.signUp(
-      email: email,
-      password: pwd,
-    );
+    try {
+      final supabase = Supabase.instance.client;
+      final AuthResponse res = await supabase.auth.signUp(
+        email: email,
+        password: pwd,
+      );
 
-    final User? user = res.user;
+      final User? user = res.user;
 
-    if (user != null) {
-      await supabase.from('app_user').insert({
-        'user_id': user.id,
-        'user_name': name,
-        'phone_number': phone,
-        'user_email': user.email,
-        'role_id': "CUSTOMER",
-      });
+      if (user != null) {
+        await supabase.from('app_user').insert({
+          'user_id': user.id,
+          'user_name': name,
+          'phone_number': phone,
+          'user_email': user.email,
+          'role_id': "CUSTOMER",
+        });
 
-      Get.to(PageVerifyEmail(email: user.email!));
+        Get.to(PageVerifyEmail(email: user.email!));
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -80,6 +92,8 @@ class AuthController {
     final supabase = Supabase.instance.client;
 
     if (otpCode.length == 6) {
+      loadingDialog();
+
       AuthResponse res = await supabase.auth.verifyOTP(
         type: OtpType.email,
         token: otpCode,
@@ -88,7 +102,7 @@ class AuthController {
 
       if (res.user != null) {
         await UserController.get().fetchUser();
-        Get.off(MainLayout(), binding: getRoleControllerBindings(""));
+        Get.offAll(MainLayout(), binding: getRoleControllerBindings(""));
       }
     }
   }
