@@ -8,6 +8,7 @@ import 'package:pizza_store_app/controllers/controller_auth.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
@@ -18,6 +19,7 @@ import 'package:pizza_store_app/pages/profile/PageChangePassword.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 
 class PageProfile extends StatelessWidget {
   PageProfile({super.key});
@@ -162,8 +164,12 @@ class PageProfile extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
+                          loadingDialog();
                           await AuthController.signOut();
-                          Get.off(() => MainLayout());
+                          Get.offAll(
+                            () => checkRole(""),
+                            binding: getRoleControllerBindings(""),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,

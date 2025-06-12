@@ -13,7 +13,6 @@ import '../controllers/controller_location.dart';
 class MainLayout extends StatelessWidget {
   const MainLayout({super.key});
 
-  // final LocationController controller = Get.put(LocationController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

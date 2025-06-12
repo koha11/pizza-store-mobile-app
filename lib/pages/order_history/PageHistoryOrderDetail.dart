@@ -25,11 +25,6 @@ class PageHistoryOrderDetail extends StatefulWidget {
 class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
   @override
   Widget build(BuildContext context) {
-    int subTotal = widget.selectedItems.fold(
-      0,
-      (sum, item) => sum + (item.actualPrice * item.amount),
-    );
-    int total = subTotal + (widget.order.shippingFee ?? 0);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chi tiết đơn hàng"),
@@ -143,7 +138,14 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                       ),
                     ),
                     const Divider(height: 24),
-                    _buildPriceRow("Tạm tính:", formatMoney(money: subTotal)),
+                    _buildPriceRow(
+                      "Tạm tính:",
+                      formatMoney(
+                        money:
+                            ((widget.order.total ?? 0) -
+                                (widget.order.shippingFee ?? 0)),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     _buildPriceRow(
                       "Phí vận chuyển:",
@@ -152,7 +154,7 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                     const SizedBox(height: 8),
                     _buildPriceRow(
                       "Tổng cộng:",
-                      formatMoney(money: total),
+                      formatMoney(money: widget.order.total ?? 0),
                       isTotal: true,
                     ),
                     SizedBox(height: 24),
@@ -182,56 +184,6 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                 ),
               ),
               const SizedBox(height: 24),
-              // if (widget.order.status == OrderStatus.pending)
-              //   SizedBox(
-              //     width: double.infinity,
-              //     child: ElevatedButton(
-              //       onPressed: () async {
-              //         try {
-              //           loadingDialog();
-              //
-              //           await CustomerOrderSnapshot.deletePendingOrder(
-              //             widget.order,
-              //           );
-              //
-              //           // Cập nhật lại danh sách đơn hàng
-              //           await HistoryCartController.get().fetchPendingOrders();
-              //
-              //           Get.snackbar(
-              //             "Thành công",
-              //             "Đã hủy đơn hàng!",
-              //             snackPosition: SnackPosition.BOTTOM,
-              //           );
-              //
-              //           Get.offAll(
-              //             () => MainLayout(),
-              //             binding: getRoleControllerBindings(""),
-              //           ); // Quay lại trang danh sách đơn hàng
-              //         } catch (e) {
-              //           Get.snackbar(
-              //             "Lỗi",
-              //             "Không thể hủy đơn hàng: $e",
-              //             snackPosition: SnackPosition.BOTTOM,
-              //           );
-              //         }
-              //       },
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.red,
-              //         padding: const EdgeInsets.symmetric(vertical: 16),
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(40),
-              //         ),
-              //       ),
-              //       child: const Text(
-              //         "Hủy đơn hàng",
-              //         style: TextStyle(
-              //           fontSize: 16,
-              //           fontWeight: FontWeight.bold,
-              //           color: Colors.black,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
             ],
           ),
         ),

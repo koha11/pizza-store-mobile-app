@@ -49,14 +49,6 @@ class PageHistoryOrderCart extends StatelessWidget {
             itemBuilder: (context, index) {
               final order = controller.pendingOrders[index];
               final orderDetails = order.orderDetails ?? [];
-              // Tính tổng tiền từ orderDetails
-              int subTotal = 0;
-              if (orderDetails.isNotEmpty) {
-                subTotal = orderDetails.fold(0, (sum, item) {
-                  return sum + ((item.actualPrice ?? 0) * (item.amount ?? 0));
-                });
-              }
-              int total = subTotal + (order.shippingFee ?? 0);
 
               return Card(
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -163,24 +155,6 @@ class PageHistoryOrderCart extends StatelessWidget {
                               }),
                             ],
                           ),
-                          // child: Row(
-                          //   children: [
-                          //     Icon(
-                          //       Icons.local_pizza,
-                          //       size: 18,
-                          //       color: Colors.orange,
-                          //     ),
-                          //     SizedBox(width: 6),
-                          //     Expanded(
-                          //
-                          //       child: Column(
-                          //         children: [
-
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
                         ),
                       ),
 
@@ -197,7 +171,11 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            formatMoney(money: subTotal),
+                            formatMoney(
+                              money:
+                                  ((order.total ?? 0) -
+                                      (order.shippingFee ?? 0)),
+                            ),
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
@@ -238,7 +216,7 @@ class PageHistoryOrderCart extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            formatMoney(money: total),
+                            formatMoney(money: order.total ?? 0),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

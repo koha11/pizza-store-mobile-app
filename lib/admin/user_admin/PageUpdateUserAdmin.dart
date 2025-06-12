@@ -27,6 +27,7 @@ class _PageUpdateUserAdminState extends State<PageUpdateUserAdmin> {
   @override
   void initState() {
     super.initState();
+
     txtId = TextEditingController(text: widget.user.userId);
     txtUserName = TextEditingController(text: widget.user.userName);
     txtEmail = TextEditingController(text: widget.user.email);
