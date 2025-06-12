@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
+import 'package:pizza_store_app/controllers/controller_home.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/pages/PageConfirmBuy.dart';
@@ -62,9 +63,9 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
           }
 
           if (controller.cart!.orderDetails!.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () => controller.loadCart(),
-              child: Center(
+            return Center(
+              child: RefreshIndicator(
+                onRefresh: () async => await controller.loadCart(),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -82,6 +83,7 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
                     ElevatedButton(
                       onPressed: () {
                         Get.back();
+                        HomePizzaStoreController.get().changePage(0);
                       },
                       child: const Text("Tìm kiếm món ăn"),
                     ),

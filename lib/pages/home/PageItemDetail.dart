@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
+import '../../controllers/controller_user.dart';
 import '../../helpers/other.helper.dart';
 import '../../models/Item.model.dart';
 import '../../models/variant.model.dart';
@@ -297,6 +298,14 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         return;
                       }
 
+                      if (UserController.get().appUser == null) {
+                        showSnackBar(
+                          desc: "Vui lòng đăng nhập để sử dụng giỏ hàng",
+                          success: false,
+                        );
+                        return;
+                      }
+
                       if (controller.checkRequiredVariant()) {
                         loadingDialog();
 
@@ -308,8 +317,7 @@ class ItemDetailBottomSheet extends StatelessWidget {
                         );
                       } else {
                         showSnackBar(
-                          desc:
-                              "vui lòng điền vào thành phần bắt buộc",
+                          desc: "vui lòng điền vào thành phần bắt buộc",
                           success: false,
                         );
                       }
