@@ -12,8 +12,6 @@ class OrderListShipperController extends GetxController {
 
   bool isLoadingPending = true;
   bool isLoadingHistory = true;
-  bool isLoadingUser = true;
-  bool isLoadingShipper = true;
 
   List<dynamic> statuses = [
     null,

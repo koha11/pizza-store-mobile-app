@@ -119,8 +119,6 @@ class ItemAdminController extends GetxController {
 
   Future<void> addItem(Item item) async {
     try {
-      isLoadingItem = true;
-      update();
       await ItemSnapshot.createItem(item: item);
       await refreshData();
       Get.back();
@@ -136,8 +134,6 @@ class ItemAdminController extends GetxController {
 
   Future<void> removeItem(Item itemId) async {
     try {
-      isLoadingItem = true;
-      update();
       await ItemSnapshot.deleteItem(item: itemId);
       await refreshData();
       Get.snackbar('Thành công', 'Đã xóa món');
@@ -151,8 +147,6 @@ class ItemAdminController extends GetxController {
 
   Future<void> updateItem(Item item) async {
     try {
-      isLoadingItem = true;
-      update();
       await ItemSnapshot.updateItem(item: item);
       await refreshData();
       Get.back();
