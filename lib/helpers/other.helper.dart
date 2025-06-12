@@ -109,11 +109,11 @@ String formatMoney({required int money}) {
 
 String formatShortCurrency(int amount) {
   if (amount >= 1000000) {
-    int millions = amount ~/ 1000000;
-    return '${millions}tr';
+    double millions = amount / 1000000;
+    return '${millions % 1 == 0 ? millions.toStringAsFixed(0) : millions.toStringAsFixed(1)}tr';
   } else if (amount >= 1000) {
-    int thousands = amount ~/ 1000;
-    return '${thousands}K';
+    double thousands = amount / 1000;
+    return '${thousands % 1 == 0 ? thousands.toStringAsFixed(0) : thousands.toStringAsFixed(1)}K';
   } else {
     return amount.toString();
   }
