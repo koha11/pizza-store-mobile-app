@@ -4,10 +4,8 @@ import 'package:badges/badges.dart' as badges;
 import 'package:pizza_store_app/controllers/controller_ShoppingCart.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
-import 'package:pizza_store_app/pages/shipper/PagePendingOrder.dart';
 import 'package:pizza_store_app/pages/home/PageSearch.dart';
 import 'package:pizza_store_app/pages/PageShopping_cart.dart';
-
 import '../controllers/controller_home.dart';
 import '../controllers/controller_search.dart';
 import '../controllers/controller_location.dart';
@@ -54,27 +52,31 @@ class MainLayout extends StatelessWidget {
           GetBuilder<ShoppingCartController>(
             init: ShoppingCartController.get(),
             builder: (controller) {
-              return badges.Badge(
-                position: badges.BadgePosition.topEnd(top: 0, end: 3),
-                showBadge: controller.totalItems > 0,
-                badgeContent: Text(
-                  '${controller.totalItems}',
-                  style: TextStyle(color: Colors.white),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    if (UserController.get().appUser == null) {
-                      Get.to(() => PageLogin());
-                    } else {
-                      Get.to(
-                        PageShoppingCart(),
-                        binding: BindingsShoppingCart(),
-                      );
-                    }
-                  },
-                  icon: Icon(Icons.shopping_cart),
-                ),
-              );
+              if (controller.cart != null) {
+                return badges.Badge(
+                  position: badges.BadgePosition.topEnd(top: 0, end: 3),
+                  showBadge: controller.totalItems > 0,
+                  badgeContent: Text(
+                    '${controller.totalItems}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      if (UserController.get().appUser == null) {
+                        Get.to(() => PageLogin());
+                      } else {
+                        Get.to(
+                          PageShoppingCart(),
+                          binding: BindingsShoppingCart(),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.shopping_cart),
+                  ),
+                );
+              } else {
+                return Text('');
+              }
             },
           ),
         ],

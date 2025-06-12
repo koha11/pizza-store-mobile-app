@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pizza_store_app/controllers/controller_item_detail.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
 import 'package:pizza_store_app/models/Item.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
@@ -8,17 +7,14 @@ import 'package:pizza_store_app/models/order_variant.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
 import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 
 class ShoppingCartController extends GetxController {
-  Map<String, OrderDetail> _cartItems = {};
   Map<String, bool> _checkedItems = {};
   String? _customerId;
   CustomerOrder? _cart;
   bool isCartLoading = false;
 
-  Map<String, OrderDetail> get cartItems => _cartItems;
   CustomerOrder? get cart => _cart;
   Map<String, bool> get checkedItems => _checkedItems;
 
@@ -379,8 +375,9 @@ class ShoppingCartController extends GetxController {
   }
 
   void reset() {
-    _cartItems.clear();
+    _cart == null;
     _checkedItems.clear();
+    update();
   }
 }
 
