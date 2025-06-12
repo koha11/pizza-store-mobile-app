@@ -6,6 +6,7 @@ import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/models/customer_order.model.dart';
 import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 
 import '../../layouts/MainLayout.dart';
 import '../../widgets/LoadingDialog.dart';
@@ -184,6 +185,47 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                 ),
               ),
               const SizedBox(height: 24),
+              if (widget.order.status == OrderStatus.pending)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        loadingDialog();
+                        await CustomerOrderSnapshot.deletePendingOrder(
+                          widget.order,
+                        );
+                        // Cập nhật lại danh sách đơn hàng
+                        await HistoryCartController.get().fetchPendingOrders();
+                        showSnackBar(desc: "Đã hủy đơn hàng!", success: true);
+                        Get.offAll(
+                          () => MainLayout(),
+                          binding: getRoleControllerBindings(""),
+                        ); // Quay lại trang danh sách đơn hàng
+                      } catch (e) {
+                        showSnackBar(
+                          desc: "Không thể hủy đơn hàng: $e",
+                          success: false,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                    child: const Text(
+                      "Hủy đơn hàng",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
