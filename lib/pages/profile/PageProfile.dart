@@ -1,13 +1,16 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pizza_store_app/admin/PageAdmin.dart';
 import 'package:pizza_store_app/controllers/controller_auth.dart';
 import 'package:pizza_store_app/controllers/controller_dashboard_manager.dart';
 import 'package:pizza_store_app/controllers/controller_orders_manager.dart';
 import 'package:pizza_store_app/controllers/controller_user.dart';
+import 'package:pizza_store_app/helpers/other.helper.dart';
 import 'package:pizza_store_app/helpers/supabase.helper.dart';
 import 'package:pizza_store_app/layouts/MainLayout.dart';
 import 'package:pizza_store_app/pages/dashboard/PageDashboard.dart';
@@ -18,6 +21,7 @@ import 'package:pizza_store_app/pages/profile/PageChangePassword.dart';
 import 'package:pizza_store_app/pages/auth/PageLogin.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrderDetailManager.dart';
 import 'package:pizza_store_app/pages/order_manager/PageOrdersList.dart';
+import 'package:pizza_store_app/widgets/LoadingDialog.dart';
 
 class PageProfile extends StatelessWidget {
   PageProfile({super.key});
@@ -57,23 +61,56 @@ class PageProfile extends StatelessWidget {
                 child: Column(
                   children: [
                     Center(
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              user.avatar != null && user.avatar!.isNotEmpty
-                                  ? user.avatar!
-                                  : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  user.avatar != null && user.avatar!.isNotEmpty
+                                      ? user.avatar!
+                                      : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D",
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-
-                            fit: BoxFit.cover,
                           ),
-                        ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () async {
+                                final pickedImage = await ImagePicker()
+                                    .pickImage(source: ImageSource.gallery);
+                                if (pickedImage != null) {
+                                  File file = File(pickedImage.path);
+                                  await controller.updateAvatarUser(
+                                    image: file,
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+
                     SizedBox(height: 15),
                     Text(
                       "${user.userName}",
@@ -162,8 +199,12 @@ class PageProfile extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
+                          loadingDialog();
                           await AuthController.signOut();
-                          Get.off(() => MainLayout());
+                          Get.offAll(
+                            () => checkRole(""),
+                            binding: getRoleControllerBindings(""),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,

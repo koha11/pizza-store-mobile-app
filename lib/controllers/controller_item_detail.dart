@@ -4,6 +4,8 @@ import 'package:pizza_store_app/models/category.model.dart';
 import 'package:pizza_store_app/models/variant.model.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/ShowSnackbar.dart';
+
 class ItemDetailController extends GetxController {
   int amount = 1;
   final String categoryId, tag;
@@ -109,6 +111,23 @@ class ItemDetailController extends GetxController {
     total *= amount;
 
     return total;
+  }
+
+  bool checkRequiredVariant() {
+    bool isChecked = true;
+
+    _variantCheckList.forEach((variantTypeId, variantIds) {
+      final variantType =
+          _variants!
+              .firstWhere((variant) => variant.variantTypeId == variantTypeId)
+              .variantType;
+
+      if (variantType.isRequired && variantIds.first.isEmpty) {
+        isChecked = false;
+      }
+    });
+
+    return isChecked;
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -63,6 +65,30 @@ class AppUserSnapshot {
   AppUser appUser;
 
   AppUserSnapshot(this.appUser);
+
+  static Future<void> updateAvatar({
+    required File image,
+    required String userId,
+    bool upsert = false,
+  }) async {
+    String publicUrl = await uploadMobileImage(
+      image: image,
+      bucket: "profile",
+      path: "profile",
+      upsert: upsert,
+    );
+    await SupabaseSnapshot.update(
+      table: AppUser.tableName,
+
+      equalObject: {"user_id": userId},
+      updateObject: {"user_avatar": publicUrl},
+    );
+    // try {
+    //   showSnackBar(desc: "Cập nhật ảnh thành công", success: true);
+    // } catch (e) {
+    //   showSnackBar(desc: e.toString(), success: false);
+    // }
+  }
 
   static Future<List<AppUser>> getAppUsers({
     Map<String, dynamic>? equalObject,

@@ -11,6 +11,9 @@ class DashboardManagerController extends GetxController {
     "totalOrder": 0,
     "totalProcessingOrder": 0,
     "totalRevenue": 0,
+    "totalShippingOrder": 0,
+    "totalFinishedOrder": 0,
+    "totalConfirmedOrder": 0,
   };
   bool isLoading = true;
   int currentIndex = 0;
@@ -58,8 +61,10 @@ class DashboardManagerController extends GetxController {
   Future<void> getMonthlyRevenueDashboardData() async {
     isLoading = true;
     update();
-    dailyRevenue = await CustomerOrderSnapshot.groupDataToStatisticChart();
-    summary = await CustomerOrderSnapshot.getOrderSummaryStatistic();
+
+    final result = await CustomerOrderSnapshot.getOrderSummaryStatistic();
+    summary = result["summary"];
+    dailyRevenue = result["dailyRevenue"];
     isLoading = false;
     update();
   }

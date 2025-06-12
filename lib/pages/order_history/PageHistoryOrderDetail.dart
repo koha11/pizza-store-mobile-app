@@ -26,11 +26,6 @@ class PageHistoryOrderDetail extends StatefulWidget {
 class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
   @override
   Widget build(BuildContext context) {
-    int subTotal = widget.selectedItems.fold(
-      0,
-      (sum, item) => sum + (item.actualPrice * item.amount),
-    );
-    int total = subTotal + (widget.order.shippingFee ?? 0);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chi tiết đơn hàng"),
@@ -144,7 +139,14 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                       ),
                     ),
                     const Divider(height: 24),
-                    _buildPriceRow("Tạm tính:", formatMoney(money: subTotal)),
+                    _buildPriceRow(
+                      "Tạm tính:",
+                      formatMoney(
+                        money:
+                            ((widget.order.total ?? 0) -
+                                (widget.order.shippingFee ?? 0)),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     _buildPriceRow(
                       "Phí vận chuyển:",
@@ -153,7 +155,7 @@ class _PageHistoryOrderDetailState extends State<PageHistoryOrderDetail> {
                     const SizedBox(height: 8),
                     _buildPriceRow(
                       "Tổng cộng:",
-                      formatMoney(money: total),
+                      formatMoney(money: widget.order.total ?? 0),
                       isTotal: true,
                     ),
                     SizedBox(height: 24),
