@@ -132,6 +132,8 @@ class ShoppingCartController extends GetxController {
     final userId = UserController.get().appUser?.userId;
     if (userId == null) return;
 
+    _customerId = userId;
+
     // Tìm giỏ hàng đang cart của user
     await _loadCart(); // Nếu không có giỏ hàng nào, tạo mới
 
