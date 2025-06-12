@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pizza_store_app/admin/user_admin/PageAppUserAdmin.dart';
 import 'package:pizza_store_app/admin/item_admin/PageItemsAdmin.dart';
+import 'package:pizza_store_app/admin/user_admin/PageAppUserAdmin.dart';
 
 class PageAdmin extends StatefulWidget {
   const PageAdmin({super.key});
@@ -27,26 +27,29 @@ class _PageAdminState extends State<PageAdmin> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(width:300,),
+              SizedBox(width: 300),
               TextButton(
                 onPressed: () => _navigateToPage(const HomePageAdmin()),
-                child: const Text("Trang Chủ",style: TextStyle(
-                  fontWeight: FontWeight.bold
-                ),),
+                child: const Text(
+                  "Trang Chủ",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               TextButton(
                 onPressed: () => _navigateToPage(PageItemsAdmin()),
-                child: const Text("Sản Phẩm",style: TextStyle(
-                    fontWeight: FontWeight.bold
-                ),),
+                child: const Text(
+                  "Sản Phẩm",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               TextButton(
                 onPressed: () => _navigateToPage(PageAppUserAdmin()),
-                child: const Text("Khách hàng",style: TextStyle(
-                    fontWeight: FontWeight.bold
-                ),),
+                child: const Text(
+                  "Khách hàng",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-              SizedBox(width: 300,),
+              SizedBox(width: 300),
             ],
           ),
         ),

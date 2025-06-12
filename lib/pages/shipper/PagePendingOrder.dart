@@ -205,7 +205,7 @@ class PagePendingOrder extends StatelessWidget {
                 );
               },
             ),
-            Text("Không có đơn hàng nào."),
+            if (orders.isEmpty) Text("Không có đơn hàng nào."),
           ],
         ),
       ),
