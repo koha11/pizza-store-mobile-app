@@ -377,6 +377,7 @@ class ShoppingCartController extends GetxController {
   void reset() {
     _cart == null;
     _checkedItems.clear();
+    update();
   }
 }
 
