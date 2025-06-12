@@ -23,13 +23,15 @@ class PageConfirmBuy extends StatefulWidget {
 class _PageConfirmBuyState extends State<PageConfirmBuy> {
   int shippingFee = (10 + Random().nextInt(11)) * 1000;
   String? selectedAddressId;
+  final controller = ShoppingCartController.get();
 
   @override
   Widget build(BuildContext context) {
     int subTotal = widget.selectedItems.fold(
       0,
-      (sum, item) => sum + (item.actualPrice * item.amount),
+      (sum, item) => sum + item.actualPrice,
     );
+
     int totalAmount = widget.selectedItems.fold(
       0,
       (sum, item) => sum + item.amount,

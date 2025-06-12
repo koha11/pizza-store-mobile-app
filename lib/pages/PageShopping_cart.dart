@@ -27,14 +27,28 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           // Nút chọn/bỏ chọn tất cả
-          IconButton(
-            icon: const Icon(Icons.check_box_outline_blank),
-            onPressed: () {
-              final controller = Get.find<ShoppingCartController>();
-              controller.checkAndUnAllItems();
+          // IconButton(
+          //   icon: const Icon(Icons.check_box_outline_blank),
+          //   onPressed: () {
+          //     final controller = Get.find<ShoppingCartController>();
+          //     controller.checkAndUnAllItems();
+          //   },
+          //   tooltip: 'Chọn/Bỏ chọn tất cả',
+          // ),
+          GetBuilder(
+            init: ShoppingCartController.get(),
+            builder: (controller) {
+              final item = controller.cart!.orderDetails!.first;
+              return Checkbox(
+                value: controller.checkedItems[item.itemId] ?? false,
+                onChanged: (value) {
+                  final controller = Get.find<ShoppingCartController>();
+                  controller.checkAndUnAllItems();
+                },
+              );
             },
-            tooltip: 'Chọn/Bỏ chọn tất cả',
           ),
+
           // Nút xóa các mục đã chọn
           IconButton(
             icon: const Icon(Icons.delete_outline),
