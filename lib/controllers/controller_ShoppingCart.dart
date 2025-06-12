@@ -33,7 +33,6 @@ class ShoppingCartController extends GetxController {
   void onReady() async {
     // TODO: implement onReady
     super.onReady();
-    await _initializeCart();
   }
 
   // Thêm getter để lấy tổng số lượng sản phẩm
