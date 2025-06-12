@@ -74,7 +74,19 @@ class MainLayout extends StatelessWidget {
                   ),
                 );
               } else {
-                return Text('');
+                return IconButton(
+                  onPressed: () {
+                    if (UserController.get().appUser == null) {
+                      Get.to(() => PageLogin());
+                    } else {
+                      Get.to(
+                        PageShoppingCart(),
+                        binding: BindingsShoppingCart(),
+                      );
+                    }
+                  },
+                  icon: Icon(Icons.shopping_cart),
+                );
               }
             },
           ),
