@@ -124,10 +124,7 @@ class CustomerOrder {
               : (json["shipping_fee"] as num).toInt(),
       shippingAddress: json["shipping_address"],
       orderDetails: orderDetails,
-      total: orderDetails.fold(
-        0,
-        (sum, item) => (sum ?? 0) + item.amount * item.actualPrice,
-      ),
+      total: orderDetails.fold(0, (sum, item) => (sum ?? 0) + item.actualPrice),
     );
   }
 
