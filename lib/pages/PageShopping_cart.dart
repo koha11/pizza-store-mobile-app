@@ -27,14 +27,40 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           // Nút chọn/bỏ chọn tất cả
-          IconButton(
-            icon: const Icon(Icons.check_box_outline_blank),
-            onPressed: () {
-              final controller = Get.find<ShoppingCartController>();
-              controller.checkAndUnAllItems();
-            },
-            tooltip: 'Chọn/Bỏ chọn tất cả',
+          // IconButton(
+          //   icon: const Icon(Icons.check_box_outline_blank),
+          //   onPressed: () {
+          //     final controller = Get.find<ShoppingCartController>();
+          //     controller.checkAndUnAllItems();
+          //   },
+          //   tooltip: 'Chọn/Bỏ chọn tất cả',
+          // ),
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: GetBuilder<ShoppingCartController>(
+              init: ShoppingCartController.get(),
+              builder: (controller) {
+                // Kiểm tra cart và orderDetails
+                if (controller.cart == null ||
+                    controller.cart?.orderDetails == null ||
+                    controller.cart!.orderDetails!.isEmpty) {
+                  return const SizedBox(); // Trả về widget rỗng nếu không có dữ liệu
+                }
+
+                // Lấy item đầu tiên an toàn
+                final firstItem = controller.cart!.orderDetails!.first;
+
+                return Checkbox(
+                  value: controller.checkedItems[firstItem.itemId] ?? false,
+                  onChanged: (value) {
+                    controller.checkAndUnAllItems();
+                  },
+                );
+              },
+            ),
           ),
+
           // Nút xóa các mục đã chọn
           IconButton(
             icon: const Icon(Icons.delete_outline),
