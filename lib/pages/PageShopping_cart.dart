@@ -35,18 +35,30 @@ class _PageShoppingCartState extends State<PageShoppingCart> {
           //   },
           //   tooltip: 'Chọn/Bỏ chọn tất cả',
           // ),
-          GetBuilder(
-            init: ShoppingCartController.get(),
-            builder: (controller) {
-              final item = controller.cart!.orderDetails!.first;
-              return Checkbox(
-                value: controller.checkedItems[item.itemId] ?? false,
-                onChanged: (value) {
-                  final controller = Get.find<ShoppingCartController>();
-                  controller.checkAndUnAllItems();
-                },
-              );
-            },
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: GetBuilder<ShoppingCartController>(
+              init: ShoppingCartController.get(),
+              builder: (controller) {
+                // Kiểm tra cart và orderDetails
+                if (controller.cart == null ||
+                    controller.cart?.orderDetails == null ||
+                    controller.cart!.orderDetails!.isEmpty) {
+                  return const SizedBox(); // Trả về widget rỗng nếu không có dữ liệu
+                }
+
+                // Lấy item đầu tiên an toàn
+                final firstItem = controller.cart!.orderDetails!.first;
+
+                return Checkbox(
+                  value: controller.checkedItems[firstItem.itemId] ?? false,
+                  onChanged: (value) {
+                    controller.checkAndUnAllItems();
+                  },
+                );
+              },
+            ),
           ),
 
           // Nút xóa các mục đã chọn
