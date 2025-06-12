@@ -8,6 +8,7 @@ import 'package:pizza_store_app/models/order_detail.model.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrderDetail.dart';
 import 'package:pizza_store_app/pages/order_history/PageHistoryOrder.dart';
 import 'package:pizza_store_app/widgets/LoadingDialog.dart';
+import 'package:pizza_store_app/widgets/ShowSnackbar.dart';
 import '../controllers/controller_ShoppingCart.dart';
 import '../controllers/controller_user.dart';
 
@@ -282,12 +283,9 @@ class _PageConfirmBuyState extends State<PageConfirmBuy> {
       child: ElevatedButton(
         onPressed: () async {
           if (selectedAddressId == null) {
-            Get.snackbar(
-              "Lỗi",
-              "Vui lòng chọn địa chỉ giao hàng",
-              snackPosition: SnackPosition.TOP,
-              backgroundColor: Colors.red,
-              colorText: Colors.white,
+            showSnackBar(
+              desc: "Vui lòng chọn địa chỉ giao hàng",
+              success: false,
             );
             return;
           }
