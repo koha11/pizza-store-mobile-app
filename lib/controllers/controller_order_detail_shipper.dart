@@ -92,7 +92,7 @@ class OrderDetailsShipperController extends GetxController {
         table: CustomerOrder.tableName,
         updateObject: {
           "status": OrderStatus.finished.name,
-          "finishTime": DateTime.now().toIso8601String(),
+          "finish_time": DateTime.now().toIso8601String(),
         },
         equalObject: {'order_id': orderId},
       );
