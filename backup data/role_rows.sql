@@ -1,0 +1,1 @@
+INSERT INTO "public"."role" ("role_id", "role_name") VALUES ('ADMIN', 'Admin'), ('CUSTOMER', 'Customer'), ('MANAGER', 'Manager'), ('SHIPPER', 'Shipper');

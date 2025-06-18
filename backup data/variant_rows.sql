@@ -1,0 +1,1 @@
+INSERT INTO "public"."variant" ("variant_id", "variant_type_id", "variant_name", "price_change") VALUES ('VI0001', 'VTI001', 'Size nhỏ', '0'), ('VI0002', 'VTI001', 'Size vừa', '30000'), ('VI0003', 'VTI001', 'Size lớn', '60000'), ('VI0004', 'VTI002', 'Bánh mỳ', '10000'), ('VI0005', 'VTI002', 'Khoai tây chiên', '20000'), ('VI0006', 'VTI002', 'Khoai tây nghiền', '40000');

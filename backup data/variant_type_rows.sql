@@ -1,0 +1,1 @@
+INSERT INTO "public"."variant_type" ("variant_type_id", "variant_type_name", "is_required") VALUES ('VTI001', 'Chọn kích cỡ', 'true'), ('VTI002', 'Chọn ăn kèm', 'false');
