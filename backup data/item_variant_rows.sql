@@ -1,0 +1,1 @@
+INSERT INTO "public"."item_variant" ("variant_id", "category_id") VALUES ('VI0001', 'CI0004'), ('VI0002', 'CI0004'), ('VI0003', 'CI0004'), ('VI0004', 'CI0001'), ('VI0005', 'CI0005'), ('VI0006', 'CI0005');
